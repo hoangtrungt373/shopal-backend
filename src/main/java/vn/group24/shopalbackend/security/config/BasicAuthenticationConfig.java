@@ -13,14 +13,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.RequiredArgsConstructor;
-import vn.group24.shopalbackend.security.repository.ShopalUserRepository;
+import vn.group24.shopalbackend.security.repository.UserAccountRepository;
 
 @Configuration
 @RequiredArgsConstructor
 public class BasicAuthenticationConfig {
 
     @Autowired
-    private final ShopalUserRepository userRepository;
+    private final UserAccountRepository userRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {

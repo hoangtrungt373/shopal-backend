@@ -33,6 +33,9 @@ public class Product extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "PRODUCT_NAME")
     private String productName;
+    @NotNull
+    @Column(name = "SKU")
+    private String sku;
 
     @NotNull
     @Column(name = "PRICE")
@@ -42,9 +45,8 @@ public class Product extends AbstractAuditableEntity {
     @Column(name = "QUANTITY_IN_STOCK")
     private Integer quantityInStock;
 
-    @NotNull
-    @Column(name = "DESCRIPTION")
-    private Integer description;
+    @Column(name = "DESCRIPTION_CONTENT_URL")
+    private Integer descriptionContentUrl;
 
     @NotNull
     @Column(name = "ACTIVE")

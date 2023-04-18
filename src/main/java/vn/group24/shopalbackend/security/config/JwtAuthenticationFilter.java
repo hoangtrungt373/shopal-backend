@@ -17,7 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import vn.group24.shopalbackend.security.repository.ShopalTokenRepository;
+import vn.group24.shopalbackend.security.repository.UserAccountTokenRepository;
 
 @Component
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    private final ShopalTokenRepository tokenRepository;
+    private final UserAccountTokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(

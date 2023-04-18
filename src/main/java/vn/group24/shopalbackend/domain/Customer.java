@@ -27,8 +27,8 @@ import vn.group24.shopalbackend.domain.enums.Gender;
 public class Customer extends AbstractAuditableEntity {
 
     @NotNull
-    @Column(name = "SHOPAL_USER_ID")
-    private Integer userId;
+    @Column(name = "USER_ACCOUNT_ID")
+    private Integer userAccountId;
 
     @Column(name = "FULL_NAME")
     private String fullName;

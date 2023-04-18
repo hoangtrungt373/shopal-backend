@@ -24,7 +24,7 @@ public class Catalog extends AbstractAuditableEntity {
 
     @NotNull
     @Column(name = "NAME")
-    private String username;
+    private String name;
 
     @NotNull
     @Column(name = "LOGO_URL")

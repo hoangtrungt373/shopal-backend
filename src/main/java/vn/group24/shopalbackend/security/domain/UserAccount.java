@@ -22,16 +22,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import vn.group24.shopalbackend.domain.AbstractEntity;
-import vn.group24.shopalbackend.security.domain.enums.ShopalRole;
+import vn.group24.shopalbackend.security.domain.enums.UserRole;
 
 
 @Entity
-@Table(name = "SHOPAL_USER", schema = "auth")
+@Table(name = "USER_ACCOUNT", schema = "auth")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@AttributeOverride(name = "id", column = @Column(name = "SHOPAL_USER_ID"))
-public class ShopalUser extends AbstractEntity implements UserDetails {
+@AttributeOverride(name = "id", column = @Column(name = "USER_ACCOUNT_ID"))
+public class UserAccount extends AbstractEntity implements UserDetails {
 
     @Column(name = "USERNAME")
     private String username;
@@ -48,10 +48,10 @@ public class ShopalUser extends AbstractEntity implements UserDetails {
     @Column(name = "ROLE")
     @Enumerated(EnumType.STRING)
     @Getter
-    private ShopalRole role;
+    private UserRole role;
 
-    @OneToMany(mappedBy = "user")
-    private List<ShopalToken> tokens;
+    @OneToMany(mappedBy = "userAccount")
+    private List<UserAccountToken> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

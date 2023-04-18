@@ -40,7 +40,7 @@ public class Accounting extends AbstractAuditableEntity {
     private LocalDate startDate;
 
     @NotNull
-    @Column(name = "START_DATE")
+    @Column(name = "END_DATE")
     private LocalDate endDate;
 
     @NotNull

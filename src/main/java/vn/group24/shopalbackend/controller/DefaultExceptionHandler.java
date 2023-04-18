@@ -22,7 +22,7 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ResponseEntity<RestError> handleBadCredentialsException(BadCredentialsException ex) {
 
-        RestError re = new RestError(HttpStatus.UNAUTHORIZED.toString(),
+        RestError re = new RestError(HttpStatus.UNAUTHORIZED, HttpStatus.UNAUTHORIZED.toString(),
                 "Email or password not correct");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(re);
     }
@@ -31,7 +31,7 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ResponseEntity<RestError> handleAuthenticationException(Exception ex) {
 
-        RestError re = new RestError(HttpStatus.UNAUTHORIZED.toString(),
+        RestError re = new RestError(HttpStatus.UNAUTHORIZED, HttpStatus.UNAUTHORIZED.toString(),
                 "Full authentication is required to access this resource");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(re);
     }
@@ -40,7 +40,7 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ResponseEntity<RestError> handleValidationBusinessRuntimeException(ValidationBusinessRuntimeException ex) {
 
-        RestError re = new RestError(HttpStatus.BAD_REQUEST.toString(),
+        RestError re = new RestError(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(),
                 ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(re);
     }

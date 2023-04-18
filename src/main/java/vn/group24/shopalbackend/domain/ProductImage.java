@@ -28,4 +28,8 @@ public class ProductImage extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "IMAGE_URL")
     private String imageUrl;
+
+    @NotNull
+    @Column(name = "IS_MAIN_IMG")
+    private Boolean isMainImg;
 }

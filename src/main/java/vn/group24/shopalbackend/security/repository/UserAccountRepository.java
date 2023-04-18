@@ -5,12 +5,12 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import vn.group24.shopalbackend.security.domain.ShopalUser;
+import vn.group24.shopalbackend.security.domain.UserAccount;
 
 @Repository
-public interface ShopalUserRepository extends JpaRepository<ShopalUser, Integer> {
+public interface UserAccountRepository extends JpaRepository<UserAccount, Integer> {
 
-    Optional<ShopalUser> findByEmail(String email);
+    Optional<UserAccount> findByEmail(String email);
 
     boolean existsByEmail(String email);
 }

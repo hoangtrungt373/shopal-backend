@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import vn.group24.shopalbackend.security.domain.ShopalToken;
-import vn.group24.shopalbackend.security.repository.ShopalTokenRepository;
+import vn.group24.shopalbackend.security.domain.UserAccountToken;
+import vn.group24.shopalbackend.security.repository.UserAccountTokenRepository;
 
 @Service
 @RequiredArgsConstructor
 public class LogoutService implements LogoutHandler {
 
-    private final ShopalTokenRepository tokenRepository;
+    private final UserAccountTokenRepository tokenRepository;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -25,7 +25,7 @@ public class LogoutService implements LogoutHandler {
             return;
         }
         jwt = authHeader.substring(7);
-        ShopalToken storedToken = tokenRepository.findByToken(jwt)
+        UserAccountToken storedToken = tokenRepository.findByToken(jwt)
                 .orElse(null);
         if (storedToken != null) {
             storedToken.setExpired(true);

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vn.group24.shopalbackend.security.domain.enums.ShopalRole;
+import vn.group24.shopalbackend.security.domain.enums.UserRole;
 
 @Data
 @Builder
@@ -13,5 +13,5 @@ import vn.group24.shopalbackend.security.domain.enums.ShopalRole;
 public class AuthenticationRequest {
     private String email;
     private String password;
-    private ShopalRole role;
+    private UserRole role;
 }

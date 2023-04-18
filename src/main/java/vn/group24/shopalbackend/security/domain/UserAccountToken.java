@@ -20,14 +20,14 @@ import vn.group24.shopalbackend.domain.AbstractEntity;
 import vn.group24.shopalbackend.security.domain.enums.TokenType;
 
 @Entity
-@Table(name = "SHOPAL_TOKEN", schema = "auth")
+@Table(name = "USER_ACCOUNT_TOKEN", schema = "auth")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@AttributeOverride(name = "id", column = @Column(name = "SHOPAL_TOKEN_ID"))
-public class ShopalToken extends AbstractEntity {
+@AttributeOverride(name = "id", column = @Column(name = "USER_ACCOUNT_TOKEN_ID"))
+public class UserAccountToken extends AbstractEntity {
 
     @NotNull
     @Column(name = "TOKEN", unique = true)
@@ -46,6 +46,6 @@ public class ShopalToken extends AbstractEntity {
     public Boolean expired;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SHOPAL_USER_ID")
-    public ShopalUser user;
+    @JoinColumn(name = "USER_ACCOUNT_ID")
+    public UserAccount userAccount;
 }

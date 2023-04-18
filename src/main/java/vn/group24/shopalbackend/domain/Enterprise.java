@@ -23,8 +23,8 @@ import lombok.Setter;
 public class Enterprise extends AbstractAuditableEntity {
 
     @NotNull
-    @Column(name = "SHOPAL_USER_ID")
-    private Integer userId;
+    @Column(name = "USER_ACCOUNT_ID")
+    private Integer userAccountId;
 
     @NotNull
     @Column(name = "ENTERPRISE_NAME")

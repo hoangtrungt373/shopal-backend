@@ -13,19 +13,19 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import vn.group24.shopalbackend.security.config.JwtService;
-import vn.group24.shopalbackend.security.domain.ShopalToken;
-import vn.group24.shopalbackend.security.domain.ShopalUser;
+import vn.group24.shopalbackend.security.domain.UserAccountToken;
+import vn.group24.shopalbackend.security.domain.UserAccount;
 import vn.group24.shopalbackend.security.domain.enums.TokenType;
-import vn.group24.shopalbackend.security.repository.ShopalTokenRepository;
-import vn.group24.shopalbackend.security.repository.ShopalUserRepository;
+import vn.group24.shopalbackend.security.repository.UserAccountTokenRepository;
+import vn.group24.shopalbackend.security.repository.UserAccountRepository;
 import vn.group24.shopalbackend.util.Validator;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final ShopalUserRepository userRepository;
-    private final ShopalTokenRepository tokenRepository;
+    private final UserAccountRepository userRepository;
+    private final UserAccountTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -34,12 +34,12 @@ public class AuthenticationService {
         Validator validator = new Validator();
         validatePreconditionField(request, validator);
         validator.throwIfTrue(userRepository.existsByEmail(request.getEmail()), "Email already exists");
-        ShopalUser user = ShopalUser.builder()
+        UserAccount user = UserAccount.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
-        ShopalUser savedUser = userRepository.save(user);
+        UserAccount savedUser = userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);
         saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse.builder()
@@ -49,7 +49,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws BadCredentialsException {
         Validator validator = new Validator();
-        ShopalUser user = userRepository.findByEmail(request.getEmail()).orElseGet(() -> null);
+        UserAccount user = userRepository.findByEmail(request.getEmail()).orElseGet(() -> null);
         validatePreconditionField(request, validator);
         validator.throwIfFalse(user != null, "Email does not exists");
         if (user != null) {
@@ -71,9 +71,9 @@ public class AuthenticationService {
                 .build();
     }
 
-    private void saveUserToken(ShopalUser user, String jwtToken) {
-        ShopalToken token = ShopalToken.builder()
-                .user(user)
+    private void saveUserToken(UserAccount user, String jwtToken) {
+        UserAccountToken token = UserAccountToken.builder()
+                .userAccount(user)
                 .token(jwtToken)
                 .tokenType(TokenType.BEARER)
                 .expired(false)
@@ -82,8 +82,8 @@ public class AuthenticationService {
         tokenRepository.save(token);
     }
 
-    private void revokeAllUserTokens(ShopalUser user) {
-        List<ShopalToken> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+    private void revokeAllUserTokens(UserAccount user) {
+        List<UserAccountToken> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
         if (!validUserTokens.isEmpty()) {
             validUserTokens.forEach(token -> {
                 token.setExpired(true);

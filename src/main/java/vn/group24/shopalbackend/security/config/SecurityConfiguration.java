@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import lombok.RequiredArgsConstructor;
-import vn.group24.shopalbackend.security.domain.enums.ShopalRole;
+import vn.group24.shopalbackend.security.domain.enums.UserRole;
 
 @Configuration
 @EnableWebSecurity
@@ -34,8 +34,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests()
                 .requestMatchers(BASIC_AUTH_ENDPOINTS)
                 .permitAll()
-                .requestMatchers("/admin/**").hasRole(ShopalRole.ADMIN.name())
-                .requestMatchers("/enterprise/**").hasRole(ShopalRole.ENTERPRISE_MANAGER.name())
+                .requestMatchers("/admin/**").hasRole(UserRole.ADMIN.name())
+                .requestMatchers("/enterprise/**").hasRole(UserRole.ENTERPRISE_MANAGER.name())
                 .anyRequest()
                 .authenticated()
                 .and()
