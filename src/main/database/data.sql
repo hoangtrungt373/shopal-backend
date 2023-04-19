@@ -1,0 +1,75 @@
+﻿DECLARE @log_user VARCHAR(20) = 'admin_1'
+
+delete from config.SYS_LANGUAGE;
+delete from config.PRODUCT_TYPE_LAN;
+delete from shop.PRODUCT_CATALOG;
+delete from shop.PRODUCT;
+delete from shop.CATALOG;
+
+SET IDENTITY_INSERT [config].[SYS_LANGUAGE] ON; 
+INSERT INTO [config].[SYS_LANGUAGE]
+	([SYS_LANGUAGE_ID]
+	,[CODE]
+	,[DESCRIPTION]
+	,[ACTIVE])
+VALUES 
+	(1, 'VN', 'Vietnamese', 1),
+	(2, 'EN', 'English', 0);
+SET IDENTITY_INSERT [config].[SYS_LANGUAGE] OFF; 
+
+SET IDENTITY_INSERT [config].[PRODUCT_TYPE_LAN] ON; 
+INSERT INTO [config].[PRODUCT_TYPE_LAN]
+	([PRODUCT_TYPE_LAN_ID]
+	,[CODE]
+	,[LAN]
+	,[DESCRIPTION])
+VALUES
+	(1,'COMPUTER_AND_ACCESSORIES','VN',N'Máy tính và các thiết bị điện tử'),
+	(2,'COMPUTER_AND_ACCESSORIES','EN','Computer and Accessories');
+SET IDENTITY_INSERT [config].[PRODUCT_TYPE_LAN] OFF; 
+
+SET IDENTITY_INSERT [shop].[CATALOG] ON; 
+INSERT INTO [shop].[CATALOG]
+	([CATALOG_ID]
+	,[PRODUCT_TYPE]
+	,[LOGO_URL]
+	,[LEVEL]
+	,[USR_LOG_I]
+	,[USR_LOG_U]
+	,[DATE_LOG_I]
+	,[DATE_LOG_U]
+	,[VERSION])
+VALUES (1, 'COMPUTER_AND_ACCESSORIES', 'catalog/computer_and_accessories.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+SET IDENTITY_INSERT [shop].[CATALOG] OFF; 
+
+SET IDENTITY_INSERT [shop].[PRODUCT] ON; 
+INSERT INTO [shop].[PRODUCT]
+	([PRODUCT_ID]
+	,[SKU]
+	,[PRODUCT_NAME]
+	,[QUANTITY_IN_STOCK]
+	,[DESCRIPTION_CONTENT_URL]
+	,[ACTIVE]
+	,[USR_LOG_I]
+	,[USR_LOG_U]
+	,[DATE_LOG_I]
+	,[DATE_LOG_U]
+	,[VERSION])
+VALUES (1,'M000001', N'Pendrive Usb 64GB Tốc Độ Cao 32GB 1GB 8GB 16GB Dung Lượng Thật 2TB 2.0', 3000,
+		'product/description/M000001.html', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+SET IDENTITY_INSERT [shop].[PRODUCT] OFF; 
+
+SET IDENTITY_INSERT [shop].[PRODUCT_CATALOG] ON; 
+INSERT INTO [shop].[PRODUCT_CATALOG]
+	([PRODUCT_CATALOG_ID]
+	,[PRODUCT_ID]
+	,[CATALOG_ID]
+	,[USR_LOG_I]
+	,[USR_LOG_U]
+	,[DATE_LOG_I]
+	,[DATE_LOG_U]
+	,[VERSION])
+VALUES (1, 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+SET IDENTITY_INSERT [shop].[PRODUCT_CATALOG] OFF; 
+
+

@@ -21,7 +21,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "COOPERATION_CONTRACT_ID"))
-public class CooperationContract extends AbstractAuditableEntity {
+public class CooperationContract extends AbstractStateAndAncestorManageableEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,6 +52,10 @@ public class CooperationContract extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "CASH_PER_POINT")
     private BigDecimal cashPerPoint;
+
+    @NotNull
+    @Column(name = "UPDATE_DESCRIPTION")
+    private String updateDescription;
 
     @NotNull
     @Column(name = "ACTIVE")

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import vn.group24.shopalbackend.controller.response.RestError;
+import vn.group24.shopalbackend.controller.response.common.RestError;
 import vn.group24.shopalbackend.exception.ValidationBusinessRuntimeException;
 
 /**
@@ -29,7 +29,7 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({AuthenticationException.class})
     @ResponseBody
-    public ResponseEntity<RestError> handleAuthenticationException(Exception ex) {
+    public ResponseEntity<RestError> handleAuthenticationException(AuthenticationException ex) {
 
         RestError re = new RestError(HttpStatus.UNAUTHORIZED, HttpStatus.UNAUTHORIZED.toString(),
                 "Full authentication is required to access this resource");
@@ -39,6 +39,15 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ValidationBusinessRuntimeException.class})
     @ResponseBody
     public ResponseEntity<RestError> handleValidationBusinessRuntimeException(ValidationBusinessRuntimeException ex) {
+
+        RestError re = new RestError(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(),
+                ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(re);
+    }
+
+    @ExceptionHandler({RuntimeException.class})
+    @ResponseBody
+    public ResponseEntity<RestError> handleRuntimeException(RuntimeException ex) {
 
         RestError re = new RestError(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(),
                 ex.getMessage());

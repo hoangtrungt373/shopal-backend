@@ -1,31 +1,51 @@
 package vn.group24.shopalbackend.mapper;
 
-import org.springframework.security.core.parameters.P;
-import vn.group24.shopalbackend.controller.response.ProductDetailDto;
-import vn.group24.shopalbackend.controller.response.ProductImageDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import vn.group24.shopalbackend.controller.response.common.CatalogDto;
+import vn.group24.shopalbackend.controller.response.common.ProductImageDto;
+import vn.group24.shopalbackend.controller.response.specific.ProductDetailDto;
+import vn.group24.shopalbackend.domain.Catalog;
 import vn.group24.shopalbackend.domain.Product;
+import vn.group24.shopalbackend.domain.ProductCatalog;
 import vn.group24.shopalbackend.domain.ProductImage;
+import vn.group24.shopalbackend.domain.multilingual.ProductTypeLan;
+import vn.group24.shopalbackend.util.LanguageUtils;
 
-import java.util.stream.Collectors;
-
+@Component
 public class ProductMapper {
 
-    public static ProductDetailDto mapToProductDetailDto(Product entity) {
+    @Autowired
+    private LanguageUtils languageUtils;
+
+    public ProductDetailDto mapToProductDetailDto(Product entity) {
         ProductDetailDto dto = new ProductDetailDto();
+        dto.setId(entity.getId());
         dto.setProductName(entity.getProductName());
-        dto.setPrice(entity.getPrice());
         dto.setActive(entity.getActive());
         dto.setSku(entity.getSku());
         dto.setDescriptionContentUrl(entity.getDescriptionContentUrl());
         dto.setQuantityInStock(entity.getQuantityInStock());
-        dto.setProductImageDtos(entity.getProductImages().stream().map(ProductMapper::mapToProductImageDto).collect(Collectors.toList()));
+        dto.setImageUrls(entity.getProductImages().stream().map(this::mapToProductImageDto).toList());
+        dto.setCatalogs(entity.getProductCatalogs().stream().map(ProductCatalog::getCatalog).map(this::mapToCatalogDto).toList());
         return dto;
     }
 
-    public static ProductImageDto mapToProductImageDto(ProductImage entity) {
+    public ProductImageDto mapToProductImageDto(ProductImage entity) {
         ProductImageDto dto = new ProductImageDto();
+        dto.setId(entity.getId());
         dto.setImageUrl(entity.getImageUrl());
         dto.setIsMainImg(entity.getIsMainImg());
+        return dto;
+    }
+
+    public CatalogDto mapToCatalogDto(Catalog entity) {
+        CatalogDto dto = new CatalogDto();
+        dto.setId(entity.getId());
+        dto.setProductType(languageUtils.getEnumDescription(entity.productType, ProductTypeLan.TABLE_NAME));
+        dto.setLevel(entity.getLevel());
+        dto.setLogoUrl(entity.getLogoUrl());
         return dto;
     }
 }

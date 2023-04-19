@@ -33,14 +33,19 @@ public class PurchaseOrderDetail extends AbstractAuditableEntity {
     private Product product;
 
     @NotNull
-    @Column(name = "POINT")
-    private BigDecimal shippingFee;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PRODUCT_POINT_ID")
+    private ProductPoint productPoint;
+
+    @NotNull
+    @Column(name = "POINT_EXCHANGE")
+    private BigDecimal pointExchange;
 
     @NotNull
     @Column(name = "AMOUNT")
-    private BigDecimal orderTotal;
+    private BigDecimal amount;
 
     @NotNull
-    @Column(name = "TOTAL_POINT")
-    public BigDecimal paymentMethod;
+    @Column(name = "TOTAL_POINT_EXCHANGE")
+    public BigDecimal totalPointExchange;
 }

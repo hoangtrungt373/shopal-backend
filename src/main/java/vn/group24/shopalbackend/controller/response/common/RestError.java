@@ -1,8 +1,9 @@
-package vn.group24.shopalbackend.controller.response;
+package vn.group24.shopalbackend.controller.response.common;
+
+import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
 
 /**
  * @author ttg

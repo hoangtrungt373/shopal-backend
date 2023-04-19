@@ -20,6 +20,7 @@ import vn.group24.shopalbackend.security.domain.enums.UserRole;
 public class SecurityConfiguration {
 
     public static final String[] BASIC_AUTH_ENDPOINTS = new String[]{"/api/v1/auth/**"};
+    public static final String[] BASIC_NO_AUTHENTICATE_ENDPOINTS = new String[]{"/api/product/**"};
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
@@ -33,6 +34,8 @@ public class SecurityConfiguration {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers(BASIC_AUTH_ENDPOINTS)
+                .permitAll()
+                .requestMatchers(BASIC_NO_AUTHENTICATE_ENDPOINTS)
                 .permitAll()
                 .requestMatchers("/admin/**").hasRole(UserRole.ADMIN.name())
                 .requestMatchers("/enterprise/**").hasRole(UserRole.ENTERPRISE_MANAGER.name())

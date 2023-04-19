@@ -17,7 +17,7 @@ import vn.group24.shopalbackend.domain.enums.Language;
 @MappedSuperclass
 @Getter
 @Setter
-public class AbstractMultilingualEntity extends AbstractEntity {
+public abstract class AbstractMultilingualEntity extends AbstractEntity {
 
     @NotNull
     @Column(name = "CODE")

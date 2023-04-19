@@ -22,13 +22,13 @@ public class AbstractAuditableEntity extends AbstractEntity {
     @Column(name = "USR_LOG_I", updatable = false)
     private String createdBy;
 
-    @Column(name = "DTE_LOG_I", updatable = false)
+    @Column(name = "DATE_LOG_I", updatable = false)
     private LocalDateTime creationDate;
 
     @Column(name = "USR_LOG_U")
     private String lastModifiedBy;
 
-    @Column(name = "DTE_LOG_U")
+    @Column(name = "DATE_LOG_U")
     private LocalDateTime lastModificationDate;
 
     @Version

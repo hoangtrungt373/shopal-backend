@@ -1,6 +1,6 @@
 package vn.group24.shopalbackend.service;
 
-import vn.group24.shopalbackend.controller.response.ProductDetailDto;
+import vn.group24.shopalbackend.controller.response.specific.ProductDetailDto;
 
 /**
  * @author ttg

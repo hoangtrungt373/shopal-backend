@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.group24.shopalbackend.domain.enums.Language;
-import vn.group24.shopalbackend.service.SysLanguageService;
+import vn.group24.shopalbackend.service.LanguageService;
 
 /**
  * @author ttg
@@ -18,11 +18,11 @@ import vn.group24.shopalbackend.service.SysLanguageService;
 public class SysLanguageController {
 
     @Autowired
-    private SysLanguageService sysLanguageService;
+    private LanguageService languageService;
 
     @GetMapping("/change-language/{reqLan}")
     public ResponseEntity<String> changeCurrentLanguage(@PathVariable Language reqLan) {
-        sysLanguageService.changeCurrentLanguage(reqLan);
+        languageService.changeCurrentLanguage(reqLan);
         return ResponseEntity.ok("Catalog here");
     }
 }

@@ -35,17 +35,14 @@ public class PurchaseOrder extends AbstractAuditableEntity {
     @JoinColumn(name = "CUSTOMER_ID")
     private Customer customer;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ENTERPRISE_ID")
     private Enterprise enterprise;
 
     @NotNull
-    @Column(name = "DELIVERY_FEE")
-    private BigDecimal shippingFee;
-
-    @NotNull
-    @Column(name = "ORDER_TOTAL")
-    private BigDecimal orderTotal;
+    @Column(name = "ORDER_TOTAL_POINT_EXHANGE")
+    private BigDecimal orderTotalPointExchange;
 
     @NotNull
     @Column(name = "PAYMENT_METHOD")

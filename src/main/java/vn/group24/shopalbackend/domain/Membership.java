@@ -33,6 +33,6 @@ public class Membership extends AbstractAuditableEntity {
     private Enterprise enterprise;
 
     @NotNull
-    @Column(name = "POINT")
-    private BigDecimal point;
+    @Column(name = "AVAILABLE_POINT")
+    private BigDecimal availablePoint;
 }
