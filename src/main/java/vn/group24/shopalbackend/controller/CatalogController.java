@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ttg
  */
 @RestController
-@RequestMapping("/catalog")
+@RequestMapping("/api/catalog")
 public class CatalogController {
 
 

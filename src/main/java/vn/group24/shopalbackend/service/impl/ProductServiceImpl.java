@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import vn.group24.shopalbackend.controller.response.specific.ProductDetailDto;
 import vn.group24.shopalbackend.domain.Product;
-import vn.group24.shopalbackend.mapper.ProductMapper;
+import vn.group24.shopalbackend.mapper.ProductDetailMapper;
 import vn.group24.shopalbackend.repository.ProductRepository;
 import vn.group24.shopalbackend.service.ProductService;
 
@@ -21,14 +21,14 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
 
     @Autowired
-    private ProductMapper productMapper;
+    private ProductDetailMapper productDetailMapper;
 
     @Override
     public ProductDetailDto getProductDetail(Integer productId) {
-        Product product = productRepository.getProductDetail(productId);
+        Product product = productRepository.getProductDetailById(productId);
         if (product == null) {
             throw new IllegalArgumentException(String.format("Can not found product with id = %s", productId));
         }
-        return productMapper.mapToProductDetailDto(product);
+        return productDetailMapper.mapToProductDetailDto(product);
     }
 }

@@ -16,6 +16,7 @@ public class ProductPointDto extends AbstractDto {
     private ProductDto product;
     private EnterpriseDto enterprise;
     private ProductSource source;
+    private String sourceDescription;
     private BigDecimal initialCash;
     private BigDecimal pointExchange;
     private String updateDescription;

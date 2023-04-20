@@ -12,12 +12,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import vn.group24.shopalbackend.domain.Customer;
+import vn.group24.shopalbackend.repository.CustomerRepository;
 import vn.group24.shopalbackend.security.config.JwtService;
-import vn.group24.shopalbackend.security.domain.UserAccountToken;
 import vn.group24.shopalbackend.security.domain.UserAccount;
+import vn.group24.shopalbackend.security.domain.UserAccountToken;
 import vn.group24.shopalbackend.security.domain.enums.TokenType;
-import vn.group24.shopalbackend.security.repository.UserAccountTokenRepository;
+import vn.group24.shopalbackend.security.domain.enums.UserRole;
 import vn.group24.shopalbackend.security.repository.UserAccountRepository;
+import vn.group24.shopalbackend.security.repository.UserAccountTokenRepository;
 import vn.group24.shopalbackend.util.Validator;
 
 @Service
@@ -25,12 +28,13 @@ import vn.group24.shopalbackend.util.Validator;
 public class AuthenticationService {
 
     private final UserAccountRepository userRepository;
+    private final CustomerRepository customerRepository;
     private final UserAccountTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(AuthenticationRequest request) {
+    public AuthenticationResponse register(RegisterRequest request) {
         Validator validator = new Validator();
         validatePreconditionField(request, validator);
         validator.throwIfTrue(userRepository.existsByEmail(request.getEmail()), "Email already exists");
@@ -40,6 +44,13 @@ public class AuthenticationService {
                 .role(request.getRole())
                 .build();
         UserAccount savedUser = userRepository.save(user);
+
+        if (UserRole.CUSTOMER == request.getRole()) {
+            Customer customer = new Customer();
+            customer.setUserAccountId(savedUser.getId());
+            customerRepository.save(customer);
+        }
+
         String jwtToken = jwtService.generateToken(user);
         saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse.builder()
@@ -53,7 +64,9 @@ public class AuthenticationService {
         validatePreconditionField(request, validator);
         validator.throwIfFalse(user != null, "Email does not exists");
         if (user != null) {
+            boolean existsCustomer = customerRepository.existsByUserAccountId(user.getId());
             validator.throwIfFalse(user.getRole() == request.getRole(), "Authorization failed");
+            validator.throwIfFalse(existsCustomer, "Authorization failed");
         }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -94,6 +107,13 @@ public class AuthenticationService {
     }
 
     private Validator validatePreconditionField(AuthenticationRequest request, Validator validator) {
+        validator.notNull(request.getEmail(), "Email can not be blank");
+        validator.notBlank(request.getPassword(), "Password can not be blank");
+        validator.isTrue(request.getRole() != null && StringUtils.isNotBlank(request.getRole().name()), "Role can not be blank");
+        return validator;
+    }
+
+    private Validator validatePreconditionField(RegisterRequest request, Validator validator) {
         validator.notNull(request.getEmail(), "Email can not be blank");
         validator.notBlank(request.getPassword(), "Password can not be blank");
         validator.isTrue(request.getRole() != null && StringUtils.isNotBlank(request.getRole().name()), "Role can not be blank");

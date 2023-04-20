@@ -6,19 +6,20 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.controller.response.common.AbstractDto;
-import vn.group24.shopalbackend.controller.response.common.CatalogDto;
-import vn.group24.shopalbackend.controller.response.common.ProductImageDto;
 import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
 
+/**
+ *
+ * @author ttg
+ */
 @Getter
 @Setter
-public class ProductDetailDto extends AbstractDto {
+public class ProductCartDto extends AbstractDto {
     private String productName;
-    private String sku;
     private Integer quantityInStock;
-    private String descriptionContentUrl;
     private Boolean active;
-    private List<ProductImageDto> imageUrls = new ArrayList<>();
+    private String mainImgUrl;
+    private Integer amountSelected;
+    private ProductPointDto pointSelected;
     private List<ProductPointDto> exchangeAblePoints = new ArrayList<>();
-    private List<CatalogDto> catalogs = new ArrayList<>();
 }

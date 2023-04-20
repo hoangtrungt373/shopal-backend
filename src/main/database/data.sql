@@ -2,10 +2,18 @@
 
 delete from config.SYS_LANGUAGE;
 delete from config.PRODUCT_TYPE_LAN;
+
+delete from shop.PRODUCT_IMAGE;
+delete from shop.PRODUCT_POINT;
 delete from shop.PRODUCT_CATALOG;
 delete from shop.PRODUCT;
+delete from shop.ENTERPRISE;
 delete from shop.CATALOG;
 
+--delete from auth.USER_ACCOUNT_TOKEN;
+delete from auth.USER_ACCOUNT where ROLE = 'ENTERPRISE_MANAGER';
+
+--[SYS_LANGUAGE]
 SET IDENTITY_INSERT [config].[SYS_LANGUAGE] ON; 
 INSERT INTO [config].[SYS_LANGUAGE]
 	([SYS_LANGUAGE_ID]
@@ -17,6 +25,7 @@ VALUES
 	(2, 'EN', 'English', 0);
 SET IDENTITY_INSERT [config].[SYS_LANGUAGE] OFF; 
 
+--[PRODUCT_TYPE_LAN]
 SET IDENTITY_INSERT [config].[PRODUCT_TYPE_LAN] ON; 
 INSERT INTO [config].[PRODUCT_TYPE_LAN]
 	([PRODUCT_TYPE_LAN_ID]
@@ -28,6 +37,20 @@ VALUES
 	(2,'COMPUTER_AND_ACCESSORIES','EN','Computer and Accessories');
 SET IDENTITY_INSERT [config].[PRODUCT_TYPE_LAN] OFF; 
 
+--[USER_ACCOUNT]
+SET IDENTITY_INSERT [auth].[USER_ACCOUNT] ON; 
+INSERT INTO [auth].[USER_ACCOUNT]
+    ([USER_ACCOUNT_ID]
+	,[USERNAME]
+    ,[EMAIL]
+    ,[PASSWORD]
+    ,[ROLE])
+VALUES 
+	(1, 'circlek123', 'ciclek123@gmail.com', '$2a$10$ispD4TeymA/dJaC1DjEEGe9Mfecr1YYWVhC/vlUmU/NAGqjRyH926', 'ENTERPRISE_MANAGER'),
+	(2, 'familymark123', 'familymark123@gmail.com', '$2a$10$ispD4TeymA/dJaC1DjEEGe9Mfecr1YYWVhC/vlUmU/NAGqjRyH926', 'ENTERPRISE_MANAGER');
+SET IDENTITY_INSERT [auth].[USER_ACCOUNT] OFF; 
+
+--[CATALOG]
 SET IDENTITY_INSERT [shop].[CATALOG] ON; 
 INSERT INTO [shop].[CATALOG]
 	([CATALOG_ID]
@@ -42,6 +65,27 @@ INSERT INTO [shop].[CATALOG]
 VALUES (1, 'COMPUTER_AND_ACCESSORIES', 'catalog/computer_and_accessories.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 SET IDENTITY_INSERT [shop].[CATALOG] OFF; 
 
+--[ENTERPRISE]
+SET IDENTITY_INSERT [shop].[ENTERPRISE] ON; 
+INSERT INTO [shop].[ENTERPRISE]
+	([ENTERPRISE_ID]
+	,[USER_ACCOUNT_ID]
+	,[ENTERPRISE_NAME]
+	,[PHONE_NUMBER]
+	,[ADRESS]
+	,[WEBSITE_URL]
+	,[LOGO_URL]
+	,[USR_LOG_I]
+	,[USR_LOG_U]
+	,[DATE_LOG_I]
+	,[DATE_LOG_U]
+	,[VERSION])
+VALUES 
+	(1, 1, 'Circle K', '0359569985', '60 Bùi Thị Xuân, Phường Phạm Ngũ Lão, Quận 1, Tp.Hồ Chí Minh, Việt Nam', 'https://www.circlek.com.vn/vi/', 'circlek.png', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2, 2, 'Family Mark', '0359569986', '60 Bùi Thị Xuân, Phường Phạm Ngũ Lão, Quận 1, Tp.Hồ Chí Minh, Việt Nam', 'https://www.famima.vn/', 'familymart.png', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+SET IDENTITY_INSERT [shop].[ENTERPRISE] OFF
+
+--[PRODUCT]
 SET IDENTITY_INSERT [shop].[PRODUCT] ON; 
 INSERT INTO [shop].[PRODUCT]
 	([PRODUCT_ID]
@@ -56,9 +100,10 @@ INSERT INTO [shop].[PRODUCT]
 	,[DATE_LOG_U]
 	,[VERSION])
 VALUES (1,'M000001', N'Pendrive Usb 64GB Tốc Độ Cao 32GB 1GB 8GB 16GB Dung Lượng Thật 2TB 2.0', 3000,
-		'product/description/M000001.html', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+		'product/description/1.html', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 SET IDENTITY_INSERT [shop].[PRODUCT] OFF; 
 
+--[PRODUCT_CATALOG]
 SET IDENTITY_INSERT [shop].[PRODUCT_CATALOG] ON; 
 INSERT INTO [shop].[PRODUCT_CATALOG]
 	([PRODUCT_CATALOG_ID]
@@ -72,4 +117,42 @@ INSERT INTO [shop].[PRODUCT_CATALOG]
 VALUES (1, 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 SET IDENTITY_INSERT [shop].[PRODUCT_CATALOG] OFF; 
 
+--[PRODUCT_POINT]
+SET IDENTITY_INSERT [shop].[PRODUCT_POINT] ON; 
+INSERT INTO [shop].[PRODUCT_POINT]
+	([PRODUCT_POINT_ID]
+	,[ENTERPRISE_ID]
+	,[PRODUCT_ID]
+	,[INITIAL_CASH]
+	,[POINT_EXCHANGE]
+	,[POINT_NAME]
+	,[SOURCE]
+	,[ID_ORIGIN]
+	,[UPDATE_DESCRIPTION]
+	,[ACTIVE]
+	,[USR_LOG_I]
+	,[USR_LOG_U]
+	,[DATE_LOG_I]
+	,[DATE_LOG_U]
+	,[VERSION])
+VALUES 
+	(1, 1, 1, '50000', '500', null, 'SYSTEM', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2, 2, 1, '100000', '200', null, 'SYSTEM', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+SET IDENTITY_INSERT [shop].[PRODUCT_POINT] OFF; 
+
+SET IDENTITY_INSERT [shop].[PRODUCT_IMAGE] ON; 
+INSERT INTO [shop].[PRODUCT_IMAGE]
+	([PRODUCT_IMAGE_ID]
+	,[PRODUCT_ID]
+	,[IMAGE_URL]
+	,[IS_MAIN_IMG]
+	,[USR_LOG_I]
+	,[USR_LOG_U]
+	,[DATE_LOG_I]
+	,[DATE_LOG_U]
+	,[VERSION])
+VALUES 
+	(1, 1, '1_1.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2, 1, '1_2.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
+SET IDENTITY_INSERT [shop].[PRODUCT_IMAGE] OFF; 
 

@@ -20,7 +20,7 @@ import vn.group24.shopalbackend.security.domain.enums.UserRole;
 public class SecurityConfiguration {
 
     public static final String[] BASIC_AUTH_ENDPOINTS = new String[]{"/api/v1/auth/**"};
-    public static final String[] BASIC_NO_AUTHENTICATE_ENDPOINTS = new String[]{"/api/product/**"};
+    public static final String[] BASIC_NO_AUTHENTICATE_ENDPOINTS = new String[]{"/api/product/**", "/api/cart/**"};
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;

@@ -20,7 +20,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.domain.enums.DeliveryStatus;
-import vn.group24.shopalbackend.domain.enums.PaymentMethod;
 
 
 @Entity
@@ -43,11 +42,6 @@ public class PurchaseOrder extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "ORDER_TOTAL_POINT_EXHANGE")
     private BigDecimal orderTotalPointExchange;
-
-    @NotNull
-    @Column(name = "PAYMENT_METHOD")
-    @Enumerated(EnumType.STRING)
-    public PaymentMethod paymentMethod;
 
     @NotNull
     @Column(name = "ORDER_DATE")

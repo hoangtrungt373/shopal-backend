@@ -36,15 +36,15 @@ public class Enterprise extends AbstractAuditableEntity {
 
     @NotNull
     @Column(name = "ADRESS")
-    public String address;
+    private String address;
 
     @NotNull
     @Column(name = "WEBSITE_URL")
     private String websiteUrl;
 
     @NotNull
-    @Column(name = "AVATAR_URL")
-    private String avatarUrl;
+    @Column(name = "LOGO_URL")
+    private String logoUrl;
 
     @OneToMany(mappedBy = "enterprise", fetch = FetchType.LAZY)
     private Set<Membership> memberships = new HashSet<>();

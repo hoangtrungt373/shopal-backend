@@ -10,4 +10,7 @@ import vn.group24.shopalbackend.domain.Customer;
  */
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
+    boolean existsByUserAccountId(Integer userAccountId);
+
+    Customer getByUserAccountId(Integer userId);
 }

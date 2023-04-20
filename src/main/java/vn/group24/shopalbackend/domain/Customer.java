@@ -49,4 +49,7 @@ public class Customer extends AbstractAuditableEntity {
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private Set<Membership> memberships = new HashSet<>();
 
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    private Set<ProductCart> productCarts = new HashSet<>();
+
 }
