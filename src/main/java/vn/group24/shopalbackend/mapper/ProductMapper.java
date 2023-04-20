@@ -43,7 +43,8 @@ public class ProductMapper {
     public CatalogDto mapToCatalogDto(Catalog entity) {
         CatalogDto dto = new CatalogDto();
         dto.setId(entity.getId());
-        dto.setProductType(languageUtils.getEnumDescription(entity.productType, ProductTypeLan.TABLE_NAME));
+        dto.setProductType(entity.getProductType());
+        dto.setProductTypeDescription(languageUtils.getEnumDescription(entity.productType, ProductTypeLan.TABLE_NAME));
         dto.setLevel(entity.getLevel());
         dto.setLogoUrl(entity.getLogoUrl());
         return dto;

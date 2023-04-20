@@ -1,4 +1,4 @@
-﻿--create database SHOPAL
+﻿--create database shopal
 --go
 --use SHOPAL
 --go
