@@ -9,8 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ModifyProductCartRequest {
-    private Integer productId;
-    private Integer amount;
-    private Integer productPointId;
+public abstract class AbstractSearchCriteria {
+    private Integer limit;
+    private Integer offset;
 }

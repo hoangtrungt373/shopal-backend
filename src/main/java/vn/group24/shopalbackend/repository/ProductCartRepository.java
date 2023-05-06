@@ -11,5 +11,5 @@ import vn.group24.shopalbackend.domain.ProductCart;
  */
 @Repository
 public interface ProductCartRepository extends JpaRepository<ProductCart, Integer>, ProductCartRepositoryCustom {
-    ProductCart getByProductIdAndProductPointIdAndCustomerId(Integer productId, Integer productPointId, Integer customerId);
+    ProductCart getByCustomerIdAndProductPointId(Integer customerId, Integer productPointId);
 }

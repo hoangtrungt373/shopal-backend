@@ -18,9 +18,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.domain.enums.PaymentMethod;
+import vn.group24.shopalbackend.domain.enums.PaymentStatus;
 
 
 @Entity
@@ -52,8 +54,9 @@ public class Accounting extends AbstractAuditableEntity {
     private BigDecimal totalCommission;
 
     @NotNull
-    @Column(name = "ALREADY_PAID")
-    private Boolean alreadyPaid;
+    @Column(name = "PAYMENT_STATUS")
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
     @Column(name = "PAYMENT_DATE")
     private LocalDateTime paymentDate;
@@ -61,6 +64,9 @@ public class Accounting extends AbstractAuditableEntity {
     @Column(name = "PAYMENT_METHOD")
     @Enumerated(EnumType.STRING)
     public PaymentMethod paymentMethod;
+
+    @Transient
+    private BigDecimal commissionRate;
 
     @OneToMany(mappedBy = "accounting", fetch = FetchType.LAZY)
     private Set<CooperationContract> cooperationContracts = new HashSet<>();

@@ -4,9 +4,10 @@ package vn.group24.shopalbackend.domain.enums;
  *
  * @author ttg
  */
-public enum DeliveryStatus {
+public enum DeliveryStatus implements AbstractMultilingualEnum<DeliveryStatus> {
     ORDERED,
     PACKED,
     IN_TRANSIT,
-    DELIVERED
+    DELIVERED,
+    CANCELLED
 }

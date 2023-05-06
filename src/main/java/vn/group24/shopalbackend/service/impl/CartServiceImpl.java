@@ -2,12 +2,12 @@ package vn.group24.shopalbackend.service.impl;
 
 import java.util.List;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import vn.group24.shopalbackend.controller.request.UpdateProductCartRequest;
 import vn.group24.shopalbackend.controller.response.common.CartDto;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Product;
@@ -41,30 +41,51 @@ public class CartServiceImpl implements CartService {
     private CartMapper cartMapper;
 
     @Override
-    public CartDto addOrRemoveProductCartForCustomer(Integer customerId, Integer productId, Integer amount, Integer productPointId) {
-        Validate.isTrue(amount >= 0, "Product amount can not negative");
+    public CartDto updateProductCartsForCustomer(Customer customer, List<UpdateProductCartRequest> updateProductCartRequests) {
+        updateProductCartRequests.forEach(updateProductCartRequest -> {
+            Integer amount = updateProductCartRequest.getAmount();
+            Integer productPointId = updateProductCartRequest.getProductPointId();
+            Integer productCartId = updateProductCartRequest.getProductCartId();
 
-        Customer customer = customerRepository.findById(customerId).orElseGet(() -> null);
-        Product product = productRepository.findById(productId).orElseGet(() -> null);
-        ProductPoint productPoint = productPointRepository.findById(productPointId).orElseGet(() -> null);
+            Validate.isTrue(amount >= 0, "Product amount can not negative");
 
-        Validate.isTrue(customer != null, String.format("Can not found Customer with id = %s", customerId));
-        Validate.isTrue(product != null && BooleanUtils.isTrue(product.getActive()), String.format("Can not found active Product with id = %s", productId));
-        Validate.isTrue(productPoint != null && BooleanUtils.isTrue(productPoint.getActive()), String.format("Can not found active ProductPoint with id = %s", productPointId));
+            ProductPoint productPoint = productPointRepository.getByIdAndActiveIsTrue(productPointId);
+            Validate.isTrue(productPoint != null, "Can not found ProductPoint with id = %s", productPointId);
 
-        ProductCart productCart = productCartRepository.getByProductIdAndProductPointIdAndCustomerId(productId, productPointId, customer.getId());
-        if (amount == 0) {
-            productCartRepository.delete(productCart);
-        } else {
-            productCart.setAmount(amount);
-            productCartRepository.save(productCart);
-        }
-        return getAllProductCartForCustomer(customerId);
+            Product product = productPoint.getProduct();
+            Validate.isTrue(product.getQuantityInStock() > amount, "Amount order can not large than amount of product in stock, amount order = %s", amount);
+
+            if (productCartId != null) { // use edit in CartPage
+                ProductCart productCart = productCartRepository.findById(productCartId)
+                        .orElseThrow(() -> new IllegalArgumentException(String.format("Can not found ProductCart with id = %s", productCartId)));
+                if (amount == 0) {
+                    productCartRepository.delete(productCart);
+                } else {
+                    productCart.setAmount(amount);
+                    productCart.setProductPoint(productPoint);
+                    productCartRepository.save(productCart);
+                }
+            } else { // use add new in ProductDetail page
+                ProductCart productCart = productCartRepository.getByCustomerIdAndProductPointId(customer.getId(), productPointId);
+                if (productCart != null) {
+                    productCart.setAmount(productCart.getAmount() + amount);
+                } else {
+                    productCart = new ProductCart();
+                    productCart.setCustomer(customer);
+                    productCart.setProductPoint(productPoint);
+                    productCart.setAmount(amount);
+                }
+                productCartRepository.save(productCart);
+            }
+        });
+
+
+        return getAllProductCartForCustomer(customer);
     }
 
     @Override
-    public CartDto getAllProductCartForCustomer(Integer customerId) {
-        List<ProductCart> productCarts = productCartRepository.getAllProductCartByCustomerId(customerId);
+    public CartDto getAllProductCartForCustomer(Customer customer) {
+        List<ProductCart> productCarts = productCartRepository.getAllProductCartByCustomerId(customer.getId());
         return cartMapper.mapToCartDto(productCarts);
     }
 

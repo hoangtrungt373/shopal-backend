@@ -7,13 +7,14 @@ import vn.group24.shopalbackend.controller.response.common.CatalogDto;
 import vn.group24.shopalbackend.controller.response.common.EnterpriseDto;
 import vn.group24.shopalbackend.controller.response.common.ProductImageDto;
 import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
-import vn.group24.shopalbackend.controller.response.specific.ProductDetailDto;
+import vn.group24.shopalbackend.controller.response.customer.ProductDetailDto;
 import vn.group24.shopalbackend.domain.Catalog;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.Product;
 import vn.group24.shopalbackend.domain.ProductCatalog;
 import vn.group24.shopalbackend.domain.ProductImage;
 import vn.group24.shopalbackend.domain.ProductPoint;
+import vn.group24.shopalbackend.domain.multilingual.ProductStatusLan;
 import vn.group24.shopalbackend.domain.multilingual.ProductTypeLan;
 import vn.group24.shopalbackend.util.LanguageUtils;
 
@@ -23,18 +24,26 @@ public class ProductDetailMapper {
     @Autowired
     private LanguageUtils languageUtils;
 
-    public ProductDetailDto mapToProductDetailDto(Product entity) {
-        ProductDetailDto dto = new ProductDetailDto();
-        dto.setId(entity.getId());
-        dto.setProductName(entity.getProductName());
-        dto.setActive(entity.getActive());
-        dto.setSku(entity.getSku());
-        dto.setDescriptionContentUrl(entity.getDescriptionContentUrl());
-        dto.setQuantityInStock(entity.getQuantityInStock());
-        dto.setImageUrls(entity.getProductImages().stream().map(this::mapToProductImageDto).toList());
-        dto.setCatalogs(entity.getProductCatalogs().stream().map(ProductCatalog::getCatalog).map(this::mapToCatalogDto).toList());
-        dto.setExchangeAblePoints(entity.getProductPoints().stream().map(this::mapToProductPointDto).toList());
-        return dto;
+    public ProductDetailDto mapToProductDetailDto(Product product) {
+        ProductDetailDto productDetailDto = new ProductDetailDto();
+        productDetailDto.setId(product.getId());
+        productDetailDto.setProductName(product.getProductName());
+        productDetailDto.setSku(product.getSku());
+        productDetailDto.setDescriptionContentUrl(product.getDescriptionContentUrl());
+        productDetailDto.setQuantityInStock(product.getQuantityInStock());
+        productDetailDto.setRating(product.getRating());
+        productDetailDto.setProductStatus(product.getProductStatus());
+        productDetailDto.setProductStatusDescription(languageUtils.getEnumDescription(product.getProductStatus(), ProductStatusLan.TABLE_NAME));
+        productDetailDto.setImageUrls(product.getProductImages().stream().map(this::mapToProductImageDto).toList());
+        productDetailDto.setCatalogs(product.getProductCatalogs().stream().map(ProductCatalog::getCatalog).map(this::mapToCatalogDto).toList());
+        productDetailDto.setExchangeAblePoints(product.getProductPoints().stream().map(this::mapToProductPointDto).toList());
+        productDetailDto.setAmountSold(product.getAmountSold());
+        productDetailDto.setInputDate(product.getInputDate());
+        productDetailDto.setInitialCash(product.getInitialCash());
+        productDetailDto.setExpirationDate(product.getExpirationDate());
+        productDetailDto.setProductStatus(product.getProductStatus());
+        productDetailDto.setProductStatusDescription(languageUtils.getEnumDescription(product.getProductStatus(), ProductStatusLan.TABLE_NAME));
+        return productDetailDto;
     }
 
     public ProductImageDto mapToProductImageDto(ProductImage entity) {
@@ -60,6 +69,7 @@ public class ProductDetailMapper {
         dto.setId(entity.getId());
         dto.setPointExchange(entity.getPointExchange());
         dto.setPointName(entity.getPointName());
+        dto.setActive(entity.getActive());
         dto.setEnterprise(mapToEnterpriseDto(entity.getEnterprise()));
         return dto;
     }

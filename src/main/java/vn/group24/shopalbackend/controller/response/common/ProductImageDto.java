@@ -9,4 +9,6 @@ public class ProductImageDto extends AbstractDto {
     private ProductDto product;
     private String imageUrl;
     private Boolean isMainImg;
+    // TODO add this column
+    private String imgText;
 }

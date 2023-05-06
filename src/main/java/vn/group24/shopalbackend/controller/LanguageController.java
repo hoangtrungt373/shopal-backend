@@ -14,8 +14,8 @@ import vn.group24.shopalbackend.service.LanguageService;
  * @author ttg
  */
 @RestController
-@RequestMapping("/language")
-public class SysLanguageController {
+@RequestMapping("/api/language")
+public class LanguageController {
 
     @Autowired
     private LanguageService languageService;

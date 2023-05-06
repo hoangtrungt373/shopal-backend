@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.repository.CustomerRepository;
+import vn.group24.shopalbackend.repository.EnterpriseRepository;
 import vn.group24.shopalbackend.security.config.JwtService;
 import vn.group24.shopalbackend.security.domain.UserAccount;
 import vn.group24.shopalbackend.security.domain.UserAccountToken;
@@ -29,6 +30,7 @@ public class AuthenticationService {
 
     private final UserAccountRepository userRepository;
     private final CustomerRepository customerRepository;
+    private final EnterpriseRepository enterpriseRepository;
     private final UserAccountTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -48,6 +50,7 @@ public class AuthenticationService {
         if (UserRole.CUSTOMER == request.getRole()) {
             Customer customer = new Customer();
             customer.setUserAccountId(savedUser.getId());
+            customer.setContactEmail(savedUser.getUsername());
             customerRepository.save(customer);
         }
 
@@ -64,9 +67,19 @@ public class AuthenticationService {
         validatePreconditionField(request, validator);
         validator.throwIfFalse(user != null, "Email does not exists");
         if (user != null) {
-            boolean existsCustomer = customerRepository.existsByUserAccountId(user.getId());
-            validator.throwIfFalse(user.getRole() == request.getRole(), "Authorization failed");
-            validator.throwIfFalse(existsCustomer, "Authorization failed");
+            validator.throwIfFalse(user.getRole() == request.getRole(), "Authorization failed, user role and login role does not match");
+            switch (request.getRole()) {
+                case CUSTOMER -> {
+                    boolean existsCustomer = customerRepository.existsByUserAccountId(user.getId());
+                    validator.throwIfFalse(existsCustomer, "Authentication failed, can not found customer with userId = %s", user.getId().toString());
+                }
+                case ENTERPRISE_MANAGER -> {
+                    boolean existsEnterprise = enterpriseRepository.existsByUserAccountId(user.getId());
+                    validator.throwIfFalse(existsEnterprise, "Authentication failed, can not found enterprise with userId = %s", user.getId().toString());
+                }
+                case ADMIN -> {
+                }
+            }
         }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -81,6 +94,7 @@ public class AuthenticationService {
         }
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .userRole(request.getRole())
                 .build();
     }
 

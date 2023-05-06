@@ -17,4 +17,5 @@ import vn.group24.shopalbackend.domain.AbstractMultilingualEntity;
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "DELIVERY_STATUS_LAN_ID"))
 public class DeliveryStatusLan extends AbstractMultilingualEntity {
+    public static final String TABLE_NAME = "DELIVERY_STATUS_LAN";
 }

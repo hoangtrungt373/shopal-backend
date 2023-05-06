@@ -27,11 +27,6 @@ public class ProductCart extends AbstractAuditableEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PRODUCT_ID")
-    private Product product;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRODUCT_POINT_ID")
     private ProductPoint productPoint;
 

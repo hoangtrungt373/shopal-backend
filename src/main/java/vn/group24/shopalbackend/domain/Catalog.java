@@ -11,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -24,6 +26,10 @@ import vn.group24.shopalbackend.domain.enums.ProductType;
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "CATALOG_ID"))
 public class Catalog extends AbstractAuditableEntity {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_CATALOG_ID")
+    private Catalog parentCatalog;
 
     @Column(name = "PRODUCT_TYPE")
     @Enumerated(EnumType.STRING)
@@ -39,4 +45,7 @@ public class Catalog extends AbstractAuditableEntity {
 
     @OneToMany(mappedBy = "catalog", fetch = FetchType.LAZY)
     private Set<ProductCatalog> productCatalogs = new HashSet<>();
+
+    @OneToMany(mappedBy = "parentCatalog", fetch = FetchType.LAZY)
+    private Set<Catalog> childCatalogs = new HashSet<>();
 }

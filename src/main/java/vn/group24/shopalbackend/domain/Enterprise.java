@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -51,4 +52,7 @@ public class Enterprise extends AbstractAuditableEntity {
 
     @OneToMany(mappedBy = "enterprise", fetch = FetchType.LAZY)
     private Set<CooperationContract> cooperationContracts = new HashSet<>();
+
+    @Transient
+    private String email;
 }

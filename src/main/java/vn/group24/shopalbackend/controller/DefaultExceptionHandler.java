@@ -40,9 +40,18 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ResponseEntity<RestError> handleValidationBusinessRuntimeException(ValidationBusinessRuntimeException ex) {
 
-        RestError re = new RestError(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(),
+        RestError re = new RestError(HttpStatus.CONFLICT, HttpStatus.CONFLICT.toString(),
                 ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(re);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(re);
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    @ResponseBody
+    public ResponseEntity<RestError> handleIllegalArgumentException(IllegalArgumentException ex) {
+
+        RestError re = new RestError(HttpStatus.CONFLICT, HttpStatus.CONFLICT.toString(),
+                ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(re);
     }
 
     @ExceptionHandler({RuntimeException.class})

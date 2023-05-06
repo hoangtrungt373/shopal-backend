@@ -1,6 +1,10 @@
 package vn.group24.shopalbackend.service;
 
+import java.util.List;
+
+import vn.group24.shopalbackend.controller.request.UpdateProductCartRequest;
 import vn.group24.shopalbackend.controller.response.common.CartDto;
+import vn.group24.shopalbackend.domain.Customer;
 
 /**
  *
@@ -8,7 +12,7 @@ import vn.group24.shopalbackend.controller.response.common.CartDto;
  */
 public interface CartService {
 
-    CartDto addOrRemoveProductCartForCustomer(Integer customerId, Integer productId, Integer amount, Integer productPointId);
+    CartDto updateProductCartsForCustomer(Customer customer, List<UpdateProductCartRequest> updateProductCartRequests);
 
-    CartDto getAllProductCartForCustomer(Integer customerId);
+    CartDto getAllProductCartForCustomer(Customer customer);
 }

@@ -35,4 +35,12 @@ public class Membership extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "AVAILABLE_POINT")
     private BigDecimal availablePoint;
+
+    @NotNull
+    @Column(name = "REGISTER_PHONE_NUMBER")
+    private String registerPhoneNumber;
+
+    @NotNull
+    @Column(name = "REGISTER_EMAIL")
+    private String registerEmail;
 }

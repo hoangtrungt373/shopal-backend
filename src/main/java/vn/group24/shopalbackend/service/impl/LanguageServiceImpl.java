@@ -54,7 +54,7 @@ public class LanguageServiceImpl implements LanguageService {
 //                .setParameter(2, code)
 //                .setParameter(3, SysLanguage.getCurrentLanguage().name());
 //        return (String) query.getSingleResult();
-//        //TODO: format this method
+        //TODO: format this method
         StringBuilder query = new StringBuilder();
         query.append("SELECT TOP(1) t.DESCRIPTION FROM config.").append(className)
                 .append(" t WHERE t.CODE = '").append(code)

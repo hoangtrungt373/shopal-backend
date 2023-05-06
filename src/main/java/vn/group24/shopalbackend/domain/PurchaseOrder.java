@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.validation.constraints.NotNull;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,6 +21,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.domain.enums.DeliveryStatus;
+import vn.group24.shopalbackend.domain.enums.OrderStatus;
 
 
 @Entity
@@ -50,11 +52,21 @@ public class PurchaseOrder extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "DELIVERY_STATUS")
     @Enumerated(EnumType.STRING)
-    public DeliveryStatus deliveryStatus;
+    private DeliveryStatus deliveryStatus;
+
+    @NotNull
+    @Column(name = "ORDER_STATUS")
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
 
     @Column(name = "DELIVERY_DATE")
     private LocalDateTime deliveryDate;
 
-    @OneToMany(mappedBy = "purchaseOrder", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "purchaseOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PurchaseOrderDetail> purchaseOrderDetails = new HashSet<>();
+
+    public void addPurchaseOrderDetail(PurchaseOrderDetail purchaseOrderDetail) {
+        purchaseOrderDetails.add(purchaseOrderDetail);
+        purchaseOrderDetail.setPurchaseOrder(this);
+    }
 }

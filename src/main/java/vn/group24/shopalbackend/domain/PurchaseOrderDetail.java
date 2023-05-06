@@ -43,9 +43,9 @@ public class PurchaseOrderDetail extends AbstractAuditableEntity {
 
     @NotNull
     @Column(name = "AMOUNT")
-    private BigDecimal amount;
+    private Integer amount;
 
     @NotNull
     @Column(name = "TOTAL_POINT_EXCHANGE")
-    public BigDecimal totalPointExchange;
+    private BigDecimal totalPointExchange;
 }

@@ -15,4 +15,6 @@ import vn.group24.shopalbackend.domain.AbstractMultilingualEntity;
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "GENDER_LAN_ID"))
 public class GenderLan extends AbstractMultilingualEntity {
+
+    public static final String TABLE_NAME = "GENDER_LAN";
 }

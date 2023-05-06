@@ -10,4 +10,7 @@ import vn.group24.shopalbackend.domain.ProductPoint;
  */
 @Repository
 public interface ProductPointRepository extends JpaRepository<ProductPoint, Integer> {
+    ProductPoint getByIdAndActiveIsTrue(Integer productPointId);
+
+    ProductPoint getByEnterpriseIdAndProductIdAndActiveIsTrue(Integer enterpriseId, Integer productId);
 }

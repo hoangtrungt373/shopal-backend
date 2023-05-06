@@ -25,18 +25,16 @@ public class ProductCartRepositoryImpl implements ProductCartRepositoryCustom {
         QProductPoint qProductPoint = QProductPoint.productPoint;
 
         BooleanExpression condition = qProductCart.customer.id.eq(customerId)
-                .and(qProduct.active.isTrue())
                 .and(qProductPoint.active.isTrue());
 
         // TODO: optimize this method to ge ProductPoint of ProductCart
         return new JPAQuery<ProductCart>(em)
                 .from(qProductCart)
 
-                .leftJoin(qProductCart.product, qProduct).fetchJoin()
-                .leftJoin(qProduct.productImages).fetchJoin()
-
-                .leftJoin(qProduct.productPoints, qProductPoint).fetchJoin()
+                .leftJoin(qProductCart.productPoint, qProductPoint).fetchJoin()
                 .leftJoin(qProductPoint.enterprise).fetchJoin()
+                .leftJoin(qProductPoint.product, qProduct).fetchJoin()
+                .leftJoin(qProduct.productImages).fetchJoin()
 
                 .where(condition)
                 .fetch();

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import vn.group24.shopalbackend.controller.response.common.CartDto;
 import vn.group24.shopalbackend.controller.response.common.EnterpriseDto;
 import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
-import vn.group24.shopalbackend.controller.response.specific.ProductCartDto;
+import vn.group24.shopalbackend.controller.response.customer.ProductCartDto;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.ProductCart;
 import vn.group24.shopalbackend.domain.ProductImage;
@@ -30,18 +30,19 @@ public class CartMapper {
     private ProductCartDto mapToProductCartDto(ProductCart productCart) {
         ProductCartDto dto = new ProductCartDto();
         dto.setId(productCart.getId());
-        dto.setProductName(productCart.getProduct().getProductName());
-        dto.setQuantityInStock(productCart.getProduct().getQuantityInStock());
+        dto.setProductId(productCart.getProductPoint().getProduct().getId());
+        dto.setProductName(productCart.getProductPoint().getProduct().getProductName());
+        dto.setQuantityInStock(productCart.getProductPoint().getProduct().getQuantityInStock());
         dto.setAmountSelected(productCart.getAmount());
-        dto.setMainImgUrl(productCart.getProduct().getProductImages().stream()
+        dto.setMainImgUrl(productCart.getProductPoint().getProduct().getProductImages().stream()
                 .filter(ProductImage::getIsMainImg)
                 .findFirst()
                 .map(ProductImage::getImageUrl)
-                .orElseGet(() -> productCart.getProduct().getProductImages().stream()
+                .orElseGet(() -> productCart.getProductPoint().getProduct().getProductImages().stream()
                         .findAny()
                         .map(ProductImage::getImageUrl)
                         .orElseGet(() -> null)));
-        dto.setExchangeAblePoints(productCart.getProduct().getProductPoints().stream().map(this::mapToProductPointDto).toList());
+        dto.setExchangeAblePoints(productCart.getProductPoint().getProduct().getProductPoints().stream().map(this::mapToProductPointDto).toList());
         dto.setPointSelected(dto.getExchangeAblePoints().stream()
                 .filter(point -> point.getId().equals(productCart.getProductPoint().getId()))
                 .findFirst()
@@ -66,5 +67,4 @@ public class CartMapper {
         dto.setLogoUrl(entity.getLogoUrl());
         return dto;
     }
-
 }

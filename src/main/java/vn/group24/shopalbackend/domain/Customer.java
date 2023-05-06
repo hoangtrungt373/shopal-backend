@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.validation.constraints.NotNull;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +15,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.domain.enums.Gender;
@@ -36,9 +38,12 @@ public class Customer extends AbstractAuditableEntity {
     @Column(name = "PHONE_NUMBER")
     private String phoneNumber;
 
+    @Column(name = "ADDRESS")
+    private String address;
+
     @Column(name = "GENDER")
     @Enumerated(EnumType.STRING)
-    public Gender gender;
+    private Gender gender;
 
     @Column(name = "BIRTHDATE")
     private LocalDate birthDate;
@@ -46,10 +51,15 @@ public class Customer extends AbstractAuditableEntity {
     @Column(name = "AVATAR_URL")
     private String avatarUrl;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Membership> memberships = new HashSet<>();
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private Set<ProductCart> productCarts = new HashSet<>();
 
+    @Column(name = "CONTACT_EMAIL")
+    private String contactEmail;
+
+    @Transient
+    private String loginEmail;
 }

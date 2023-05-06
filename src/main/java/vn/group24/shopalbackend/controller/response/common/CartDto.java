@@ -5,7 +5,7 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
-import vn.group24.shopalbackend.controller.response.specific.ProductCartDto;
+import vn.group24.shopalbackend.controller.response.customer.ProductCartDto;
 
 /**
  *

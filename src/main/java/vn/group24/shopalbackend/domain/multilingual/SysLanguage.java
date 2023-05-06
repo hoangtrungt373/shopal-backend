@@ -21,7 +21,7 @@ import vn.group24.shopalbackend.domain.enums.Language;
 @AttributeOverride(name = "id", column = @Column(name = "SYS_LANGUAGE_ID"))
 public class SysLanguage extends AbstractEntity {
 
-    private static Language CURRENT_LANGUAGE = Language.VN;
+    private static Language CURRENT_LANGUAGE = Language.EN;
 
     @NotNull
     @Column(name = "CODE")
