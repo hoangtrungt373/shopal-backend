@@ -46,6 +46,10 @@ public class PurchaseOrder extends AbstractAuditableEntity {
     private BigDecimal orderTotalPointExchange;
 
     @NotNull
+    @Column(name = "ORDER_TOTAL_CASH")
+    private BigDecimal orderTotalCash;
+
+    @NotNull
     @Column(name = "ORDER_DATE")
     private LocalDateTime orderDate;
 

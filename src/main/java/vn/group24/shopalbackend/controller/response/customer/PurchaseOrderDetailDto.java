@@ -22,4 +22,6 @@ public class PurchaseOrderDetailDto extends AbstractDto {
     private BigDecimal pointExchange;
     private Integer amount;
     private BigDecimal totalPointExchange;
+    private BigDecimal initialCash;
+    private BigDecimal totalCash;
 }

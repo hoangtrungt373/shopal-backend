@@ -6,12 +6,16 @@ BEGIN TRANSACTION
 DECLARE @log_user VARCHAR(20) = 'admin_1'
 
 delete from config.SYS_LANGUAGE;
-delete from config.PRODUCT_TYPE_LAN;
 delete from config.GENDER_LAN;
 delete from config.ORDER_STATUS_LAN;
 delete from config.PAYMENT_STATUS_LAN;
+delete from config.PAYMENT_METHOD_LAN;
 delete from config.CONTRACT_STATUS_LAN;
 delete from config.PRODUCT_STATUS_LAN;
+delete from config.CONTRACT_STATUS_LAN;
+delete from config.DELIVERY_STATUS_LAN;
+delete from config.PRODUCT_TYPE_LAN;
+
 
 delete from shop.COOPERATION_CONTRACT;
 delete from shop.ACCOUNTING;
@@ -44,48 +48,6 @@ VALUES
 	(1, 'VN', 'Vietnamese', 1),
 	(2, 'EN', 'English', 0);
 SET IDENTITY_INSERT [config].[SYS_LANGUAGE] OFF; 
-
------------------------------------------------------------
---[PRODUCT_TYPE_LAN]
-SET IDENTITY_INSERT [config].[PRODUCT_TYPE_LAN] ON; 
-INSERT INTO [config].[PRODUCT_TYPE_LAN]
-	([PRODUCT_TYPE_LAN_ID]
-	,[CODE]
-	,[LAN]
-	,[DESCRIPTION])
-VALUES
-	(1,'ELECTRONIC_DEVICES','VN',N'Thiết bị điện tử'),
-	(2,'TV_AND_HOME_APPLIANCES','VN',N'TV và thiết bị điện gia dụng'),
-	(3,'HEALTH_AND_BEAUTY','VN',N'Sức khỏe và làm đẹp'),
-	(4,'BABIES_AND_TOYS','VN',N'Hàng mẹ, bé và đồ chơi'),
-	(5,'GROCERIES_AND_PETS','VN',N'Siêu thị tạp hóa'),
-	(6,'HOME_AND_LIFESTYLE','VN',N'Hàng gia dụng và đời sống'),
-	(7,'WOMEN_FASHION_AND_ACCESSORIES','VN',N'Thời trang và phụ kiện nữ'),
-	(8,'MEN_FASHION_AND_ACCESSORIES','VN',N'Thời trang và phụ kiện nam'),
-	(9,'SPORTS_AND_TRAVEL','VN',N'Thể thao và du lịch'),
-	(10,'AUTOMOTIVE_AND_MOTORCYCLES','VN',N'Ô tô xe máy và thiết bị định vị'),
-	(11,'ELECTRONIC_DEVICES','EN',N'Electronic Devices'),
-	(12,'TV_AND_HOME_APPLIANCES','EN',N'TV & Home Appliances'),
-	(13,'HEALTH_AND_BEAUTY','EN',N'Health & Beauty'),
-	(14,'BABIES_AND_TOYS','EN',N'Babies & Toys'),
-	(15,'GROCERIES_AND_PETS','EN',N'Groceries & Pets'),
-	(16,'HOME_AND_LIFESTYLE','EN',N'Home & LifeStyle'),
-	(17,'WOMEN_FASHION_AND_ACCESSORIES','EN',N'Women Fashion & Accessories'),
-	(18,'MEN_FASHION_AND_ACCESSORIES','EN',N'Mem Fashion & Accessories'),
-	(19,'SPORTS_AND_TRAVEL','EN',N'Sports & Travel'),
-	(20,'AUTOMOTIVE_AND_MOTORCYCLES','EN',N'Automotive & Motorcycles'),
-	(21,'MOBILES','VN',N'Điện thoại di động'),
-	(22,'TABLETS','VN',N'Máy tính bảng'),
-	(23,'LAPTOPS','VN',N'Laptop'),
-	(24,'AUDIO_AND_MOTORCYCLES','VN',N'Âm thanh'),
-	(25,'CONSOLE_GAMING','VN',N'Console gaming'),
-	(26,'MOBILES','EN',N'Mobiles'),
-	(27,'TABLETS','EN',N'Tablets'),
-	(28,'LAPTOPS','EN',N'Laptops'),
-	(29,'AUDIO_AND_MOTORCYCLES','EN',N'Audio & Motorcycles'),
-	(30,'CONSOLE_GAMING','EN',N'Console gaming');
-
-SET IDENTITY_INSERT [config].[PRODUCT_TYPE_LAN] OFF; 
 
 -----------------------------------------------------------
 --[GENDER_LAN]
@@ -155,6 +117,7 @@ VALUES
 	(6,'PENDING','VN', N'Pending');
 SET IDENTITY_INSERT [config].[CONTRACT_STATUS_LAN] OFF; 
 
+-----------------------------------------------------------
 --[PRODUCT_STATUS_LAN]
 SET IDENTITY_INSERT [config].[PRODUCT_STATUS_LAN] ON; 
 INSERT INTO [config].[PRODUCT_STATUS_LAN]
@@ -168,6 +131,21 @@ VALUES
 	(3,'INACTIVE','EN',N'Inactive'),
 	(4,'ACTIVE','EN',N'Active');
 SET IDENTITY_INSERT [config].[PRODUCT_STATUS_LAN] OFF; 
+
+-----------------------------------------------------------
+--[CATALOG_STATUS_LAN]
+SET IDENTITY_INSERT [config].[CATALOG_STATUS_LAN] ON; 
+INSERT INTO [config].[CATALOG_STATUS_LAN]
+	([CATALOG_STATUS_LAN_ID]
+	,[CODE]
+	,[LAN]
+	,[DESCRIPTION])
+VALUES
+	(1,'INACTIVE','VN',N'Không áp dụng'),
+	(2,'ACTIVE','VN',N'Đang áp dụng'),
+	(3,'INACTIVE','EN',N'Inactive'),
+	(4,'ACTIVE','EN',N'Active');
+SET IDENTITY_INSERT [config].[CATALOG_STATUS_LAN] OFF; 
 
 -----------------------------------------------------------
 --[USER_ACCOUNT]
@@ -205,7 +183,8 @@ SET IDENTITY_INSERT [auth].[USER_ACCOUNT] OFF;
 SET IDENTITY_INSERT [shop].[CATALOG] ON; 
 INSERT INTO [shop].[CATALOG]
 	([CATALOG_ID]
-	,[PRODUCT_TYPE]
+	,[CATALOG_NAME]
+	,[CATALOG_STATUS]
 	,[LOGO_URL]
 	,[LEVEL]
 	,[PARENT_CATALOG_ID]
@@ -215,21 +194,24 @@ INSERT INTO [shop].[CATALOG]
 	,[DATE_LOG_U]
 	,[VERSION])
 VALUES 
-	(1, 'ELECTRONIC_DEVICES', 'elctronic_devices.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(2, 'TV_AND_HOME_APPLIANCES', 'tv_and_home_appliances.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(3, 'HEALTH_AND_BEAUTY', 'health_and_beauty.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(4, 'BABIES_AND_TOYS', 'babies_and_toys.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(5, 'GROCERIES_AND_PETS', 'groceries_and_pets.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(6, 'HOME_AND_LIFESTYLE', 'home_and_lifestyle.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(7, 'WOMEN_FASHION_AND_ACCESSORIES', 'women_fashion_and_accessories.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(8, 'MEN_FASHION_AND_ACCESSORIES', 'men_fashion_and_accessories.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(9, 'SPORTS_AND_TRAVEL', 'sports_and_travel.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(10, 'AUTOMOTIVE_AND_MOTORCYCLES', 'automotive_and_motorcycles.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(11, 'MOBILES', 'mobiles.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(12, 'TABLETS', 'tablets.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(13, 'LAPTOPS', 'laptops.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(14, 'AUDIO_AND_MOTORCYCLES', 'audio_and_motorcycles.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(15, 'CONSOLE_GAMING', 'console_gaming.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+	(1, N'Thiết Bị Số - Phụ Kiện Số', 'ACTIVE', '1.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2, N'Voucher - Dịch vụ', 'ACTIVE', '2.png', 1, NULL, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(3, N'Phụ Kiện Điện Thoại và Máy Tính Bảng', 'ACTIVE', '3.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(4, N'Phụ kiện Máy tính và Laptop', 'ACTIVE', '4.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(5, N'Thiết Bị Âm Thanh và Phụ Kiện', 'ACTIVE', '5.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(6, N'Thiết Bị Thông Minh và Linh Kiện Điện Tử', 'ACTIVE', '6.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(7, N'Thiết Bị Đeo Thông Minh và Phụ Kiện', 'ACTIVE', '7.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(8, N'Thiết Bị Chơi Game và Phụ Kiện', 'ACTIVE', '8.png', 2, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(9, N'Thanh toán hóa đơn', 'ACTIVE', '9.png', 2, 2, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(10, N'Khóa học', 'ACTIVE', '10.png', 2, 2, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(11, N'Du lịch - Khách sạn', 'ACTIVE', '11.png', 2, 2, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(12, N'Spa & Làm đẹp', 'ACTIVE', '12.png', 2, 2, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(13, N'Dịch vụ khác', 'ACTIVE', '13.png', 2, 2, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(14, N'Nhà hàng - Ăn uống', 'ACTIVE', '14.png', 2, 2, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(15, N'Nha khoa - Sức khỏe', 'ACTIVE', '15.png', 2, 2, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(16, N'Sự kiện - Giải trí', 'ACTIVE', '16.png', 2, 2, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(17, N'Sim số - Thẻ cào - Thẻ game', 'ACTIVE', '17.png', 2, 2, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(18, N'Phiếu quà tặng', 'ACTIVE', '18.png', 2, 2, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 SET IDENTITY_INSERT [shop].[CATALOG] OFF; 
 
 SET IDENTITY_INSERT [shop].[CUSTOMER] ON; 
@@ -291,9 +273,11 @@ INSERT INTO [shop].[PRODUCT]
 	([PRODUCT_ID]
 	,[SKU]
 	,[PRODUCT_NAME]
+	,[PRODUCT_TYPE]
 	,[QUANTITY_IN_STOCK]
 	,[DESCRIPTION_CONTENT_URL]
 	,[PRODUCT_STATUS]
+	,[AMOUNT_SOLD]
 	,[INITIAL_CASH]
 	,[RATING]
 	,[INPUT_DATE]
@@ -304,16 +288,62 @@ INSERT INTO [shop].[PRODUCT]
 	,[DATE_LOG_U]
 	,[VERSION])
 VALUES 
-	(1,'M000001', N'Máy xay sinh tố Bear LLJ-D04A1', 
-		100, '1.html', 'ACTIVE', '100000', '3.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(2,'M000002', N'Giày thể thao nam G2 kiểu sneaker trắng cổ mid bằng da microfiber cao cấp chống nhăn độn đế tăng chiều cao', 
-		200, '2.html', 'ACTIVE', '150000', '4', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(3,'M000003', N'Chậu cây cảnh giả cây thông bonsai xanh mát giống thật trang trí bàn kệ tủ tiểu cảnh Anzzar-02', 
-		300, '3.html', 'ACTIVE', '160000', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(4,'M000004', N'Đèn Ngủ Silicon Hình Chú Vịt Dễ Thương Dùng Trang Trí Phòng Ngủ', 
-		400, '4.html', 'ACTIVE', '70000', '5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(5,'M000005', N'Quạt mini, quạt mini để bàn cực mát xoay 720 độ kẹp bàn chắc chắn cho dân văn phòng, kẹp xe đẩy cho bé', 
-		500, '5.html', 'ACTIVE', '80000', '3', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+	(1,'M000001', N'Cáp Sạc Nhanh 20W PD Cho iPhone, iPad - Dây Sạc Hoco X14 1 Đầu Type-C, 1 Đầu Tới iPhone - Siêu Nhanh Siêu Bền - HÀNG CHÍNH HÃNG', 'NORMAL',
+		100, '1.html', 'ACTIVE', 100, '99000', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2,'M000002', N'Củ sạc nhanh chuẩn kép PD và QC3.0 Remax RP-U88 công suất 20W - Hàng chính hãng',  'NORMAL',
+		200, '2.html', 'ACTIVE', 200,  '229000', '4', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(3,'M000003', N'Giá đỡ laptop nhôm có thể gấp gọn dành cho Macbook Ipad Surface và máy tính xách tay',  'NORMAL',
+		300, '3.html', 'ACTIVE', 300,  '249000 ', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(4,'M000004', N'Chuột không dây Logitech M220 Silent - Hàng chính hãng', 'NORMAL',
+		400, '4.html', 'ACTIVE', 400,  '226000', '4.6', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(5,'M000005', N'Tai nghe bluetooth nhét tai chống ồn cao cấp V5.0 chính hãng dùng cho iPhone Samsung OPPO VIVO HUAWEI XIAOMI tai nghe không dây - Hàng Chính Hãng PKCB', 'NORMAL',
+		500, '5.html', 'ACTIVE', 500,  '290000', '3.9', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(6,'M000006', N'Tai nghe chụp tai không dây Remax RB-660HB - Hàng chính hãng', 'NORMAL', 
+		100, '1.html', 'ACTIVE', 100, '590000', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(7,'M000007', N'ADAPTER DC 12V 2A CÓ ĐÈN BÁO', 'NORMAL',
+		200, '2.html', 'ACTIVE', 200,  '229000', '4', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(8,'M000008', N'Loa thông minh OLLI MAIKA - Đen Nguyên Bản - Hàng Chính Hãng', 'NORMAL',
+		300, '3.html', 'ACTIVE', 300,  '249000 ', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(9,'M000009', N'Đồng Hồ Thông Minh Trẻ em AMA Q12S Model MỚI nhất ra mắt tháng 12/2021 - Hàng nhập khẩu', 'NORMAL', 
+		400, '4.html', 'ACTIVE', 400,  '579000', '4.6', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(10,'M000010', N'Vòng đeo tay HUAWEI Band 7 | Thiết kế siêu mỏng | SpO2 tự động | Pin đến 2 tuần | Hàng Chính Hãng', 'NORMAL', 
+		500, '5.html', 'ACTIVE', 500,  '250000', '3.9', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(11,'M000011', N'Máy chơi game điện tử 4 nút tay cầm không dây GAME STICK 4K ULTRA_HD Joystick 360 - 2 người chơi - kết nối TV 4K - Thẻ SD 32G +3000 games -Game console thiết bị game mượt ( HDMI ) - Tặng cáp chuyển HDMI', 'NORMAL', 
+		100, '11.html', 'ACTIVE', 100, '619000', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(12,'M000012', N'Ghế Gaming, Ghế Game Thủ Có Gác Chân Và Massage Lưng Dành Cho Các Gamer, Ghế Chơi Game Kết Hợp Ghế Lười Xoay Văn Phòng Và Làm Việc Thư Giãn Kèm Gối Tựa Lưng Đầu - Hàng Chính Hãng', 'NORMAL',
+		200, '12.html', 'ACTIVE', 200,  '1164000', '4', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(13,'M000013', N'Voucher Gói học ELSA Pro thời hạn 6 tháng từ ELSA SPEAK - Học phát âm tiếng Anh chuẩn bản xứ', 'VOUCHER',
+		300, '13.html', 'ACTIVE', 300,  '545000 ', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(14,'M000014', N'[MÃ GIẢM GIÁ LÊN ĐẾN 50K] Ứng dụng Tiếng Anh số 1 cho trẻ mới bắt đầu (0-10 tuổi) - Gói Monkey Junior trọn đời', 'VOUCHER', 
+		400, '14.html', 'ACTIVE', 400,  '579000', '4.6', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(15,'M000015', N'Vé Thuyền Rồng Sông Hàn Đà Nẵng Về Đêm', 'VOUCHER',
+		500, '15.html', 'ACTIVE', 500,  '250000', '3.9', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(16,'M000016', N'TTC Resort Ninh Thuận 4*- Gồm Bữa Sáng, Miễn Phí Vui Chơi Cổng Công Viên Nước', 'VOUCHER', 
+		100, '16.html', 'ACTIVE', 100, '760000', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(17,'M000017', N'VOUCHER CHĂM SÓC NHỨC MÕI CỔ, VAI, GÁY',  'VOUCHER',
+		200, '17.html', 'ACTIVE', 200,  '1164000', '4', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(18,'M000018', N'VOUCHER MASSAGE CHĂM SÓC BODY ĐÁ NÓNG', 'VOUCHER',
+		300, '18.html', 'ACTIVE', 300,  '349000 ', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(19,'M000019', N'[12 tháng] Voiz FM - Voucher nghe Sách Nói', 'VOUCHER',
+		400, '19.html', 'ACTIVE', 400,  '640000', '4.6', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(20,'M000020', N'Giftpop_Ưu Đãi 500K Cho Đơn Hàng GrabMart', 'VOUCHER',
+		500, '20.html', 'ACTIVE', 500,  '500000', '3.9', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(21,'M000021', N'Voucher Buffet Chay Buổi Trưa tại Bông Sen Hotel Nhà Hàng Cỏ Nội với Hơn 40 Món Ăn Đặc Sắc', 'VOUCHER',
+		100, '21.html', 'ACTIVE', 100, '319000', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(22,'M000022', N'Voucher Buffet Tối tại Nhà Hàng Gánh Bông Sen, Tinh Hoa Ẩm Thực Sài Thành',  'VOUCHER',
+		200, '22.html', 'ACTIVE', 200,  '359000', '4', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(23,'M000023', N'FPT Play - 06-12 tháng Gói iZi, 13 tháng gói MAX/VIP - Tài khoản dịch vụ phổ biến xem truyền hình, thể thao, phim truyện và giải trí, bóng đá trực tiếp và độc quyền UEFA cup C1 C2 C3', 'VOUCHER',
+		300, '23.html', 'ACTIVE', 300,  '290000 ', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(24,'M000024', N'[tiNiWorld] - Vé điện tử vào cổng tất cả TRUNG TÂM tiNiWorld trên toàn quốc TW180', 'VOUCHER', 
+		400, '24.html', 'ACTIVE', 400,  '190000', '4.6', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(25,'M000025', N'Lấy Cao Răng (Cạo vôi răng) Và Đánh Bóng Công Nghệ Siêu Âm Mới - Nha khoa BeDental (5 chi nhánh)', 'VOUCHER', 
+		500, '25.html', 'ACTIVE', 500,  '99000', '3.9', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(26,'M000026', N'Voucher Nhổ răng sữa em bé + Ngừa sâu răng - Nha khoa BeDental', 'VOUCHER', 
+		100, '26.html', 'ACTIVE', 100, '760000', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(27,'M000027', N'Phiếu Quà Tặng Việt Talents 200.000đ', 'VOUCHER', 
+		200, '27.html', 'ACTIVE', 200,  '200000', '4', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(28,'M000028', N'Phiếu Quà Tặng Tiki 1.000.000đ', 'VOUCHER', 
+		300, '28.html', 'ACTIVE', 300,  '1000000 ', '4.5', '2020-01-01', '2024-01-01', @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 
 SET IDENTITY_INSERT [shop].[PRODUCT] OFF; 
 
@@ -330,23 +360,42 @@ INSERT INTO [shop].[PRODUCT_CATALOG]
 	,[DATE_LOG_U]
 	,[VERSION])
 VALUES 
-	(1, 1, 11, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(2, 2, 12, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(3, 3, 13, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(4, 4, 14, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(5, 5, 15, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+	(1, 1, 3, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2, 2, 3, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(3, 3, 4, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(4, 4, 4, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(5, 5, 5, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(6, 6, 5, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(7, 7, 6, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(8, 8, 6, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(9, 9, 7, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(10, 10, 7, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(11, 11, 8, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(12, 12, 8, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(13, 13, 10, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(14, 14, 10, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(15, 15, 11, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(16, 16, 11, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(17, 17, 12, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(18, 18, 12, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(19, 19, 13, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(20, 20, 13, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(21, 21, 14, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(22, 22, 14, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(23, 23, 15, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(24, 24, 15, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(25, 25, 16, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(26, 26, 16, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(27, 27, 17, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(28, 28, 17, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 SET IDENTITY_INSERT [shop].[PRODUCT_CATALOG] OFF; 
 
 -----------------------------------------------------------
 --[PRODUCT_POINT]
-SET IDENTITY_INSERT [shop].[PRODUCT_POINT] ON; 
 INSERT INTO [shop].[PRODUCT_POINT]
-	([PRODUCT_POINT_ID]
-	,[ENTERPRISE_ID]
+	([ENTERPRISE_ID]
 	,[PRODUCT_ID]
-	,[INITIAL_CASH]
 	,[POINT_EXCHANGE]
-	,[POINT_NAME]
 	,[ID_ORIGIN]
 	,[UPDATE_DESCRIPTION]
 	,[ACTIVE]
@@ -356,32 +405,59 @@ INSERT INTO [shop].[PRODUCT_POINT]
 	,[DATE_LOG_U]
 	,[VERSION])
 VALUES 
-	(1,  2001, 1, '10000', '100', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(2,  2002, 1, '20000', '200', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(3,  2003, 1, '30000', '300', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(4,  2004, 1, '40000', '400', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(5,  2005, 1, '50000', '500', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(6,  2001, 2, '11000', '110', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(7,  2002, 2, '21000', '210', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(8,  2003, 2, '31000', '310', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(9,  2004, 2, '41000', '410', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(10, 2005, 2, '51000', '510', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(11, 2001, 3, '12000', '120', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(12, 2002, 3, '22000', '220', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(13, 2003, 3, '32000', '320', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(14, 2004, 3, '42000', '420', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(15, 2005, 3, '52000', '520', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(16, 2001, 4, '13000', '130', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(17, 2002, 4, '23000', '230', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(18, 2003, 4, '33000', '330', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(19, 2004, 4, '43000', '430', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(20, 2005, 4, '53000', '530', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(21, 2001, 5, '14000', '140', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(22, 2002, 5, '24000', '240', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(23, 2003, 5, '34000', '340', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(24, 2004, 5, '44000', '440', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(25, 2005, 5, '54000', '540', null, 'SYSTEM', 1, 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
-SET IDENTITY_INSERT [shop].[PRODUCT_POINT] OFF; 
+	(2001, 1, '100', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2002, 2, '200', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2003, 3, '300', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2004, 4, '400', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 5, '500', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2001, 6, '110', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2002, 7, '210', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2003, 8, '310', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2004, 9, '410', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 10, '510', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2001, 11, '120', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2002, 12, '220', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2003, 13, '320', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2004, 14, '420', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 15, '520', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2001, 16, '130', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2002, 17, '230', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2003, 18, '330', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2004, 19, '430', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 20, '530', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2001, 21, '140', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2002, 22, '240', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2003, 23, '340', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2004, 24, '440', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 25, '540', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 26, '540', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 27, '540', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2001, 2, '100', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2002, 3, '200', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2003, 4, '300', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2004, 5, '400', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 6, '500', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2001, 7, '110', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2002, 8, '210', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2003, 9, '310', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2004, 10, '410', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 11, '510', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2001, 12, '120', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2002, 13, '220', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2003, 14, '320', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2004, 15, '420', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 16, '520', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2001, 17, '130', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2002, 18, '230', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2003, 19, '330', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2004, 20, '430', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 21, '530', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2001, 22, '140', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2002, 23, '240', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2003, 24, '340', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2004, 25, '440', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 26, '540', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2005, 27, '540', 1, 'Initial', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 
 -----------------------------------------------------------
 --[PRODUCT_IMAGE]
@@ -397,31 +473,146 @@ INSERT INTO [shop].[PRODUCT_IMAGE]
 	,[DATE_LOG_U]
 	,[VERSION])
 VALUES 
-	(1,	 1, '1_1.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(2,	 1, '1_2.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(3,	 1, '1_3.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(4,	 1, '1_4.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(5,	 1, '1_5.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(6,	 2, '2_1.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(7,	 2, '2_2.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(8,	 2, '2_3.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(9,	 2, '2_4.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(10, 2, '2_5.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(11, 3, '3_1.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(12, 3, '3_2.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(13, 3, '3_3.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(14, 3, '3_4.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(15, 3, '3_5.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(16, 4, '4_1.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(17, 4, '4_2.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(18, 4, '4_3.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(19, 4, '4_4.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(20, 4, '4_5.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(21, 5, '5_1.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
-	(22, 5, '5_2.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(23, 5, '5_3.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(24, 5, '5_4.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
-	(25, 5, '5_5.png', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
+	(1,	 1, '1_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(2,	 1, '1_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(3,	 1, '1_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(4,	 1, '1_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(5,	 1, '1_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(6,	 2, '2_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(7,	 2, '2_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(8,	 2, '2_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(9,	 2, '2_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(10, 2, '2_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(11, 3, '3_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(12, 3, '3_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(13, 3, '3_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(14, 3, '3_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(15, 3, '3_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(16, 4, '4_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(17, 4, '4_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(18, 4, '4_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(19, 4, '4_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(20, 4, '4_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(21, 5, '5_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(22, 5, '5_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(23, 5, '5_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(24, 5, '5_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(25, 5, '5_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(26, 6, '6_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(27, 6, '6_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(28, 6, '6_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(29, 6, '6_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(30, 6, '6_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(31, 7, '7_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(32, 7, '7_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(33, 7, '7_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(34, 7, '7_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(35, 7, '7_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(36, 8, '8_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(37, 8, '8_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(38, 8, '8_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(39, 8, '8_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(40, 8, '8_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(41, 9, '9_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(42, 9, '9_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(43, 9, '9_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(44, 9, '9_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(45, 9, '9_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(46, 10, '10_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(47, 10, '10_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(48, 10, '10_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(49, 10, '10_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(50, 10, '10_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(51, 11, '11_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(52, 11, '11_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(53, 11, '11_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(54, 11, '11_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(55, 11, '11_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(56, 12, '12_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(57, 12, '12_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(58, 12, '12_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(59, 12, '12_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(60, 12, '12_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(61, 13, '13_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(62, 13, '13_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(63, 13, '13_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(64, 13, '13_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(65, 13, '13_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(66, 14, '14_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(67, 14, '14_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(68, 14, '14_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(69, 14, '14_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(70, 14, '14_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(71, 15, '15_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(72, 15, '15_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(73, 15, '15_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(74, 15, '15_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(75, 15, '15_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(76, 16, '16_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(77, 16, '16_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(78, 16, '16_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(79, 16, '16_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(80, 16, '16_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(81, 17, '17_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(82, 17, '17_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(83, 17, '17_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(84, 17, '17_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(85, 17, '17_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(86, 18, '18_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(87, 18, '18_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(88, 18, '18_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(89, 18, '18_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(90, 18, '18_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(91, 19, '19_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(92, 19, '19_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(93, 19, '19_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(94, 19, '19_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(95, 19, '19_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(96, 20, '20_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(97, 20, '20_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(98, 20, '20_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(99, 20, '20_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(100, 20, '20_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(101, 21, '21_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(102, 21, '21_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(103, 21, '21_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(104, 21, '21_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(105, 21, '21_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(106, 22, '22_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(107, 22, '22_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(108, 22, '22_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(109, 22, '22_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(110, 22, '22_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(111, 23, '23_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(112, 23, '23_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(113, 23, '23_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(114, 23, '23_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(115, 23, '23_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(116, 24, '24_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(117, 24, '24_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(118, 24, '24_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(119, 24, '24_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(120, 24, '24_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(121, 25, '25_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(122, 25, '25_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(123, 25, '25_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(124, 25, '25_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(125, 25, '25_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(126, 26, '26_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(127, 26, '26_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(128, 26, '26_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(129, 26, '26_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(130, 26, '26_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(131, 27, '27_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(132, 27, '27_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(133, 27, '27_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(134, 27, '27_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(135, 27, '27_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(136, 28, '28_1.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
+	(137, 28, '28_2.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(138, 28, '28_3.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(139, 28, '28_4.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+	(140, 28, '28_5.webp', 1, @log_user, @log_user, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
 SET IDENTITY_INSERT [shop].[PRODUCT_IMAGE] OFF; 
 
 -----------------------------------------------------------

@@ -31,5 +31,6 @@ public class EnterprisePurchaseOrderDto extends AbstractDto {
     private String orderStatusDescription;
     private LocalDateTime deliveryDate;
     private Integer orderTotalItems;
+    private BigDecimal orderTotalCash;
     private List<PurchaseOrderDetailDto> purchaseProducts = new ArrayList<>();
 }

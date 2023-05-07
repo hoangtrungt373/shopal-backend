@@ -50,6 +50,7 @@ public class ProductMapper {
             productDto.setInputDate(product.getInputDate());
             productDto.setExpirationDate(product.getExpirationDate());
             productDto.setInitialCash(product.getInitialCash());
+            productDto.setProductType(product.getProductType());
             return productDto;
         }).collect(Collectors.toList());
     }
@@ -58,7 +59,6 @@ public class ProductMapper {
         ProductPointDto dto = new ProductPointDto();
         dto.setId(entity.getId());
         dto.setPointExchange(entity.getPointExchange());
-        dto.setPointName(entity.getPointName());
         dto.setActive(entity.getActive());
         dto.setEnterprise(mapToEnterpriseDto(entity.getEnterprise()));
         return dto;

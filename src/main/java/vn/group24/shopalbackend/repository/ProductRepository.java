@@ -10,4 +10,5 @@ import vn.group24.shopalbackend.domain.Product;
  */
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer>, ProductRepositoryCustom {
+    Product getBySku(String sku);
 }

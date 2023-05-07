@@ -67,6 +67,7 @@ public class PurchaseOrderMapper {
             enterprisePurchaseOrderDto.setOrderTotalItems(purchaseOrder.getPurchaseOrderDetails()
                     .stream().map(PurchaseOrderDetail::getAmount).reduce(0, Integer::sum));
             enterprisePurchaseOrderDto.setCustomer(mapToCustomerDto(purchaseOrder.getCustomer()));
+            enterprisePurchaseOrderDto.setOrderTotalCash(purchaseOrder.getOrderTotalCash());
             enterprisePurchaseOrderDtos.add(enterprisePurchaseOrderDto);
         });
         return enterprisePurchaseOrderDtos;
@@ -101,9 +102,11 @@ public class PurchaseOrderMapper {
         purchaseOrderDetailDto.setPointExchange(purchaseOrderDetail.getPointExchange());
         purchaseOrderDetailDto.setAmount(purchaseOrderDetail.getAmount());
         purchaseOrderDetailDto.setTotalPointExchange(purchaseOrderDetail.getTotalPointExchange());
+        purchaseOrderDetailDto.setInitialCash(purchaseOrderDetail.getProduct().getInitialCash());
         purchaseOrderDetailDto.setProductId(purchaseOrderDetail.getProduct().getId());
         purchaseOrderDetailDto.setProductName(purchaseOrderDetail.getProduct().getProductName());
         purchaseOrderDetailDto.setSku(purchaseOrderDetail.getProduct().getSku());
+        purchaseOrderDetailDto.setTotalCash(purchaseOrderDetail.getTotalCash());
         purchaseOrderDetailDto.setMainImgUrl(purchaseOrderDetail.getProduct().getProductImages().stream()
                 .filter(ProductImage::getIsMainImg)
                 .findFirst()

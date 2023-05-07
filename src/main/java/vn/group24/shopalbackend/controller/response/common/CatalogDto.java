@@ -5,7 +5,8 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
-import vn.group24.shopalbackend.domain.enums.ProductType;
+import vn.group24.shopalbackend.domain.enums.CatalogStatus;
+import vn.group24.shopalbackend.domain.enums.ProductTrendingState;
 
 /**
  * @author ttg
@@ -13,9 +14,15 @@ import vn.group24.shopalbackend.domain.enums.ProductType;
 @Getter
 @Setter
 public class CatalogDto extends AbstractDto {
-    private ProductType productType;
-    private String productTypeDescription;
+    private String catalogName;
+    private String parentCatalogName;
+    private Integer parentCatalogId;
     private String logoUrl;
     private Integer level;
+    private CatalogStatus catalogStatus;
+    private String catalogStatusDescription;
     private List<CatalogDto> childCatalogs = new ArrayList<>();
+    private Integer totalProduct;
+    private Integer totalSell;
+    private ProductTrendingState productTrendingState;
 }

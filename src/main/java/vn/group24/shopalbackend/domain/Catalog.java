@@ -15,9 +15,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
-import vn.group24.shopalbackend.domain.enums.ProductType;
+import vn.group24.shopalbackend.domain.enums.CatalogStatus;
+import vn.group24.shopalbackend.domain.enums.ProductTrendingState;
 
 
 @Entity
@@ -31,17 +33,30 @@ public class Catalog extends AbstractAuditableEntity {
     @JoinColumn(name = "PARENT_CATALOG_ID")
     private Catalog parentCatalog;
 
-    @Column(name = "PRODUCT_TYPE")
-    @Enumerated(EnumType.STRING)
-    public ProductType productType;
-
     @NotNull
+    @Column(name = "CATALOG_NAME")
+    private String catalogName;
+
     @Column(name = "LOGO_URL")
     private String logoUrl;
 
     @NotNull
     @Column(name = "LEVEL")
     private Integer level;
+
+    @NotNull
+    @Column(name = "CATALOG_STATUS")
+    @Enumerated(EnumType.STRING)
+    private CatalogStatus catalogStatus;
+
+    @Transient
+    private Integer totalProduct;
+
+    @Transient
+    private Integer totalSell;
+
+    @Transient
+    private ProductTrendingState productTrendingState;
 
     @OneToMany(mappedBy = "catalog", fetch = FetchType.LAZY)
     private Set<ProductCatalog> productCatalogs = new HashSet<>();

@@ -15,7 +15,6 @@ import vn.group24.shopalbackend.domain.ProductCatalog;
 import vn.group24.shopalbackend.domain.ProductImage;
 import vn.group24.shopalbackend.domain.ProductPoint;
 import vn.group24.shopalbackend.domain.multilingual.ProductStatusLan;
-import vn.group24.shopalbackend.domain.multilingual.ProductTypeLan;
 import vn.group24.shopalbackend.util.LanguageUtils;
 
 @Component
@@ -41,6 +40,7 @@ public class ProductDetailMapper {
         productDetailDto.setInputDate(product.getInputDate());
         productDetailDto.setInitialCash(product.getInitialCash());
         productDetailDto.setExpirationDate(product.getExpirationDate());
+        productDetailDto.setProductType(product.getProductType());
         productDetailDto.setProductStatus(product.getProductStatus());
         productDetailDto.setProductStatusDescription(languageUtils.getEnumDescription(product.getProductStatus(), ProductStatusLan.TABLE_NAME));
         return productDetailDto;
@@ -55,20 +55,18 @@ public class ProductDetailMapper {
     }
 
     public CatalogDto mapToCatalogDto(Catalog entity) {
-        CatalogDto dto = new CatalogDto();
-        dto.setId(entity.getId());
-        dto.setProductType(entity.getProductType());
-        dto.setProductTypeDescription(languageUtils.getEnumDescription(entity.productType, ProductTypeLan.TABLE_NAME));
-        dto.setLevel(entity.getLevel());
-        dto.setLogoUrl(entity.getLogoUrl());
-        return dto;
+        CatalogDto catalogDto = new CatalogDto();
+        catalogDto.setId(entity.getId());
+        catalogDto.setCatalogName(entity.getCatalogName());
+        catalogDto.setLevel(entity.getLevel());
+        catalogDto.setLogoUrl(entity.getLogoUrl());
+        return catalogDto;
     }
 
     private ProductPointDto mapToProductPointDto(ProductPoint entity) {
         ProductPointDto dto = new ProductPointDto();
         dto.setId(entity.getId());
         dto.setPointExchange(entity.getPointExchange());
-        dto.setPointName(entity.getPointName());
         dto.setActive(entity.getActive());
         dto.setEnterprise(mapToEnterpriseDto(entity.getEnterprise()));
         return dto;

@@ -55,7 +55,6 @@ public class CartMapper {
         ProductPointDto dto = new ProductPointDto();
         dto.setId(entity.getId());
         dto.setPointExchange(entity.getPointExchange());
-        dto.setPointName(entity.getPointName());
         dto.setEnterprise(mapToEnterpriseDto(entity.getEnterprise()));
         return dto;
     }

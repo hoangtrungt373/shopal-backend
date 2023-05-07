@@ -109,6 +109,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                         purchaseOrderDetail.setPointExchange(productCart.getProductPoint().getPointExchange());
                         purchaseOrderDetail.setAmount(productCart.getAmount());
                         purchaseOrderDetail.setPurchaseOrder(purchaseOrder);
+                        purchaseOrderDetail.setTotalCash(productCart.getProductPoint().getProduct().getInitialCash().multiply(BigDecimal.valueOf(productCart.getAmount())));
                         purchaseOrderDetail.setTotalPointExchange(purchaseOrderDetail.getPointExchange().multiply(BigDecimal.valueOf(purchaseOrderDetail.getAmount())));
                         return purchaseOrderDetail;
                     }).collect(Collectors.toSet()));
@@ -125,6 +126,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                             "Customer [%s]'s available point for enterprise [%s] is not enough to place this order", customer.getContactEmail(), enterprise.getEnterpriseName());
 
                     purchaseOrder.setOrderTotalPointExchange(orderTotalPointExchange);
+                    purchaseOrder.setOrderTotalCash(purchaseOrder.getPurchaseOrderDetails().stream().map(PurchaseOrderDetail::getTotalCash).reduce(BigDecimal.ZERO, BigDecimal::add));
                     purchaseOrders.add(purchaseOrder);
 
                     membership.setAvailablePoint(availablePoint.subtract(orderTotalPointExchange));

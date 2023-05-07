@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.validation.constraints.NotNull;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +19,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.domain.enums.ProductStatus;
+import vn.group24.shopalbackend.domain.enums.ProductType;
 
 
 @Entity
@@ -31,7 +33,6 @@ public class Product extends AbstractAuditableEntity {
     @Column(name = "PRODUCT_NAME")
     private String productName;
 
-    @NotNull
     @Column(name = "SKU")
     private String sku;
 
@@ -63,15 +64,30 @@ public class Product extends AbstractAuditableEntity {
     @Column(name = "INITIAL_CASH")
     private BigDecimal initialCash;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<ProductImage> productImages = new HashSet<>();
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private Set<ProductPoint> productPoints = new HashSet<>();
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<ProductCatalog> productCatalogs = new HashSet<>();
 
     @Column(name = "AMOUNT_SOLD")
     private Integer amountSold;
+
+    @NotNull
+    @Column(name = "PRODUCT_TYPE")
+    @Enumerated(EnumType.STRING)
+    private ProductType productType;
+
+    public void addProductImage(ProductImage productImage) {
+        this.productImages.add(productImage);
+        productImage.setProduct(this);
+    }
+
+    public void addProductCatalog(ProductCatalog productCatalog) {
+        this.productCatalogs.add(productCatalog);
+        productCatalog.setProduct(this);
+    }
 }

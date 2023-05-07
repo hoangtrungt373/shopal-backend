@@ -1,5 +1,7 @@
 package vn.group24.shopalbackend.service.impl;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -8,19 +10,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import vn.group24.shopalbackend.controller.request.AdminCreateOrUpdateProductRequest;
 import vn.group24.shopalbackend.controller.request.ProductSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.common.ProductDto;
 import vn.group24.shopalbackend.controller.response.customer.ProductDetailDto;
 import vn.group24.shopalbackend.domain.CooperationContract;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.Product;
+import vn.group24.shopalbackend.domain.ProductCatalog;
+import vn.group24.shopalbackend.domain.ProductImage;
 import vn.group24.shopalbackend.domain.ProductPoint;
 import vn.group24.shopalbackend.domain.enums.ContractStatus;
 import vn.group24.shopalbackend.mapper.ProductDetailMapper;
 import vn.group24.shopalbackend.mapper.ProductMapper;
+import vn.group24.shopalbackend.repository.CatalogRepository;
 import vn.group24.shopalbackend.repository.ProductPointRepository;
 import vn.group24.shopalbackend.repository.ProductRepository;
 import vn.group24.shopalbackend.service.ProductService;
+import vn.group24.shopalbackend.util.BigDecimalUtils;
 import vn.group24.shopalbackend.util.Constants;
 
 /**
@@ -34,6 +41,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     @Autowired
     private ProductPointRepository productPointRepository;
+    @Autowired
+    private CatalogRepository catalogRepository;
 
     @Autowired
     private ProductDetailMapper productDetailMapper;
@@ -89,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
         newProductPoint.setEnterprise(enterprise);
         newProductPoint.setActive(Boolean.TRUE);
         newProductPoint.setUpdateDescription(Constants.INITIAL_CREATE);
-        newProductPoint.setPointExchange(existsProduct.getInitialCash().multiply(existsCooperationContract.getCashPerPoint()));
+        newProductPoint.setPointExchange(BigDecimalUtils.divide(existsProduct.getInitialCash(), existsCooperationContract.getCashPerPoint(), 0, 2));
         productPointRepository.save(newProductPoint);
         return "Registration to sell product succefully";
     }
@@ -104,4 +113,52 @@ public class ProductServiceImpl implements ProductService {
         return "Registration to sell product succefully";
     }
 
+    @Override
+    public String createOrUpdateProduct(AdminCreateOrUpdateProductRequest request) {
+        if (request.getProductId() == null) { //case create
+            validateProductInfo(request);
+            Product newProduct = new Product();
+            newProduct.setSku(request.getSku());
+            newProduct.setProductName(request.getProductName());
+            newProduct.setQuantityInStock(request.getQuantityInStock());
+            newProduct.setDescriptionContentUrl(request.getDescriptionContentUrl());
+            newProduct.setProductStatus(request.getProductStatus());
+            newProduct.setRating(BigDecimal.ZERO);
+            newProduct.setInputDate(LocalDate.now());
+            newProduct.setExpirationDate(request.getExpirationDate() == null ? LocalDate.of(2023, 12, 31) : request.getExpirationDate());
+            newProduct.setInitialCash(request.getInitialCash());
+            newProduct.setAmountSold(0);
+            for (int i = 0; i < request.getImageUrls().size(); i++) {
+                ProductImage newProductImage = new ProductImage();
+                newProductImage.setProduct(newProduct);
+                newProductImage.setImageUrl(request.getImageUrls().get(i));
+                newProductImage.setIsMainImg(i == 0 ? Boolean.TRUE : Boolean.FALSE);
+                newProduct.addProductImage(newProductImage);
+            }
+            newProduct.setProductType(request.getProductType());
+            ProductCatalog newProductCatalog = new ProductCatalog();
+            newProductCatalog.setCatalog(catalogRepository.findById(request.getCatalogId()).orElseGet(() -> null));
+            newProduct.addProductCatalog(newProductCatalog);
+            productRepository.save(newProduct);
+            return "Create new Product successfully";
+        } else { // create update
+            return null;
+        }
+    }
+
+    private void validateProductInfo(AdminCreateOrUpdateProductRequest request) {
+        Validate.isTrue(request.getProductName() != null, "Product name can not be null");
+        Validate.isTrue(request.getQuantityInStock() != null && request.getQuantityInStock() > 0, "Quantity in stock must be > 0");
+        Validate.isTrue(request.getInitialCash() != null && request.getInitialCash().compareTo(BigDecimal.ZERO) > 0, "Initial cash must be > 0");
+        Validate.isTrue(request.getCatalogId() != null && catalogRepository.existsById(request.getCatalogId()), "Catalog with id = [%s] must exists");
+        Validate.isTrue(request.getProductStatus() != null, "Product status can not be null");
+        Validate.isTrue(request.getProductType() != null, "Product type can not be null");
+        if (request.getExpirationDate() != null) {
+            Validate.isTrue(!request.getExpirationDate().isBefore(LocalDate.now()), "Expiration date must be > current date");
+        }
+        if (request.getSku() != null) {
+            Product existsProductBySku = productRepository.getBySku(request.getSku());
+            Validate.isTrue(existsProductBySku == null, "Duplicate product sku");
+        }
+    }
 }

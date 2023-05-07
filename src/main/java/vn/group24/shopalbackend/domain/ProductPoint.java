@@ -41,7 +41,4 @@ public class ProductPoint extends AbstractStateAndAncestorManageableEntity {
     @NotNull
     @Column(name = "ACTIVE")
     private Boolean active;
-
-    @Column(name = "POINT_NAME")
-    private String pointName;
 }

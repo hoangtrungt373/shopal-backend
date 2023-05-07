@@ -53,7 +53,7 @@ public class OrderController extends AbstractController {
         List<EnterprisePurchaseOrderDto> enterprisePurchaseOrderDtos = purchaseOrderService.getPurchaseOrderForEnterpriseByCriteria(userUtils.getAuthenticateEnterprise(), criteria);
         return ResponseEntity.ok().body(enterprisePurchaseOrderDtos);
     }
-
+    
     @GetMapping("/current-enterprise/customer-order/get-detail/{purchaseOrderId}")
 //    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<EnterprisePurchaseOrderDto> getPurchaseOrderDetailForCurrentEnterprise(@PathVariable Integer purchaseOrderId) {

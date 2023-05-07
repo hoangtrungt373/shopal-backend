@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.domain.enums.ProductStatus;
+import vn.group24.shopalbackend.domain.enums.ProductType;
 
 /**
  *
@@ -27,6 +28,7 @@ public class ProductDto extends AbstractDto {
     private String productStatusDescription;
     private Integer amountSold;
     private BigDecimal initialCash;
+    private ProductType productType;
     private LocalDate inputDate;
     private LocalDate expirationDate;
     private List<ProductImageDto> imageUrls = new ArrayList<>();

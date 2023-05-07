@@ -10,7 +10,13 @@ import vn.group24.shopalbackend.controller.response.common.CatalogDto;
  */
 public interface CatalogService {
 
-    List<CatalogDto> getAllCatalog();
+    List<CatalogDto> getAllMainCatalog();
+
+    List<CatalogDto> getAllChildCatalog();
+
+    List<CatalogDto> getAllMainCatalogWithDetail();
+
+    List<CatalogDto> getAllChildCatalogWithDetail();
 
     List<CatalogDto> getByCriteria(CatalogSearchCriteriaRequest criteria);
 }

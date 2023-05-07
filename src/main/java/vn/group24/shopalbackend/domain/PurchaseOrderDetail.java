@@ -48,4 +48,8 @@ public class PurchaseOrderDetail extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "TOTAL_POINT_EXCHANGE")
     private BigDecimal totalPointExchange;
+
+    @NotNull
+    @Column(name = "TOTAL_CASH")
+    private BigDecimal totalCash;
 }

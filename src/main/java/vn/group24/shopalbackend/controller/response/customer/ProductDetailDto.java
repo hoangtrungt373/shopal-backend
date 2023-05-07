@@ -12,6 +12,7 @@ import vn.group24.shopalbackend.controller.response.common.CatalogDto;
 import vn.group24.shopalbackend.controller.response.common.ProductImageDto;
 import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
 import vn.group24.shopalbackend.domain.enums.ProductStatus;
+import vn.group24.shopalbackend.domain.enums.ProductType;
 
 @Getter
 @Setter
@@ -27,6 +28,7 @@ public class ProductDetailDto extends AbstractDto {
     private BigDecimal initialCash;
     private LocalDate inputDate;
     private LocalDate expirationDate;
+    private ProductType productType;
     private List<ProductImageDto> imageUrls = new ArrayList<>();
     private List<ProductPointDto> exchangeAblePoints = new ArrayList<>();
     private List<CatalogDto> catalogs = new ArrayList<>();
