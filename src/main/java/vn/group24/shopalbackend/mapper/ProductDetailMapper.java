@@ -1,6 +1,5 @@
 package vn.group24.shopalbackend.mapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import vn.group24.shopalbackend.controller.response.common.CatalogDto;
@@ -14,14 +13,9 @@ import vn.group24.shopalbackend.domain.Product;
 import vn.group24.shopalbackend.domain.ProductCatalog;
 import vn.group24.shopalbackend.domain.ProductImage;
 import vn.group24.shopalbackend.domain.ProductPoint;
-import vn.group24.shopalbackend.domain.multilingual.ProductStatusLan;
-import vn.group24.shopalbackend.util.LanguageUtils;
 
 @Component
 public class ProductDetailMapper {
-
-    @Autowired
-    private LanguageUtils languageUtils;
 
     public ProductDetailDto mapToProductDetailDto(Product product) {
         ProductDetailDto productDetailDto = new ProductDetailDto();
@@ -32,7 +26,7 @@ public class ProductDetailMapper {
         productDetailDto.setQuantityInStock(product.getQuantityInStock());
         productDetailDto.setRating(product.getRating());
         productDetailDto.setProductStatus(product.getProductStatus());
-        productDetailDto.setProductStatusDescription(languageUtils.getEnumDescription(product.getProductStatus(), ProductStatusLan.TABLE_NAME));
+        productDetailDto.setProductStatusDescription(product.getProductStatus().getTextForCurrentLan());
         productDetailDto.setImageUrls(product.getProductImages().stream().map(this::mapToProductImageDto).toList());
         productDetailDto.setCatalogs(product.getProductCatalogs().stream().map(ProductCatalog::getCatalog).map(this::mapToCatalogDto).toList());
         productDetailDto.setExchangeAblePoints(product.getProductPoints().stream().map(this::mapToProductPointDto).toList());
@@ -41,8 +35,6 @@ public class ProductDetailMapper {
         productDetailDto.setInitialCash(product.getInitialCash());
         productDetailDto.setExpirationDate(product.getExpirationDate());
         productDetailDto.setProductType(product.getProductType());
-        productDetailDto.setProductStatus(product.getProductStatus());
-        productDetailDto.setProductStatusDescription(languageUtils.getEnumDescription(product.getProductStatus(), ProductStatusLan.TABLE_NAME));
         return productDetailDto;
     }
 

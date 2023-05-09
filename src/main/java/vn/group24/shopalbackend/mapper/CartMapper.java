@@ -2,7 +2,6 @@ package vn.group24.shopalbackend.mapper;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import vn.group24.shopalbackend.controller.response.common.CartDto;
@@ -13,13 +12,9 @@ import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.ProductCart;
 import vn.group24.shopalbackend.domain.ProductImage;
 import vn.group24.shopalbackend.domain.ProductPoint;
-import vn.group24.shopalbackend.util.LanguageUtils;
 
 @Component
 public class CartMapper {
-
-    @Autowired
-    private LanguageUtils languageUtils;
 
     public CartDto mapToCartDto(List<ProductCart> productCarts) {
         CartDto dto = new CartDto();

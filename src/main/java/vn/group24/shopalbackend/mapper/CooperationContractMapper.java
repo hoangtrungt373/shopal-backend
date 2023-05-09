@@ -2,13 +2,10 @@ package vn.group24.shopalbackend.mapper;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import vn.group24.shopalbackend.controller.response.enterprise.EnterpriseCooperationContractDto;
 import vn.group24.shopalbackend.domain.CooperationContract;
-import vn.group24.shopalbackend.domain.multilingual.ContractStatusLan;
-import vn.group24.shopalbackend.util.LanguageUtils;
 
 /**
  *
@@ -16,9 +13,6 @@ import vn.group24.shopalbackend.util.LanguageUtils;
  */
 @Component
 public class CooperationContractMapper {
-
-    @Autowired
-    private LanguageUtils languageUtils;
 
     public List<EnterpriseCooperationContractDto> mapToEnterpriseCooperationContractDto(List<CooperationContract> cooperationContracts) {
         return cooperationContracts.stream().map(cooperationContract -> {
@@ -28,7 +22,7 @@ public class CooperationContractMapper {
             enterpriseCooperationContractDto.setCommissionRate(cooperationContract.getCommissionRate());
             enterpriseCooperationContractDto.setStartDate(cooperationContract.getStartDate());
             enterpriseCooperationContractDto.setEndDate(cooperationContract.getEndDate());
-            enterpriseCooperationContractDto.setContractStatusDescription(languageUtils.getEnumDescription(cooperationContract.getContractStatus(), ContractStatusLan.TABLE_NAME));
+            enterpriseCooperationContractDto.setContractStatusDescription(cooperationContract.getContractStatus().getTextForCurrentLan());
             enterpriseCooperationContractDto.setCashPerPoint(cooperationContract.getCashPerPoint());
             enterpriseCooperationContractDto.setUpdateDescription(cooperationContract.getUpdateDescription());
             return enterpriseCooperationContractDto;

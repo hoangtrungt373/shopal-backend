@@ -2,9 +2,7 @@ package vn.group24.shopalbackend.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import vn.group24.shopalbackend.controller.response.common.CustomerDto;
@@ -17,9 +15,6 @@ import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.ProductImage;
 import vn.group24.shopalbackend.domain.PurchaseOrder;
 import vn.group24.shopalbackend.domain.PurchaseOrderDetail;
-import vn.group24.shopalbackend.domain.multilingual.GenderLan;
-import vn.group24.shopalbackend.domain.multilingual.OrderStatusLan;
-import vn.group24.shopalbackend.util.LanguageUtils;
 
 /**
  *
@@ -28,9 +23,6 @@ import vn.group24.shopalbackend.util.LanguageUtils;
 @Component
 public class PurchaseOrderMapper {
 
-    @Autowired
-    private LanguageUtils languageUtils;
-
     public List<CustomerPurchaseOrderDto> mapToCustomerPurchaseOrderDtos(List<PurchaseOrder> purchaseOrders) {
         List<CustomerPurchaseOrderDto> customerPurchaseOrderDtos = new ArrayList<>();
         purchaseOrders.forEach(purchaseOrder -> {
@@ -38,12 +30,12 @@ public class PurchaseOrderMapper {
             customerPurchaseOrderDto.setId(purchaseOrder.getId());
             customerPurchaseOrderDto.setOrderDate(purchaseOrder.getOrderDate());
             customerPurchaseOrderDto.setOrderStatus(purchaseOrder.getOrderStatus());
-            customerPurchaseOrderDto.setOrderStatusDescription(languageUtils.getEnumDescription(purchaseOrder.getOrderStatus(), OrderStatusLan.TABLE_NAME));
+            customerPurchaseOrderDto.setOrderStatusDescription(purchaseOrder.getOrderStatus().getTextForCurrentLan());
             customerPurchaseOrderDto.setDeliveryDate(purchaseOrder.getDeliveryDate());
             customerPurchaseOrderDto.setOrderTotalPointExchange(purchaseOrder.getOrderTotalPointExchange());
             customerPurchaseOrderDto.setEnterprise(mapToEnterpriseDto(purchaseOrder.getEnterprise()));
             customerPurchaseOrderDto.setPurchaseProducts(purchaseOrder.getPurchaseOrderDetails().stream()
-                    .map(this::mapToPurchaseOrderDetailDto).collect(Collectors.toList()));
+                    .map(this::mapToPurchaseOrderDetailDto).toList());
 
             customerPurchaseOrderDtos.add(customerPurchaseOrderDto);
         });
@@ -57,13 +49,13 @@ public class PurchaseOrderMapper {
             enterprisePurchaseOrderDto.setId(purchaseOrder.getId());
             enterprisePurchaseOrderDto.setOrderDate(purchaseOrder.getOrderDate());
             enterprisePurchaseOrderDto.setOrderStatus(purchaseOrder.getOrderStatus());
-            enterprisePurchaseOrderDto.setOrderStatusDescription(languageUtils.getEnumDescription(purchaseOrder.getOrderStatus(), OrderStatusLan.TABLE_NAME));
+            enterprisePurchaseOrderDto.setOrderStatusDescription(purchaseOrder.getOrderStatus().getTextForCurrentLan());
             enterprisePurchaseOrderDto.setDeliveryDate(purchaseOrder.getDeliveryDate());
             enterprisePurchaseOrderDto.setOrderTotalPointExchange(purchaseOrder.getOrderTotalPointExchange());
             enterprisePurchaseOrderDto.setCustomerFullName(purchaseOrder.getCustomer().getFullName());
             enterprisePurchaseOrderDto.setCustomerContactEmail(purchaseOrder.getCustomer().getContactEmail());
             enterprisePurchaseOrderDto.setPurchaseProducts(purchaseOrder.getPurchaseOrderDetails().stream()
-                    .map(this::mapToPurchaseOrderDetailDto).collect(Collectors.toList()));
+                    .map(this::mapToPurchaseOrderDetailDto).toList());
             enterprisePurchaseOrderDto.setOrderTotalItems(purchaseOrder.getPurchaseOrderDetails()
                     .stream().map(PurchaseOrderDetail::getAmount).reduce(0, Integer::sum));
             enterprisePurchaseOrderDto.setCustomer(mapToCustomerDto(purchaseOrder.getCustomer()));
@@ -91,7 +83,7 @@ public class PurchaseOrderMapper {
         customerDto.setAvatarUrl(customer.getAvatarUrl());
         customerDto.setBirthDate(customer.getBirthDate());
         customerDto.setGender(customer.getGender());
-        customerDto.setGenderDescription(languageUtils.getEnumDescription(customer.getGender(), GenderLan.TABLE_NAME));
+        customerDto.setGenderDescription(customer.getGender().getTextForCurrentLan());
         return customerDto;
     }
 

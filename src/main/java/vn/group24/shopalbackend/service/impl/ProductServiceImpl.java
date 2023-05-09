@@ -1,14 +1,17 @@
 package vn.group24.shopalbackend.service.impl;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import vn.group24.shopalbackend.controller.request.AdminCreateOrUpdateProductRequest;
 import vn.group24.shopalbackend.controller.request.ProductSearchCriteriaRequest;
@@ -26,9 +29,11 @@ import vn.group24.shopalbackend.mapper.ProductMapper;
 import vn.group24.shopalbackend.repository.CatalogRepository;
 import vn.group24.shopalbackend.repository.ProductPointRepository;
 import vn.group24.shopalbackend.repository.ProductRepository;
+import vn.group24.shopalbackend.security.domain.enums.UserRole;
 import vn.group24.shopalbackend.service.ProductService;
 import vn.group24.shopalbackend.util.BigDecimalUtils;
 import vn.group24.shopalbackend.util.Constants;
+import vn.group24.shopalbackend.util.FileUtils;
 
 /**
  * @author ttg
@@ -51,8 +56,17 @@ public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
 
     @Override
-    public ProductDetailDto getProductDetail(Integer productId) {
+    public ProductDetailDto getProductDetailForCustomer(Integer productId) {
         Product product = productRepository.getProductDetailById(productId);
+        if (product == null) {
+            throw new IllegalArgumentException(String.format("Can not found product with id = %s", productId));
+        }
+        return productDetailMapper.mapToProductDetailDto(product);
+    }
+
+    @Override
+    public ProductDetailDto getProductDetailForAdmin(Integer productId) {
+        Product product = productRepository.findById(productId).orElseGet(() -> null);
         if (product == null) {
             throw new IllegalArgumentException(String.format("Can not found product with id = %s", productId));
         }
@@ -67,6 +81,10 @@ public class ProductServiceImpl implements ProductService {
 
         if (criteria.getOffset() == null) {
             criteria.setOffset(Constants.DEFAULT_SEARCH_OFFSET);
+        }
+
+        if (criteria.getUserRole() == null) {
+            criteria.setUserRole(UserRole.CUSTOMER);
         }
 
         List<Product> products = productRepository.getByCriteria(criteria);
@@ -114,11 +132,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public String createOrUpdateProduct(AdminCreateOrUpdateProductRequest request) {
+    public String createOrUpdateProduct(AdminCreateOrUpdateProductRequest request, MultipartFile[] images) throws IOException {
         if (request.getProductId() == null) { //case create
             validateProductInfo(request);
             Product newProduct = new Product();
-            newProduct.setSku(request.getSku());
+            newProduct.setSku(StringUtils.isNotBlank(request.getSku()) ? request.getSku() : nextProductSku());
             newProduct.setProductName(request.getProductName());
             newProduct.setQuantityInStock(request.getQuantityInStock());
             newProduct.setDescriptionContentUrl(request.getDescriptionContentUrl());
@@ -128,10 +146,10 @@ public class ProductServiceImpl implements ProductService {
             newProduct.setExpirationDate(request.getExpirationDate() == null ? LocalDate.of(2023, 12, 31) : request.getExpirationDate());
             newProduct.setInitialCash(request.getInitialCash());
             newProduct.setAmountSold(0);
-            for (int i = 0; i < request.getImageUrls().size(); i++) {
+            for (int i = 0; i < images.length; i++) {
                 ProductImage newProductImage = new ProductImage();
                 newProductImage.setProduct(newProduct);
-                newProductImage.setImageUrl(request.getImageUrls().get(i));
+                newProductImage.setImageUrl(FileUtils.saveFileWithRandomName(images[i], Constants.PRODUCT_IMAGE_DIRECTORY));
                 newProductImage.setIsMainImg(i == 0 ? Boolean.TRUE : Boolean.FALSE);
                 newProduct.addProductImage(newProductImage);
             }
@@ -149,16 +167,24 @@ public class ProductServiceImpl implements ProductService {
     private void validateProductInfo(AdminCreateOrUpdateProductRequest request) {
         Validate.isTrue(request.getProductName() != null, "Product name can not be null");
         Validate.isTrue(request.getQuantityInStock() != null && request.getQuantityInStock() > 0, "Quantity in stock must be > 0");
-        Validate.isTrue(request.getInitialCash() != null && request.getInitialCash().compareTo(BigDecimal.ZERO) > 0, "Initial cash must be > 0");
+        Validate.isTrue(request.getInitialCash() != null &&
+                        request.getInitialCash().compareTo(BigDecimal.valueOf(500)) > 0 &&
+                        String.valueOf(request.getInitialCash()).endsWith("0"),
+                "Initial cash must be >= 1000 vnd");
         Validate.isTrue(request.getCatalogId() != null && catalogRepository.existsById(request.getCatalogId()), "Catalog with id = [%s] must exists");
         Validate.isTrue(request.getProductStatus() != null, "Product status can not be null");
         Validate.isTrue(request.getProductType() != null, "Product type can not be null");
         if (request.getExpirationDate() != null) {
             Validate.isTrue(!request.getExpirationDate().isBefore(LocalDate.now()), "Expiration date must be > current date");
         }
-        if (request.getSku() != null) {
+        if (StringUtils.isNotBlank(request.getSku())) {
             Product existsProductBySku = productRepository.getBySku(request.getSku());
             Validate.isTrue(existsProductBySku == null, "Duplicate product sku");
         }
+    }
+
+    @Override
+    public String nextProductSku() {
+        return String.format("%1$8s", productRepository.getNextSku()).replace(' ', '0');
     }
 }

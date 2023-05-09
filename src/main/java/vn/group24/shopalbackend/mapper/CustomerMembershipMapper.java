@@ -3,15 +3,12 @@ package vn.group24.shopalbackend.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import vn.group24.shopalbackend.controller.response.enterprise.CustomerMembershipDto;
 import vn.group24.shopalbackend.controller.response.enterprise.CustomerRegisterDto;
 import vn.group24.shopalbackend.domain.Enterprise;
-import vn.group24.shopalbackend.domain.multilingual.GenderLan;
 import vn.group24.shopalbackend.domain.staging.StagCustomer;
-import vn.group24.shopalbackend.util.LanguageUtils;
 
 /**
  *
@@ -19,9 +16,6 @@ import vn.group24.shopalbackend.util.LanguageUtils;
  */
 @Component
 public class CustomerMembershipMapper {
-
-    @Autowired
-    private LanguageUtils languageUtils;
 
     public List<CustomerMembershipDto> mapToCustomerMembershipDtos(Enterprise enterprise) {
         List<CustomerMembershipDto> customerMembershipDtos = new ArrayList<>();
@@ -34,7 +28,7 @@ public class CustomerMembershipMapper {
             customerMembershipDto.setRegisterPhoneNumber(membership.getRegisterPhoneNumber());
             customerMembershipDto.setAddress(membership.getCustomer().getAddress());
             customerMembershipDto.setGender(membership.getCustomer().getGender());
-            customerMembershipDto.setGenderDescription(languageUtils.getEnumDescription(membership.getCustomer().getGender(), GenderLan.TABLE_NAME));
+            customerMembershipDto.setGenderDescription(membership.getCustomer().getGender().getTextForCurrentLan());
             customerMembershipDto.setBirthDate(membership.getCustomer().getBirthDate());
             customerMembershipDto.setAvatarUrl(membership.getCustomer().getAvatarUrl());
             customerMembershipDto.setAvailablePoint(membership.getAvailablePoint());

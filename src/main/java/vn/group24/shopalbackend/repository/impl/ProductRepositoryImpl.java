@@ -18,6 +18,7 @@ import vn.group24.shopalbackend.domain.QProduct;
 import vn.group24.shopalbackend.domain.QProductCatalog;
 import vn.group24.shopalbackend.domain.QProductPoint;
 import vn.group24.shopalbackend.repository.ProductRepositoryCustom;
+import vn.group24.shopalbackend.security.domain.enums.UserRole;
 
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
@@ -55,9 +56,12 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         QEnterprise qEnterprise = QEnterprise.enterprise;
         QCatalog qCatalog = QCatalog.catalog;
 
-        BooleanExpression condition = qProduct.id.isNotNull()
-                .and(qProductPoint.active.isTrue());
+        BooleanExpression condition = qProduct.id.isNotNull();
 
+        if (UserRole.CUSTOMER == criteria.getUserRole()) {
+            condition = condition.and(qProductPoint.active.isTrue());
+        }
+        
         if (CollectionUtils.isNotEmpty(criteria.getCatalogIdList())) {
             condition = condition.and(qCatalog.id.in(criteria.getCatalogIdList()));
         }

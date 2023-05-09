@@ -1,5 +1,7 @@
 package vn.group24.shopalbackend.security.config;
 
+import java.util.List;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -25,13 +27,12 @@ public class LogoutService implements LogoutHandler {
             return;
         }
         jwt = authHeader.substring(7);
-        UserAccountToken storedToken = tokenRepository.findByToken(jwt)
-                .orElse(null);
-        if (storedToken != null) {
+        List<UserAccountToken> storedTokens = tokenRepository.findByToken(jwt);
+        storedTokens.forEach(storedToken -> {
             storedToken.setExpired(true);
             storedToken.setRevoked(true);
             tokenRepository.save(storedToken);
             SecurityContextHolder.clearContext();
-        }
+        });
     }
 }

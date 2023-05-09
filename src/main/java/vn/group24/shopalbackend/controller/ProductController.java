@@ -1,15 +1,19 @@
 package vn.group24.shopalbackend.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import vn.group24.shopalbackend.controller.request.AdminCreateOrUpdateProductRequest;
 import vn.group24.shopalbackend.controller.request.ProductSearchCriteriaRequest;
@@ -24,9 +28,15 @@ public class ProductController extends AbstractController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/get-detail/{productId}")
-    public ResponseEntity<ProductDetailDto> getProductDetail(@PathVariable Integer productId) {
-        ProductDetailDto productDetailDto = productService.getProductDetail(productId);
+    @GetMapping("/customer/get-detail/{productId}")
+    public ResponseEntity<ProductDetailDto> getProductDetailForCustomer(@PathVariable Integer productId) {
+        ProductDetailDto productDetailDto = productService.getProductDetailForCustomer(productId);
+        return ResponseEntity.ok().body(productDetailDto);
+    }
+
+    @GetMapping("/current-admin/get-detail/{productId}")
+    public ResponseEntity<ProductDetailDto> getProductDetailForAdmin(@PathVariable Integer productId) {
+        ProductDetailDto productDetailDto = productService.getProductDetailForAdmin(productId);
         return ResponseEntity.ok().body(productDetailDto);
     }
 
@@ -46,8 +56,8 @@ public class ProductController extends AbstractController {
         return ResponseEntity.ok().body(productService.handleRequestCancellingProductForEnterprise(userUtils.getAuthenticateEnterprise(), productId));
     }
 
-    @PostMapping("/current-admin/create-or-update-product")
-    public ResponseEntity<String> createOrUpdateProduct(@RequestBody AdminCreateOrUpdateProductRequest request) {
-        return ResponseEntity.ok().body(productService.createOrUpdateProduct(request));
+    @PostMapping(value = "/current-admin/create-or-update-product", produces = {MediaType.ALL_VALUE, "application/json"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> createOrUpdateProduct(@RequestPart(name = "dto") AdminCreateOrUpdateProductRequest request, @RequestPart(name = "images") MultipartFile[] images) throws IOException {
+        return ResponseEntity.ok().body(productService.createOrUpdateProduct(request, images));
     }
 }

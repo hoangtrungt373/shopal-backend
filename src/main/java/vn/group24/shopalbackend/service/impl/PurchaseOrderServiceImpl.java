@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -33,12 +34,8 @@ import vn.group24.shopalbackend.domain.PurchaseOrder;
 import vn.group24.shopalbackend.domain.PurchaseOrderDetail;
 import vn.group24.shopalbackend.domain.enums.DeliveryStatus;
 import vn.group24.shopalbackend.domain.enums.OrderStatus;
-import vn.group24.shopalbackend.domain.multilingual.OrderStatusLan;
-import vn.group24.shopalbackend.domain.multilingual.SysLanguage;
-import vn.group24.shopalbackend.mapper.LanguageMapper;
 import vn.group24.shopalbackend.mapper.PurchaseOrderMapper;
 import vn.group24.shopalbackend.repository.MembershipRepository;
-import vn.group24.shopalbackend.repository.OrderStatusLanRepository;
 import vn.group24.shopalbackend.repository.ProductCartRepository;
 import vn.group24.shopalbackend.repository.ProductRepository;
 import vn.group24.shopalbackend.repository.PurchaseOrderRepository;
@@ -62,12 +59,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     private ProductRepository productRepository;
 
     @Autowired
-    private OrderStatusLanRepository orderStatusLanRepository;
-
-    @Autowired
     private PurchaseOrderMapper purchaseOrderMapper;
-    @Autowired
-    private LanguageMapper languageMapper;
 
     @Override
     public void createNewPurchaseOrderForCustomer(Customer customer, List<CreateNewPurchaseOrderRequest> createNewPurchaseOrderRequests) {
@@ -180,9 +172,12 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     @Override
     public List<OrderStatusDto> getAllOrderStatus() {
-        // TODO: optimize these method get enum lan description
-        List<OrderStatusLan> orderStatusLans = orderStatusLanRepository.getByLanguage(SysLanguage.getCurrentLanguage());
-        return languageMapper.mapToOrderStatusDto(orderStatusLans);
+        return Arrays.stream(OrderStatus.values()).map(orderStatus -> {
+            OrderStatusDto orderStatusDto = new OrderStatusDto();
+            orderStatusDto.setOrderStatus(orderStatus);
+            orderStatusDto.setOrderStatusDescription(orderStatusDto.getOrderStatusDescription());
+            return orderStatusDto;
+        }).toList();
     }
 
     @Override

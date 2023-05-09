@@ -3,7 +3,6 @@ package vn.group24.shopalbackend.mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import vn.group24.shopalbackend.controller.response.common.EnterpriseDto;
@@ -13,8 +12,6 @@ import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.Product;
 import vn.group24.shopalbackend.domain.ProductImage;
 import vn.group24.shopalbackend.domain.ProductPoint;
-import vn.group24.shopalbackend.domain.multilingual.ProductStatusLan;
-import vn.group24.shopalbackend.util.LanguageUtils;
 
 /**
  *
@@ -22,9 +19,6 @@ import vn.group24.shopalbackend.util.LanguageUtils;
  */
 @Component
 public class ProductMapper {
-
-    @Autowired
-    private LanguageUtils languageUtils;
 
     public List<ProductDto> mapToProductDtos(List<Product> products) {
         return products.stream().map(product -> {
@@ -35,7 +29,7 @@ public class ProductMapper {
             productDto.setQuantityInStock(product.getQuantityInStock());
             productDto.setRating(product.getRating());
             productDto.setProductStatus(product.getProductStatus());
-            productDto.setProductStatusDescription(languageUtils.getEnumDescription(product.getProductStatus(), ProductStatusLan.TABLE_NAME));
+            productDto.setProductStatusDescription(product.getProductStatus().getTextForCurrentLan());
             productDto.setAmountSold(product.getAmountSold());
             productDto.setMainImgUrl(product.getProductImages().stream()
                     .filter(ProductImage::getIsMainImg)

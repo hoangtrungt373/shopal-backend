@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import vn.group24.shopalbackend.controller.response.common.CatalogDto;
 import vn.group24.shopalbackend.domain.Catalog;
-import vn.group24.shopalbackend.domain.multilingual.CatalogStatusLan;
-import vn.group24.shopalbackend.util.LanguageUtils;
 
 /**
  *
@@ -18,9 +15,6 @@ import vn.group24.shopalbackend.util.LanguageUtils;
  */
 @Component
 public class CatalogMapper {
-
-    @Autowired
-    private LanguageUtils languageUtils;
 
     public List<CatalogDto> mapToCatalogDtos(List<Catalog> catalogs) {
         List<CatalogDto> catalogDtos = new ArrayList<>();
@@ -51,7 +45,7 @@ public class CatalogMapper {
         catalogDto.setTotalProduct(catalog.getTotalProduct());
         catalogDto.setProductTrendingState(catalog.getProductTrendingState());
         catalogDto.setCatalogStatus(catalog.getCatalogStatus());
-        catalogDto.setCatalogStatusDescription(languageUtils.getEnumDescription(catalog.getCatalogStatus(), CatalogStatusLan.TABLE_NAME));
+        catalogDto.setCatalogStatusDescription(catalog.getCatalogStatus().getTextForCurrentLan());
         return catalogDto;
     }
 }

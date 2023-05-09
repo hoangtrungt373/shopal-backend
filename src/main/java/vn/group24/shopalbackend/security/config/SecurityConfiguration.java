@@ -28,6 +28,7 @@ public class SecurityConfiguration {
             "/api/catalog/**",
             "/api/enterprise/**",
             "/api/accounting/**",
+            "/api/file/**",
             "/api/contract/**",
             "/api/membership/**"};
 

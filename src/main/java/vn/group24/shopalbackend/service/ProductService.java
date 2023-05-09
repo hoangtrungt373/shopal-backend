@@ -1,6 +1,9 @@
 package vn.group24.shopalbackend.service;
 
+import java.io.IOException;
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import vn.group24.shopalbackend.controller.request.AdminCreateOrUpdateProductRequest;
 import vn.group24.shopalbackend.controller.request.ProductSearchCriteriaRequest;
@@ -13,7 +16,9 @@ import vn.group24.shopalbackend.domain.Enterprise;
  */
 public interface ProductService {
 
-    ProductDetailDto getProductDetail(Integer productId);
+    ProductDetailDto getProductDetailForCustomer(Integer productId);
+
+    ProductDetailDto getProductDetailForAdmin(Integer productId);
 
     List<ProductDto> getProductByCriteria(ProductSearchCriteriaRequest criteria);
 
@@ -21,5 +26,7 @@ public interface ProductService {
 
     String handleRequestCancellingProductForEnterprise(Enterprise enterprise, Integer productId);
 
-    String createOrUpdateProduct(AdminCreateOrUpdateProductRequest request);
+    String createOrUpdateProduct(AdminCreateOrUpdateProductRequest request, MultipartFile[] images) throws IOException;
+
+    String nextProductSku();
 }
