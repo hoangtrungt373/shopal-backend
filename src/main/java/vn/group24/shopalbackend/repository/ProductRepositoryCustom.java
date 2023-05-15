@@ -10,4 +10,5 @@ public interface ProductRepositoryCustom {
 
     List<Product> getByCriteria(ProductSearchCriteriaRequest criteria);
 
+    Integer countByCriteria(ProductSearchCriteriaRequest criteria);
 }

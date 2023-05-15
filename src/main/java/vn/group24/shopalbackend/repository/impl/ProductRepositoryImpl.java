@@ -17,6 +17,7 @@ import vn.group24.shopalbackend.domain.QEnterprise;
 import vn.group24.shopalbackend.domain.QProduct;
 import vn.group24.shopalbackend.domain.QProductCatalog;
 import vn.group24.shopalbackend.domain.QProductPoint;
+import vn.group24.shopalbackend.domain.enums.ProductStatus;
 import vn.group24.shopalbackend.repository.ProductRepositoryCustom;
 import vn.group24.shopalbackend.security.domain.enums.UserRole;
 
@@ -25,12 +26,15 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     @PersistenceContext
     private EntityManager em;
 
+    QProduct qProduct = QProduct.product;
+    QProductCatalog qProductCatalog = QProductCatalog.productCatalog;
+    QProductPoint qProductPoint = QProductPoint.productPoint;
+    QEnterprise qEnterprise = QEnterprise.enterprise;
+    QCatalog qCatalog = new QCatalog("qCatalog");
+    QCatalog qParentCatalog = new QCatalog("qParentCatalog");
+
     @Override
     public Product getProductDetailById(Integer productId) {
-        QProduct qProduct = QProduct.product;
-        QProductCatalog qProductCatalog = QProductCatalog.productCatalog;
-        QProductPoint qProductPoint = QProductPoint.productPoint;
-
         BooleanExpression condition = qProduct.id.eq(productId)
                 .and(qProductPoint.active.isTrue());
 
@@ -50,20 +54,59 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     @Override
     public List<Product> getByCriteria(ProductSearchCriteriaRequest criteria) {
-        QProduct qProduct = QProduct.product;
-        QProductCatalog qProductCatalog = QProductCatalog.productCatalog;
-        QProductPoint qProductPoint = QProductPoint.productPoint;
-        QEnterprise qEnterprise = QEnterprise.enterprise;
-        QCatalog qCatalog = QCatalog.catalog;
+        BooleanExpression condition = buildSearchCriteria(criteria);
 
+        JPAQuery<Product> query = new JPAQuery<Product>(em)
+                .from(qProduct)
+                .leftJoin(qProduct.productImages).fetchJoin()
+
+                .leftJoin(qProduct.productPoints, qProductPoint).fetchJoin()
+                .leftJoin(qProductPoint.enterprise, qEnterprise).fetchJoin()
+
+                .leftJoin(qProduct.productCatalogs, qProductCatalog).fetchJoin()
+                .leftJoin(qProductCatalog.catalog, qCatalog).fetchJoin()
+                .leftJoin(qCatalog.parentCatalog, qParentCatalog).fetchJoin();
+
+        query = query.where(condition)
+                .limit(criteria.getLimit()).offset(criteria.getOffset())
+                .orderBy(qProduct.id.asc());
+
+        return query.fetch();
+    }
+
+    @Override
+    public Integer countByCriteria(ProductSearchCriteriaRequest criteria) {
+        BooleanExpression condition = buildSearchCriteria(criteria);
+
+        JPAQuery<Integer> query = new JPAQuery<Product>(em)
+                .select(qProduct.id)
+                .from(qProduct)
+                .leftJoin(qProduct.productImages)
+
+                .leftJoin(qProduct.productPoints, qProductPoint)
+                .leftJoin(qProductPoint.enterprise, qEnterprise)
+
+                .leftJoin(qProduct.productCatalogs, qProductCatalog)
+                .leftJoin(qProductCatalog.catalog, qCatalog)
+                .leftJoin(qCatalog.parentCatalog, qParentCatalog);
+
+        query = query.where(condition);
+
+        return query.fetch().size();
+    }
+
+    private BooleanExpression buildSearchCriteria(ProductSearchCriteriaRequest criteria) {
         BooleanExpression condition = qProduct.id.isNotNull();
 
         if (UserRole.CUSTOMER == criteria.getUserRole()) {
             condition = condition.and(qProductPoint.active.isTrue());
+            condition = condition.and(qProduct.productStatus.eq(ProductStatus.ACTIVE));
         }
-        
+
         if (CollectionUtils.isNotEmpty(criteria.getCatalogIdList())) {
-            condition = condition.and(qCatalog.id.in(criteria.getCatalogIdList()));
+            condition = condition.and(qCatalog.id.in(criteria.getCatalogIdList()).or(
+                    qParentCatalog.id.in(criteria.getCatalogIdList())
+            ));
         }
 
         if (criteria.getRatingMin() != null) {
@@ -75,23 +118,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         }
 
         if (StringUtils.isNotBlank(criteria.getKeyword())) {
-            condition = condition.and(qProduct.productName.containsIgnoreCase(criteria.getKeyword()));
+            condition = condition.and(qProduct.productName.containsIgnoreCase(criteria.getKeyword())
+                    .or(qCatalog.catalogName.containsIgnoreCase(criteria.getKeyword())
+                            .or(qParentCatalog.catalogName.containsIgnoreCase(criteria.getKeyword()))));
         }
 
-        JPAQuery<Product> query = new JPAQuery<Product>(em)
-                .from(qProduct)
-                .leftJoin(qProduct.productImages).fetchJoin()
-
-                .leftJoin(qProduct.productPoints, qProductPoint).fetchJoin()
-                .leftJoin(qProductPoint.enterprise, qEnterprise).fetchJoin()
-
-                .leftJoin(qProduct.productCatalogs, qProductCatalog).fetchJoin()
-                .leftJoin(qProductCatalog.catalog, qCatalog).fetchJoin();
-
-        query = query.where(condition)
-                .limit(criteria.getLimit()).offset(criteria.getOffset())
-                .orderBy(qProduct.id.asc());
-
-        return query.fetch();
+        return condition;
     }
 }

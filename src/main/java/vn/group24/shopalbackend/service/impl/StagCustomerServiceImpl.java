@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import vn.group24.shopalbackend.controller.request.CreateNewMembershipRequest;
+import vn.group24.shopalbackend.controller.request.CustomerNewMembershipRequest;
 import vn.group24.shopalbackend.controller.response.enterprise.CustomerRegisterDto;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Enterprise;
@@ -32,6 +32,7 @@ import vn.group24.shopalbackend.repository.MembershipRepository;
 import vn.group24.shopalbackend.repository.StagCustomerRepository;
 import vn.group24.shopalbackend.security.domain.UserAccount;
 import vn.group24.shopalbackend.service.StagCustomerService;
+import vn.group24.shopalbackend.util.Validator;
 
 /**
  *
@@ -52,18 +53,20 @@ public class StagCustomerServiceImpl implements StagCustomerService {
     private CustomerMembershipMapper customerMembershipMapper;
 
     @Override
-    public void createNewCustomerMembershipFromEnterpriseRegister(Customer customer, CreateNewMembershipRequest createNewMembershipRequest) {
+    public String handleRequestNewMembershipForCustomer(Customer customer, CustomerNewMembershipRequest createNewMembershipRequest) {
         String registerEmail = createNewMembershipRequest.getRegisterEmail();
         String registerPhoneNumber = createNewMembershipRequest.getRegisterPhoneNumber();
+        Integer enterpriseId = createNewMembershipRequest.getEnterpriseId();
         Validate.isTrue(registerEmail != null, "Register email can not be blank");
         Validate.isTrue(registerPhoneNumber != null, "Register phone number can not be blank");
+        Validate.isTrue(enterpriseId != null, "EnterpriseId can not be null");
 
-        StagCustomer registerAccount = stagCustomerRepository.getByRegisterEmailAndRegisterPhoneNumber(
-                registerEmail, registerPhoneNumber);
-        Validate.isTrue(registerAccount != null, "Can not find customer with email = %s, phone = %s in enterprise [%s] 's customer system",
-                registerEmail, registerPhoneNumber);
+        StagCustomer registerAccount = stagCustomerRepository.getByRegisterEmailAndRegisterPhoneNumberAndEnterpriseId(
+                registerEmail, registerPhoneNumber, enterpriseId);
+        Validator validator = new Validator();
+        validator.throwIfFalse(registerAccount != null, "Membership information can not be found");
 
-        Enterprise registerEnterprise = enterpriseRepository.findById(registerAccount.getEnterpriseId()).orElseGet(() -> null);
+        Enterprise registerEnterprise = enterpriseRepository.findById(Objects.requireNonNull(registerAccount).getEnterpriseId()).orElseGet(() -> null);
         Validate.isTrue(registerEnterprise != null, "Enterprise not found with id= %s", registerAccount.getEnterpriseId());
 
         Validate.isTrue(customer.getMemberships().stream()
@@ -79,6 +82,8 @@ public class StagCustomerServiceImpl implements StagCustomerService {
 
         membershipRepository.save(membership);
         stagCustomerRepository.delete(registerAccount);
+
+        return "Create new membership successfully";
     }
 
     @Override

@@ -1,9 +1,13 @@
 package vn.group24.shopalbackend.service;
 
+import java.io.IOException;
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import vn.group24.shopalbackend.controller.response.common.CustomerDto;
 import vn.group24.shopalbackend.controller.response.enterprise.CustomerMembershipDto;
+import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.security.domain.UserAccount;
 
 /**
@@ -12,6 +16,10 @@ import vn.group24.shopalbackend.security.domain.UserAccount;
 public interface CustomerService {
 
     CustomerDto getCustomerInfo(UserAccount userAccount);
+
+    String updateCustomerInfo(Customer customer, CustomerDto request, MultipartFile uploadAvatarUrl) throws IOException;
+
+    String handleSendEmailVerifyEmailUpdate(Customer customer, String newEmail);
 
     List<CustomerMembershipDto> getCustomerMembershipForEnterprise(UserAccount userAccount);
 }

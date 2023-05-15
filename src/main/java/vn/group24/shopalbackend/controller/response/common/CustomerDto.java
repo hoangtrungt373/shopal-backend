@@ -15,6 +15,7 @@ import vn.group24.shopalbackend.domain.enums.Gender;
 public class CustomerDto extends AbstractDto {
     private String contactEmail;
     private String fullName;
+    private String nickName;
     private String phoneNumber;
     private Gender gender;
     private String genderDescription;

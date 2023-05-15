@@ -14,12 +14,14 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
+import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
 import vn.group24.shopalbackend.controller.request.EnterprisePurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
@@ -40,6 +42,7 @@ import vn.group24.shopalbackend.repository.ProductCartRepository;
 import vn.group24.shopalbackend.repository.ProductRepository;
 import vn.group24.shopalbackend.repository.PurchaseOrderRepository;
 import vn.group24.shopalbackend.service.PurchaseOrderService;
+import vn.group24.shopalbackend.util.Validator;
 
 /**
  *
@@ -63,6 +66,11 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     @Override
     public void createNewPurchaseOrderForCustomer(Customer customer, List<CreateNewPurchaseOrderRequest> createNewPurchaseOrderRequests) {
+        Validator validator = new Validator();
+        validator.throwIfFalse(StringUtils.isNotBlank(customer.getFullName()), "Hãy cập nhật thông tin họ tên, số điện thoại, địa chỉ liên lạc để tiến hành đặt hàng");
+        validator.throwIfFalse(StringUtils.isNotBlank(customer.getPhoneNumber()), "Hãy cập nhật thông tin họ tên, số điện thoại, địa chỉ liên lạc để tiến hành đặt hàng");
+        validator.throwIfFalse(StringUtils.isNotBlank(customer.getAddress()), "Hãy cập nhật thông tin họ tên, số điện thoại, địa chỉ liên lạc để tiến hành đặt hàng");
+
         // TODO: create query fetch join here
         List<ProductCart> orderProductCarts = productCartRepository.findAllById(createNewPurchaseOrderRequests.stream()
                 .map(CreateNewPurchaseOrderRequest::getProductCartId).collect(Collectors.toList()));
@@ -74,11 +82,11 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 .collect(Collectors.groupingBy(productCart -> productCart.getProductPoint().getProduct()));
 
         productGroupByOrderProduct.forEach((product, productCarts) -> {
-            int totalAmountOrder = productCarts.stream().map(ProductCart::getAmount).reduce(0, Integer::sum);
-            int remainQuantityInStock = product.getQuantityInStock() - totalAmountOrder;
-            Validate.isTrue(remainQuantityInStock > 0, "Amount of order product [%s] can not larger product's quantity in stock [%s]", totalAmountOrder, product.getQuantityInStock());
+            Integer totalAmountOrder = productCarts.stream().map(ProductCart::getAmount).reduce(0, Integer::sum);
+            Integer remainQuantityInStock = product.getQuantityInStock() - totalAmountOrder;
+            validator.throwIfFalse(remainQuantityInStock > 0, "Số lượng sản phẩm đặt [%s] đã vượt quá số hàng tồn, vui lòng thử lại", product.getProductName());
             product.setQuantityInStock(remainQuantityInStock);
-            product.setAmountSold(product.getAmountSold() + totalAmountOrder);
+            product.setTotalSold(product.getTotalSold() + totalAmountOrder);
         });
 
         List<PurchaseOrder> purchaseOrders = new ArrayList<>();
@@ -201,5 +209,35 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         }
         purchaseOrderRepository.save(purchaseOrder);
         return "Update PurchaseOrderStatus ok";
+    }
+
+    @Override
+    public String cancelOrderForCustomer(Customer customer, CustomerPurchaseOrderCancelRequest request) {
+        // TODO: fetch join this
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(request.getPurchaseOrderId()).orElseGet(() -> null);
+        Validate.isTrue(purchaseOrder != null, "Can not found PurchaseOrder with id = %s", request.getPurchaseOrderId());
+        Validate.isTrue(OrderStatus.CANCELLED == purchaseOrder.getOrderStatus(), "Can not cancel PurchaseOrder with status = %s", purchaseOrder.getOrderStatus());
+
+        // update order status
+        purchaseOrder.setOrderStatus(OrderStatus.CANCELLED);
+        purchaseOrder.setCancelDate(LocalDateTime.now());
+        // TODO: config request cancel reason
+        purchaseOrder.setCancelReason(request.getCancelReason());
+        purchaseOrderRepository.save(purchaseOrder);
+
+        // restore customer point
+        Membership membership = membershipRepository.getByCustomerIdAndEnterpriseId(customer.getId(), purchaseOrder.getEnterprise().getId());
+        membership.setAvailablePoint(membership.getAvailablePoint().add(purchaseOrder.getOrderTotalPointExchange()));
+        membershipRepository.save(membership);
+
+        // restore product quantity in stock and amount sold
+        purchaseOrder.getPurchaseOrderDetails().forEach(purchaseOrderDetail -> {
+            Product product = purchaseOrderDetail.getProduct();
+            product.setQuantityInStock(product.getQuantityInStock() + purchaseOrderDetail.getAmount());
+            product.setTotalSold(product.getTotalSold() - purchaseOrderDetail.getAmount());
+            productRepository.save(product);
+        });
+
+        return "Cancel PurchaseOrder succefully";
     }
 }

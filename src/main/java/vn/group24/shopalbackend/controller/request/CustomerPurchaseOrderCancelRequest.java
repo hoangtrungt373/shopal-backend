@@ -9,7 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class CreateNewMembershipRequest {
-    private String registerEmail;
-    private String registerPhoneNumber;
+public class CustomerPurchaseOrderCancelRequest {
+    private Integer purchaseOrderId;
+    private String cancelReason;
 }

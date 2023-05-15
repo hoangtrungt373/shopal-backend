@@ -14,4 +14,6 @@ import vn.group24.shopalbackend.domain.Membership;
 @Repository
 public interface MembershipRepository extends JpaRepository<Membership, Integer> {
     List<Membership> getByCustomerId(Integer customerId);
+
+    Membership getByCustomerIdAndEnterpriseId(Integer customerId, Integer membershipId);
 }

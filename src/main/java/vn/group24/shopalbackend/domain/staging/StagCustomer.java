@@ -28,6 +28,7 @@ public class StagCustomer extends AbstractAuditableEntity {
     @Column(name = "ENTERPRISE_ID")
     private Integer enterpriseId;
 
+    @NotNull
     @Column(name = "FULL_NAME")
     private String fullName;
 

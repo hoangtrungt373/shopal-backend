@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
+import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
 import vn.group24.shopalbackend.controller.request.EnterprisePurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
@@ -53,7 +54,7 @@ public class OrderController extends AbstractController {
         List<EnterprisePurchaseOrderDto> enterprisePurchaseOrderDtos = purchaseOrderService.getPurchaseOrderForEnterpriseByCriteria(userUtils.getAuthenticateEnterprise(), criteria);
         return ResponseEntity.ok().body(enterprisePurchaseOrderDtos);
     }
-    
+
     @GetMapping("/current-enterprise/customer-order/get-detail/{purchaseOrderId}")
 //    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<EnterprisePurchaseOrderDto> getPurchaseOrderDetailForCurrentEnterprise(@PathVariable Integer purchaseOrderId) {
@@ -65,6 +66,12 @@ public class OrderController extends AbstractController {
 //    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String> updatePurchaseOrderStatusForCurrentEnterprise(@RequestBody EnterpriseUpdateOrderStatusRequest request) {
         return ResponseEntity.ok().body(purchaseOrderService.updatePurchaseOrderStatusForEnterprise(userUtils.getAuthenticateEnterprise(), request));
+    }
+
+    @PostMapping("/current-customer/cancel-order")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<String> cancelOrderForCurrentCustomer(@RequestBody CustomerPurchaseOrderCancelRequest request) {
+        return ResponseEntity.ok().body(purchaseOrderService.cancelOrderForCustomer(userUtils.getAuthenticateCustomer(), request));
     }
 
     @GetMapping("/order-status/get-all")

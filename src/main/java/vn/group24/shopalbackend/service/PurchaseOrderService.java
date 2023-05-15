@@ -3,6 +3,7 @@ package vn.group24.shopalbackend.service;
 import java.util.List;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
+import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
 import vn.group24.shopalbackend.controller.request.EnterprisePurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
@@ -27,4 +28,6 @@ public interface PurchaseOrderService {
     List<OrderStatusDto> getAllOrderStatus();
 
     String updatePurchaseOrderStatusForEnterprise(Enterprise enterprise, EnterpriseUpdateOrderStatusRequest request);
+
+    String cancelOrderForCustomer(Customer customer, CustomerPurchaseOrderCancelRequest request);
 }

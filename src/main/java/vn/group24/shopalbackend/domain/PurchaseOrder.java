@@ -66,6 +66,12 @@ public class PurchaseOrder extends AbstractAuditableEntity {
     @Column(name = "DELIVERY_DATE")
     private LocalDateTime deliveryDate;
 
+    @Column(name = "CANCEL_REASON")
+    private String cancelReason;
+
+    @Column(name = "CANCEL_DATE")
+    private LocalDateTime cancelDate;
+
     @OneToMany(mappedBy = "purchaseOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PurchaseOrderDetail> purchaseOrderDetails = new HashSet<>();
 

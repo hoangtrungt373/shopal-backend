@@ -7,6 +7,7 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import vn.group24.shopalbackend.controller.response.ProductReviewDto;
 import vn.group24.shopalbackend.controller.response.common.AbstractDto;
 import vn.group24.shopalbackend.controller.response.common.CatalogDto;
 import vn.group24.shopalbackend.controller.response.common.ProductImageDto;
@@ -24,12 +25,14 @@ public class ProductDetailDto extends AbstractDto {
     private ProductStatus productStatus;
     private String productStatusDescription;
     private BigDecimal rating;
-    private Integer amountSold;
+    private Integer totalSold;
     private BigDecimal initialCash;
     private LocalDate inputDate;
     private LocalDate expirationDate;
+    private Integer totalReview;
     private ProductType productType;
     private List<ProductImageDto> imageUrls = new ArrayList<>();
     private List<ProductPointDto> exchangeAblePoints = new ArrayList<>();
     private List<CatalogDto> catalogs = new ArrayList<>();
+    private List<ProductReviewDto> reviews = new ArrayList<>();
 }

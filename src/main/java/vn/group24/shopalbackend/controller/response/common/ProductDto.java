@@ -26,7 +26,7 @@ public class ProductDto extends AbstractDto {
     private BigDecimal rating;
     private ProductStatus productStatus;
     private String productStatusDescription;
-    private Integer amountSold;
+    private Integer totalSold;
     private BigDecimal initialCash;
     private ProductType productType;
     private LocalDate inputDate;

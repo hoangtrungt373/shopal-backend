@@ -27,6 +27,8 @@ public class SecurityConfiguration {
             "/api/customer/**",
             "/api/catalog/**",
             "/api/enterprise/**",
+            "/api/email/**",
+            "/api/cooperation-request/**",
             "/api/accounting/**",
             "/api/file/**",
             "/api/contract/**",

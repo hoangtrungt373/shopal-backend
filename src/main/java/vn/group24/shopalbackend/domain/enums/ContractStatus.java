@@ -6,7 +6,7 @@ package vn.group24.shopalbackend.domain.enums;
  */
 public enum ContractStatus implements AbstractMultilingualEnum<ContractStatus> {
     PENDING("Chưa áp dụng", "Pending"),
-    ACTIVE("Không áp dụng", "Active"),
+    ACTIVE("Đang áp dụng", "Active"),
     INACTIVE("Hết hạn", "Inactive");
 
     private final String textEn;

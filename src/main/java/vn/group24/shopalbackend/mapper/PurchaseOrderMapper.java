@@ -15,6 +15,7 @@ import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.ProductImage;
 import vn.group24.shopalbackend.domain.PurchaseOrder;
 import vn.group24.shopalbackend.domain.PurchaseOrderDetail;
+import vn.group24.shopalbackend.domain.enums.ProductReviewType;
 
 /**
  *
@@ -107,6 +108,8 @@ public class PurchaseOrderMapper {
                         .findAny()
                         .map(ProductImage::getImageUrl)
                         .orElseGet(() -> null)));
+        purchaseOrderDetailDto.setIsReview(purchaseOrderDetail.getProductReviews().stream()
+                .anyMatch(pr -> ProductReviewType.REVIEW == pr.getReviewType()));
         return purchaseOrderDetailDto;
     }
 }

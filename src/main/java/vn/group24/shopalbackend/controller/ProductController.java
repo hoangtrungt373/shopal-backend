@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import vn.group24.shopalbackend.controller.request.AdminCreateOrUpdateProductRequest;
+import vn.group24.shopalbackend.controller.request.CustomerProductReviewRequest;
 import vn.group24.shopalbackend.controller.request.ProductSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.common.ProductDto;
 import vn.group24.shopalbackend.controller.response.customer.ProductDetailDto;
@@ -46,6 +47,11 @@ public class ProductController extends AbstractController {
         return ResponseEntity.ok().body(productDtos);
     }
 
+    @PostMapping("/count-by-criteria")
+    public ResponseEntity<Integer> countProductByCriteria(@RequestBody ProductSearchCriteriaRequest criteria) {
+        return ResponseEntity.ok().body(productService.countProductByCriteria(criteria));
+    }
+
     @GetMapping("/current-enterprise/request-selling/{productId}")
     public ResponseEntity<String> handleRequestSellingProductForCurrentEnterprise(@PathVariable Integer productId) {
         return ResponseEntity.ok().body(productService.handleRequestSellingProductForEnterprise(userUtils.getAuthenticateEnterprise(), productId));
@@ -59,5 +65,10 @@ public class ProductController extends AbstractController {
     @PostMapping(value = "/current-admin/create-or-update-product", produces = {MediaType.ALL_VALUE, "application/json"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> createOrUpdateProduct(@RequestPart(name = "dto") AdminCreateOrUpdateProductRequest request, @RequestPart(name = "images") MultipartFile[] images) throws IOException {
         return ResponseEntity.ok().body(productService.createOrUpdateProduct(request, images));
+    }
+
+    @PostMapping(value = "/current-customer/add-product-review", produces = {MediaType.ALL_VALUE, "application/json"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> addProductReviewByCurrentCustomer(@RequestPart(name = "dto") CustomerProductReviewRequest request, @RequestPart(name = "images", required = false) MultipartFile[] images) throws IOException {
+        return ResponseEntity.ok().body(productService.addPurchaseOrderProductReviewByCustomer(userUtils.getAuthenticateCustomer(), request, images));
     }
 }

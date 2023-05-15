@@ -35,6 +35,9 @@ public class Customer extends AbstractAuditableEntity {
     @Column(name = "FULL_NAME")
     private String fullName;
 
+    @Column(name = "NICK_NAME")
+    private String nickName;
+
     @Column(name = "PHONE_NUMBER")
     private String phoneNumber;
 
@@ -50,6 +53,10 @@ public class Customer extends AbstractAuditableEntity {
 
     @Column(name = "AVATAR_URL")
     private String avatarUrl;
+
+    @NotNull
+    @Column(name = "JOIN_DATE")
+    private LocalDate joinDate;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Membership> memberships = new HashSet<>();

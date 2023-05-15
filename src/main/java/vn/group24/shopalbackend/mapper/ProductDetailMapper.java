@@ -1,18 +1,26 @@
 package vn.group24.shopalbackend.mapper;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import vn.group24.shopalbackend.controller.response.ProductReviewDto;
 import vn.group24.shopalbackend.controller.response.common.CatalogDto;
+import vn.group24.shopalbackend.controller.response.common.CustomerDto;
 import vn.group24.shopalbackend.controller.response.common.EnterpriseDto;
 import vn.group24.shopalbackend.controller.response.common.ProductImageDto;
 import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
 import vn.group24.shopalbackend.controller.response.customer.ProductDetailDto;
 import vn.group24.shopalbackend.domain.Catalog;
+import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.Product;
 import vn.group24.shopalbackend.domain.ProductCatalog;
 import vn.group24.shopalbackend.domain.ProductImage;
 import vn.group24.shopalbackend.domain.ProductPoint;
+import vn.group24.shopalbackend.domain.ProductReview;
 
 @Component
 public class ProductDetailMapper {
@@ -30,11 +38,13 @@ public class ProductDetailMapper {
         productDetailDto.setImageUrls(product.getProductImages().stream().map(this::mapToProductImageDto).toList());
         productDetailDto.setCatalogs(product.getProductCatalogs().stream().map(ProductCatalog::getCatalog).map(this::mapToCatalogDto).toList());
         productDetailDto.setExchangeAblePoints(product.getProductPoints().stream().map(this::mapToProductPointDto).toList());
-        productDetailDto.setAmountSold(product.getAmountSold());
+        productDetailDto.setTotalSold(product.getTotalSold());
         productDetailDto.setInputDate(product.getInputDate());
         productDetailDto.setInitialCash(product.getInitialCash());
         productDetailDto.setExpirationDate(product.getExpirationDate());
         productDetailDto.setProductType(product.getProductType());
+        productDetailDto.setTotalReview(product.getTotalReview());
+        productDetailDto.setReviews(product.getProductReviews().stream().map(this::mapToProductReviewDto).toList());
         return productDetailDto;
     }
 
@@ -70,5 +80,30 @@ public class ProductDetailMapper {
         dto.setEnterpriseName(entity.getEnterpriseName());
         dto.setLogoUrl(entity.getLogoUrl());
         return dto;
+    }
+
+    private ProductReviewDto mapToProductReviewDto(ProductReview productReview) {
+        ProductReviewDto productReviewDto = new ProductReviewDto();
+        productReviewDto.setId(productReview.getId());
+        productReviewDto.setReviewType(productReview.getReviewType());
+        productReviewDto.setAmountLike(productReview.getAmountLike());
+        productReviewDto.setReviewDate(productReview.getReviewDate());
+        productReviewDto.setContent(productReview.getContent());
+        productReviewDto.setRating(productReview.getRating());
+        String imageUrlStr = productReview.getImageUrls().replace("[", "").replace("]", "");
+        if (StringUtils.isNotBlank(imageUrlStr)) {
+            List<String> imageUrls = Arrays.stream(imageUrlStr.split(",", 5)).map(StringUtils::trim).toList();
+            productReviewDto.setImageUrls(imageUrls);
+        }
+        productReviewDto.setCustomer(mapToCustomerDto(productReview.getCustomer()));
+        return productReviewDto;
+    }
+
+    private CustomerDto mapToCustomerDto(Customer customer) {
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setId(customer.getId());
+        customerDto.setAvatarUrl(customer.getAvatarUrl());
+        customerDto.setFullName(customer.getFullName());
+        return customerDto;
     }
 }

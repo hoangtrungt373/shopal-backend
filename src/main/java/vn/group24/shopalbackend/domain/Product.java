@@ -52,6 +52,7 @@ public class Product extends AbstractAuditableEntity {
     @Column(name = "RATING")
     private BigDecimal rating;
 
+
     @NotNull
     @Column(name = "INPUT_DATE")
     private LocalDate inputDate;
@@ -73,8 +74,16 @@ public class Product extends AbstractAuditableEntity {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<ProductCatalog> productCatalogs = new HashSet<>();
 
-    @Column(name = "AMOUNT_SOLD")
-    private Integer amountSold;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ProductReview> productReviews = new HashSet<>();
+
+    @NotNull
+    @Column(name = "TOTAL_SOLD")
+    private Integer totalSold;
+
+    @NotNull
+    @Column(name = "TOTAL_REVIEW")
+    private Integer totalReview;
 
     @NotNull
     @Column(name = "PRODUCT_TYPE")
@@ -89,5 +98,10 @@ public class Product extends AbstractAuditableEntity {
     public void addProductCatalog(ProductCatalog productCatalog) {
         this.productCatalogs.add(productCatalog);
         productCatalog.setProduct(this);
+    }
+
+    public void addProductReview(ProductReview productReview) {
+        this.productReviews.add(productReview);
+        productReview.setProduct(this);
     }
 }

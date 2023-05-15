@@ -51,7 +51,7 @@ public class CatalogServiceImpl implements CatalogService {
         catalogsLv1.forEach(catalog -> {
             Integer totalProduct = catalog.getChildCatalogs().stream().map(childCatalog -> childCatalog.getProductCatalogs().size()).reduce(0, Integer::sum);
             Integer totalSell = catalog.getChildCatalogs().stream().flatMap(childCatalog -> childCatalog.getProductCatalogs().stream())
-                    .map(ProductCatalog::getProduct).distinct().map(Product::getAmountSold).reduce(0, Integer::sum);
+                    .map(ProductCatalog::getProduct).distinct().map(Product::getTotalSold).reduce(0, Integer::sum);
             catalog.setTotalSell(totalSell);
             catalog.setTotalProduct(totalProduct);
             catalog.setProductTrendingState(Arrays.stream(ProductTrendingState.values()).findAny().orElseGet(() -> ProductTrendingState.MEDIUM));
@@ -65,7 +65,7 @@ public class CatalogServiceImpl implements CatalogService {
         List<Catalog> catalogsLv1 = catalogRepository.getByLevel(2);
         catalogsLv1.forEach(catalog -> {
             Integer totalProduct = catalog.getProductCatalogs().size();
-            Integer totalSell = catalog.getProductCatalogs().stream().map(ProductCatalog::getProduct).distinct().map(Product::getAmountSold).reduce(0, Integer::sum);
+            Integer totalSell = catalog.getProductCatalogs().stream().map(ProductCatalog::getProduct).distinct().map(Product::getTotalSold).reduce(0, Integer::sum);
             catalog.setTotalSell(totalSell);
             catalog.setTotalProduct(totalProduct);
             catalog.setProductTrendingState(Arrays.stream(ProductTrendingState.values()).findAny().orElseGet(() -> ProductTrendingState.MEDIUM));

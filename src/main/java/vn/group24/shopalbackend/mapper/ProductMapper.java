@@ -30,7 +30,7 @@ public class ProductMapper {
             productDto.setRating(product.getRating());
             productDto.setProductStatus(product.getProductStatus());
             productDto.setProductStatusDescription(product.getProductStatus().getTextForCurrentLan());
-            productDto.setAmountSold(product.getAmountSold());
+            productDto.setTotalSold(product.getTotalSold());
             productDto.setMainImgUrl(product.getProductImages().stream()
                     .filter(ProductImage::getIsMainImg)
                     .findFirst()

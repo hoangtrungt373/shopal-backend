@@ -1,6 +1,8 @@
 package vn.group24.shopalbackend.domain;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -10,6 +12,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,4 +55,10 @@ public class PurchaseOrderDetail extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "TOTAL_CASH")
     private BigDecimal totalCash;
+
+    @Column(name = "CONTACT_EMAIL")
+    private String contactEmail;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "purchaseOrderDetail")
+    private Set<ProductReview> productReviews = new HashSet<>();
 }

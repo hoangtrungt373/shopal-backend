@@ -17,5 +17,19 @@ spring:
       hibernate:
         format_sql: false
 
+  mail:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        debug: true
+    host: smtp.gmail.com
+    port: 587
+    username: hoangtrungt373@gmail.com
+    password: oxmbqtmbosuefoks
+    default-encoding: UTF-8
+
 server:
   port: 8095

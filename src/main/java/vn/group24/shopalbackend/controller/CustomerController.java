@@ -1,13 +1,18 @@
 package vn.group24.shopalbackend.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import vn.group24.shopalbackend.controller.response.common.CustomerDto;
 import vn.group24.shopalbackend.controller.response.enterprise.CustomerMembershipDto;
@@ -35,6 +40,16 @@ public class CustomerController extends AbstractController {
     public ResponseEntity<CustomerDto> getCurrentCustomerInfo() {
         UserAccount userAccount = userUtils.getAuthenticateUser();
         return ResponseEntity.ok(customerService.getCustomerInfo(userAccount));
+    }
+
+    @PostMapping(value = "/current-customer/update", produces = {MediaType.ALL_VALUE, "application/json"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> updateCurrentCustomerInfo(@RequestPart(name = "dto") CustomerDto request, @RequestPart(name = "uploadAvatarUrl", required = false) MultipartFile uploadAvatarUrl) throws IOException {
+        return ResponseEntity.ok().body(customerService.updateCustomerInfo(userUtils.getAuthenticateCustomer(), request, uploadAvatarUrl));
+    }
+
+    @PostMapping(value = "/current-customer/verify-new-email")
+    public ResponseEntity<String> handleSendEmailVerifyEmailUpdate(@RequestBody String newEmail) {
+        return ResponseEntity.ok().body(customerService.handleSendEmailVerifyEmailUpdate(userUtils.getAuthenticateCustomer(), newEmail));
     }
 
     @GetMapping("/current-enterprise/customer-membership/get-all")

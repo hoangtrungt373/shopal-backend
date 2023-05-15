@@ -21,6 +21,7 @@ public class CustomerMapper {
         customerDto.setAddress(customer.getAddress());
         customerDto.setAvatarUrl(customer.getAvatarUrl());
         customerDto.setBirthDate(customer.getBirthDate());
+        customerDto.setNickName(customer.getNickName());
         customerDto.setGender(customer.getGender());
         customerDto.setGenderDescription(customer.getGender().getTextForCurrentLan());
         return customerDto;

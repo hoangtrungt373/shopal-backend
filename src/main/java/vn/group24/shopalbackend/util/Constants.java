@@ -13,8 +13,13 @@ public class Constants {
     public static final String INITIAL_CREATE = "Initial";
 
     public static final String PRODUCT_IMAGE_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\img\\product";
+    public static final String PRODUCT_REVIEW_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\img\\review";
+    public static final String CUSTOMER_AVATAR_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\img\\customer";
 
-    private static Language CURRENT_LANGUAGE = Language.EN;
+    public static final String ACCEPT_ENTERPRISE_COOPERATION_REQUEST_TEMPLATE = "accept-enterprise-cooperation-request-template";
+    public static final String VERIFY_CUSTOMER_EMAIL_TEMPLATE = "verify-customer-email-template";
+
+    private static Language CURRENT_LANGUAGE = Language.VN;
 
     public static void setCurrentLanguage(Language language) {
         CURRENT_LANGUAGE = language;
