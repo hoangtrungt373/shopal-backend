@@ -30,7 +30,7 @@ public class ProductDetailMapper {
         productDetailDto.setId(product.getId());
         productDetailDto.setProductName(product.getProductName());
         productDetailDto.setSku(product.getSku());
-        productDetailDto.setDescriptionContentUrl(product.getDescriptionContentUrl());
+        productDetailDto.setProductDescriptionUrl(product.getProductDescriptionUrl());
         productDetailDto.setQuantityInStock(product.getQuantityInStock());
         productDetailDto.setRating(product.getRating());
         productDetailDto.setProductStatus(product.getProductStatus());

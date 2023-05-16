@@ -1,9 +1,12 @@
-package vn.group24.shopalbackend.controller.response.common;
+package vn.group24.shopalbackend.controller.response.admin;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import vn.group24.shopalbackend.controller.response.common.AbstractDto;
 import vn.group24.shopalbackend.domain.enums.Gender;
 
 /**
@@ -12,7 +15,7 @@ import vn.group24.shopalbackend.domain.enums.Gender;
  */
 @Getter
 @Setter
-public class CustomerDto extends AbstractDto {
+public class CustomerAllInfoDto extends AbstractDto {
     private String contactEmail;
     private String fullName;
     private String nickName;
@@ -24,4 +27,7 @@ public class CustomerDto extends AbstractDto {
     private String address;
     private LocalDate joinDate;
     private Integer totalBuy;
+    private List<MembershipPointDto> membershipPoints = new ArrayList<>();
+
 }
+

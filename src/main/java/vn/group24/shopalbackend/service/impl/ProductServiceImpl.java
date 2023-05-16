@@ -174,7 +174,7 @@ public class ProductServiceImpl implements ProductService {
             newProduct.setSku(StringUtils.isNotBlank(request.getSku()) ? request.getSku() : nextProductSku());
             newProduct.setProductName(request.getProductName());
             newProduct.setQuantityInStock(request.getQuantityInStock());
-            newProduct.setDescriptionContentUrl(request.getDescriptionContentUrl());
+            newProduct.setProductDescriptionUrl(request.getProductDescriptionUrl());
             newProduct.setProductStatus(request.getProductStatus());
             newProduct.setRating(BigDecimal.ZERO);
             newProduct.setInputDate(LocalDate.now());

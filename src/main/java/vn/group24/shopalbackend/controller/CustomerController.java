@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import vn.group24.shopalbackend.controller.request.CustomerSearchCriteriaRequest;
+import vn.group24.shopalbackend.controller.response.admin.CustomerAllInfoDto;
 import vn.group24.shopalbackend.controller.response.common.CustomerDto;
 import vn.group24.shopalbackend.controller.response.enterprise.CustomerMembershipDto;
 import vn.group24.shopalbackend.controller.response.enterprise.CustomerRegisterDto;
@@ -72,5 +74,11 @@ public class CustomerController extends AbstractController {
     public ResponseEntity<CustomerDto> importCustomerRegisterForCurrentEnterprise() {
         UserAccount userAccount = userUtils.getAuthenticateUser();
         return ResponseEntity.ok(customerService.getCustomerInfo(userAccount));
+    }
+
+    @PostMapping("/get-all-info")
+    //    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<CustomerAllInfoDto>> getCustomerAllInfoByCriteria(@RequestBody CustomerSearchCriteriaRequest request) {
+        return ResponseEntity.ok(customerService.getCustomerAllInfoByCriteria(request));
     }
 }

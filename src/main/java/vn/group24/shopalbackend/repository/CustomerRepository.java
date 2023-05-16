@@ -9,8 +9,9 @@ import vn.group24.shopalbackend.domain.Customer;
  * @author ttg
  */
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, Integer> {
+public interface CustomerRepository extends JpaRepository<Customer, Integer>, CustomerRepositoryCustom {
     boolean existsByUserAccountId(Integer userAccountId);
 
     Customer getByUserAccountId(Integer userId);
+
 }

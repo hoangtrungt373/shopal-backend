@@ -40,8 +40,8 @@ public class Product extends AbstractAuditableEntity {
     @Column(name = "QUANTITY_IN_STOCK")
     private Integer quantityInStock;
 
-    @Column(name = "DESCRIPTION_CONTENT_URL")
-    private String descriptionContentUrl;
+    @Column(name = "PRODUCT_DESCRIPTION_URL")
+    private String productDescriptionUrl;
 
     @NotNull
     @Column(name = "PRODUCT_STATUS")

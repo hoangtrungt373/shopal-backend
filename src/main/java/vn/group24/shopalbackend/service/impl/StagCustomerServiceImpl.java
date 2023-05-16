@@ -78,6 +78,7 @@ public class StagCustomerServiceImpl implements StagCustomerService {
         membership.setEnterprise(registerEnterprise);
         membership.setAvailablePoint(registerAccount.getInitialPoint());
         membership.setRegisterEmail(registerEmail);
+        membership.setTotalBuy(0);
         membership.setRegisterPhoneNumber(registerPhoneNumber);
 
         membershipRepository.save(membership);

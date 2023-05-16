@@ -28,5 +28,5 @@ public class AdminCreateOrUpdateProductRequest {
     private ProductType productType;
     private List<String> imageUrls;
     //    private MultipartFile[] files;
-    private String descriptionContentUrl;
+    private String productDescriptionUrl;
 }

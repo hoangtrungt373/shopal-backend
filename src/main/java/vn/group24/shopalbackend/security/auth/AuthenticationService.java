@@ -1,5 +1,6 @@
 package vn.group24.shopalbackend.security.auth;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +52,8 @@ public class AuthenticationService {
             Customer customer = new Customer();
             customer.setUserAccountId(savedUser.getId());
             customer.setContactEmail(savedUser.getUsername());
+            customer.setJoinDate(LocalDate.now());
+            customer.setTotalBuy(0);
             customerRepository.save(customer);
         }
 

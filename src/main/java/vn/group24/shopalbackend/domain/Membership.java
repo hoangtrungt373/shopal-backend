@@ -43,4 +43,8 @@ public class Membership extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "REGISTER_EMAIL")
     private String registerEmail;
+
+    @NotNull
+    @Column(name = "TOTAL_BUY")
+    private Integer totalBuy;
 }

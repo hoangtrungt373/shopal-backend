@@ -58,6 +58,10 @@ public class Customer extends AbstractAuditableEntity {
     @Column(name = "JOIN_DATE")
     private LocalDate joinDate;
 
+    @NotNull
+    @Column(name = "TOTAL_BUY")
+    private Integer totalBuy;
+
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Membership> memberships = new HashSet<>();
 

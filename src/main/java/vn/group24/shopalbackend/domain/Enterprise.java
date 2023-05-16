@@ -1,5 +1,6 @@
 package vn.group24.shopalbackend.domain;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,6 +47,10 @@ public class Enterprise extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "LOGO_URL")
     private String logoUrl;
+
+    @NotNull
+    @Column(name = "JOIN_DATE")
+    private LocalDate joinDate;
 
     @OneToMany(mappedBy = "enterprise", fetch = FetchType.LAZY)
     private Set<Membership> memberships = new HashSet<>();

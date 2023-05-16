@@ -11,13 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import vn.group24.shopalbackend.controller.request.CustomerSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.request.EmailDetailRequest;
+import vn.group24.shopalbackend.controller.response.admin.CustomerAllInfoDto;
 import vn.group24.shopalbackend.controller.response.common.CustomerDto;
 import vn.group24.shopalbackend.controller.response.enterprise.CustomerMembershipDto;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.mapper.CustomerMapper;
 import vn.group24.shopalbackend.mapper.CustomerMembershipMapper;
+import vn.group24.shopalbackend.mapper.admin.CustomerAllInfoMapper;
 import vn.group24.shopalbackend.repository.CustomerRepository;
 import vn.group24.shopalbackend.repository.EnterpriseRepository;
 import vn.group24.shopalbackend.security.domain.UserAccount;
@@ -45,11 +48,19 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private CustomerMembershipMapper customerMembershipMapper;
+    @Autowired
+    private CustomerAllInfoMapper customerAllInfoMapper;
 
     @Override
     public CustomerDto getCustomerInfo(UserAccount userAccount) {
         Customer customer = customerRepository.getByUserAccountId(userAccount.getId());
         return customerMapper.mapToCustomerDto(customer);
+    }
+
+    @Override
+    public List<CustomerAllInfoDto> getCustomerAllInfoByCriteria(CustomerSearchCriteriaRequest request) {
+        // TODO: fetch join by criteria
+        return customerAllInfoMapper.mapToCustomerAllInfoDtos(customerRepository.getByCriteria(request));
     }
 
     @Override

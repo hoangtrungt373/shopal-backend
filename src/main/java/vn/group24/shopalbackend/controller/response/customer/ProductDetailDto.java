@@ -21,7 +21,7 @@ public class ProductDetailDto extends AbstractDto {
     private String productName;
     private String sku;
     private Integer quantityInStock;
-    private String descriptionContentUrl;
+    private String productDescriptionUrl;
     private ProductStatus productStatus;
     private String productStatusDescription;
     private BigDecimal rating;
