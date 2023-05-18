@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import vn.group24.shopalbackend.controller.request.EnterpriseRegisterRequest;
-import vn.group24.shopalbackend.controller.response.admin.EnterpriseCooperationRequestDto;
-import vn.group24.shopalbackend.service.EnterpriseCooperationRequestService;
+import vn.group24.shopalbackend.controller.response.admin.EnterpriseRegisterRequestAnnDto;
+import vn.group24.shopalbackend.service.EnterpriseRegisterRequestService;
 
 /**
  *
@@ -22,21 +24,21 @@ import vn.group24.shopalbackend.service.EnterpriseCooperationRequestService;
 public class CooperationRequestController extends AbstractController {
 
     @Autowired
-    private EnterpriseCooperationRequestService enterpriseCooperationRequestService;
+    private EnterpriseRegisterRequestService enterpriseRegisterRequestService;
 
     @PostMapping("/receive")
-    public ResponseEntity<String> handleReceiveEnterpriseCooperationRequest(@RequestBody EnterpriseRegisterRequest request) {
-        return ResponseEntity.ok(enterpriseCooperationRequestService.handleReceiveEnterpriseCooperationRequest(request));
+    public ResponseEntity<String> handleReceiveEnterpriseRegisterRequest(@RequestBody EnterpriseRegisterRequest request) throws JsonProcessingException {
+        return ResponseEntity.ok(enterpriseRegisterRequestService.handleReceiveEnterpriseRegisterRequest(request));
     }
 
     @PostMapping("/all")
-    public ResponseEntity<List<EnterpriseCooperationRequestDto>> getAllEnterpriseCooperationRequest() {
-        return ResponseEntity.ok(enterpriseCooperationRequestService.getAllEnterpriseCooperationRequest());
+    public ResponseEntity<List<EnterpriseRegisterRequestAnnDto>> getAllEnterpriseRegisterRequest() {
+        return ResponseEntity.ok(enterpriseRegisterRequestService.getAllEnterpriseRegisterRequest());
     }
 
     @PostMapping("/accept")
     public ResponseEntity<String> handleAcceptEnterpriseCooperationRequest(@RequestBody Integer requestId) {
-        return ResponseEntity.ok(enterpriseCooperationRequestService.handleAcceptEnterpriseCooperationRequest(requestId));
+        return ResponseEntity.ok(enterpriseRegisterRequestService.handleAcceptEnterpriseCooperationRequest(requestId));
     }
 
 }

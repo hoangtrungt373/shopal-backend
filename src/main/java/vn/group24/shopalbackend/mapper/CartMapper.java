@@ -10,7 +10,7 @@ import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
 import vn.group24.shopalbackend.controller.response.customer.ProductCartDto;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.ProductCart;
-import vn.group24.shopalbackend.domain.ProductImage;
+import vn.group24.shopalbackend.domain.ProductGallery;
 import vn.group24.shopalbackend.domain.ProductPoint;
 
 @Component
@@ -29,13 +29,13 @@ public class CartMapper {
         dto.setProductName(productCart.getProductPoint().getProduct().getProductName());
         dto.setQuantityInStock(productCart.getProductPoint().getProduct().getQuantityInStock());
         dto.setAmountSelected(productCart.getAmount());
-        dto.setMainImgUrl(productCart.getProductPoint().getProduct().getProductImages().stream()
-                .filter(ProductImage::getIsMainImg)
+        dto.setMainImgUrl(productCart.getProductPoint().getProduct().getProductGalleries().stream()
+                .filter(ProductGallery::getIsMainFile)
                 .findFirst()
-                .map(ProductImage::getImageUrl)
-                .orElseGet(() -> productCart.getProductPoint().getProduct().getProductImages().stream()
+                .map(ProductGallery::getFileUrl)
+                .orElseGet(() -> productCart.getProductPoint().getProduct().getProductGalleries().stream()
                         .findAny()
-                        .map(ProductImage::getImageUrl)
+                        .map(ProductGallery::getFileUrl)
                         .orElseGet(() -> null)));
         dto.setExchangeAblePoints(productCart.getProductPoint().getProduct().getProductPoints().stream().map(this::mapToProductPointDto).toList());
         dto.setPointSelected(dto.getExchangeAblePoints().stream()

@@ -22,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
 import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
-import vn.group24.shopalbackend.controller.request.EnterprisePurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
+import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
 import vn.group24.shopalbackend.controller.response.customer.CustomerPurchaseOrderDto;
 import vn.group24.shopalbackend.controller.response.enterprise.EnterprisePurchaseOrderDto;
@@ -146,22 +146,22 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Override
-    public List<EnterprisePurchaseOrderDto> getPurchaseOrderForEnterpriseByCriteria(Enterprise enterprise, EnterprisePurchaseOrderSearchCriteriaRequest criteria) {
+    public List<EnterprisePurchaseOrderDto> getPurchaseOrderForEnterpriseByCriteria(Enterprise enterprise, PurchaseOrderSearchCriteriaRequest criteria) {
         List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.getByEnterpriseId(enterprise.getId()).stream()
                 .filter(po -> getPurchaseOrderPredicate(criteria).test(po))
                 .sorted(Comparator.comparing(PurchaseOrder::getOrderDate).reversed()).toList();
         return purchaseOrderMapper.mapToEnterprisePurchaseOrderDtos(purchaseOrders);
     }
 
-    private Predicate<PurchaseOrder> getPurchaseOrderPredicate(EnterprisePurchaseOrderSearchCriteriaRequest criteria) {
-        if (criteria.getStartDate() == null) {
-            criteria.setStartDate(LocalDate.MIN);
+    private Predicate<PurchaseOrder> getPurchaseOrderPredicate(PurchaseOrderSearchCriteriaRequest criteria) {
+        if (criteria.getOrderDateFrom() == null) {
+            criteria.setOrderDateFrom(LocalDate.MIN);
         }
-        if (criteria.getEndDate() == null) {
-            criteria.setEndDate(LocalDate.MAX);
+        if (criteria.getOrderDateTo() == null) {
+            criteria.setOrderDateTo(LocalDate.MAX);
         }
-        Predicate<PurchaseOrder> predicate = po -> !po.getOrderDate().isBefore(LocalDateTime.of(criteria.getStartDate(), LocalTime.MIN)) &&
-                !po.getOrderDate().isAfter(LocalDateTime.of(criteria.getEndDate(), LocalTime.MAX));
+        Predicate<PurchaseOrder> predicate = po -> !po.getOrderDate().isBefore(LocalDateTime.of(criteria.getOrderDateFrom(), LocalTime.MIN)) &&
+                !po.getOrderDate().isAfter(LocalDateTime.of(criteria.getOrderDateTo(), LocalTime.MAX));
 
         if (criteria.getOrderStatus() != null) {
             predicate = predicate.and(po -> criteria.getOrderStatus() == po.getOrderStatus());

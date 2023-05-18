@@ -14,7 +14,7 @@ import vn.group24.shopalbackend.domain.enums.EnterpriseRegisterRequestStatus;
  */
 @Getter
 @Setter
-public class EnterpriseCooperationRequestDto extends AbstractDto {
+public class EnterpriseRegisterRequestAnnDto extends AbstractDto {
     private String fullName;
     private String position;
     private String workEmail;

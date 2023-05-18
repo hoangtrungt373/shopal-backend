@@ -29,6 +29,7 @@ public class ProductDto extends AbstractDto {
     private Integer totalSold;
     private BigDecimal initialCash;
     private ProductType productType;
+    private String productTypeDescription;
     private LocalDate inputDate;
     private LocalDate expirationDate;
     private List<ProductImageDto> imageUrls = new ArrayList<>();

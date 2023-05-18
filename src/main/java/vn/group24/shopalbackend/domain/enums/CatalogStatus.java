@@ -5,8 +5,8 @@ package vn.group24.shopalbackend.domain.enums;
  * @author ttg
  */
 public enum CatalogStatus implements AbstractMultilingualEnum<CatalogStatus> {
-    ACTIVE("Không áp dụng", "Inactive"),
-    INACTIVE("Đang áp dụng", "Active");
+    INACTIVE("Không áp dụng", "Inactive"),
+    ACTIVE("Đang áp dụng", "Active");
 
     private final String textEn;
     private final String textVn;

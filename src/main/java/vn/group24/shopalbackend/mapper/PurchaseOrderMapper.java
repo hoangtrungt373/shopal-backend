@@ -12,7 +12,7 @@ import vn.group24.shopalbackend.controller.response.customer.PurchaseOrderDetail
 import vn.group24.shopalbackend.controller.response.enterprise.EnterprisePurchaseOrderDto;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Enterprise;
-import vn.group24.shopalbackend.domain.ProductImage;
+import vn.group24.shopalbackend.domain.ProductGallery;
 import vn.group24.shopalbackend.domain.PurchaseOrder;
 import vn.group24.shopalbackend.domain.PurchaseOrderDetail;
 import vn.group24.shopalbackend.domain.enums.ProductReviewType;
@@ -100,13 +100,13 @@ public class PurchaseOrderMapper {
         purchaseOrderDetailDto.setProductName(purchaseOrderDetail.getProduct().getProductName());
         purchaseOrderDetailDto.setSku(purchaseOrderDetail.getProduct().getSku());
         purchaseOrderDetailDto.setTotalCash(purchaseOrderDetail.getTotalCash());
-        purchaseOrderDetailDto.setMainImgUrl(purchaseOrderDetail.getProduct().getProductImages().stream()
-                .filter(ProductImage::getIsMainImg)
+        purchaseOrderDetailDto.setMainImgUrl(purchaseOrderDetail.getProduct().getProductGalleries().stream()
+                .filter(ProductGallery::getIsMainFile)
                 .findFirst()
-                .map(ProductImage::getImageUrl)
-                .orElseGet(() -> purchaseOrderDetail.getProduct().getProductImages().stream()
+                .map(ProductGallery::getFileUrl)
+                .orElseGet(() -> purchaseOrderDetail.getProduct().getProductGalleries().stream()
                         .findAny()
-                        .map(ProductImage::getImageUrl)
+                        .map(ProductGallery::getFileUrl)
                         .orElseGet(() -> null)));
         purchaseOrderDetailDto.setIsReview(purchaseOrderDetail.getProductReviews().stream()
                 .anyMatch(pr -> ProductReviewType.REVIEW == pr.getReviewType()));

@@ -41,4 +41,12 @@ public class ProductPoint extends AbstractStateAndAncestorManageableEntity {
     @NotNull
     @Column(name = "ACTIVE")
     private Boolean active;
+
+    public ProductPoint copy(ProductPoint productPoint) {
+        ProductPoint copy = new ProductPoint();
+        copy.setEnterprise(productPoint.getEnterprise());
+        copy.setPointExchange(productPoint.getPointExchange());
+        copy.setActive(productPoint.getActive());
+        return copy;
+    }
 }

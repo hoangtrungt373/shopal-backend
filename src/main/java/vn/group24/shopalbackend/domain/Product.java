@@ -27,7 +27,7 @@ import vn.group24.shopalbackend.domain.enums.ProductType;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "PRODUCT_ID"))
-public class Product extends AbstractAuditableEntity {
+public class Product extends AbstractStateAndAncestorManageableEntity {
 
     @NotNull
     @Column(name = "PRODUCT_NAME")
@@ -52,7 +52,6 @@ public class Product extends AbstractAuditableEntity {
     @Column(name = "RATING")
     private BigDecimal rating;
 
-
     @NotNull
     @Column(name = "INPUT_DATE")
     private LocalDate inputDate;
@@ -64,18 +63,6 @@ public class Product extends AbstractAuditableEntity {
     @NotNull
     @Column(name = "INITIAL_CASH")
     private BigDecimal initialCash;
-
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<ProductImage> productImages = new HashSet<>();
-
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private Set<ProductPoint> productPoints = new HashSet<>();
-
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<ProductCatalog> productCatalogs = new HashSet<>();
-
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<ProductReview> productReviews = new HashSet<>();
 
     @NotNull
     @Column(name = "TOTAL_SOLD")
@@ -90,9 +77,29 @@ public class Product extends AbstractAuditableEntity {
     @Enumerated(EnumType.STRING)
     private ProductType productType;
 
-    public void addProductImage(ProductImage productImage) {
-        this.productImages.add(productImage);
-        productImage.setProduct(this);
+    @NotNull
+    @Column(name = "UPDATE_DESCRIPTION")
+    private String updateDescription;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ProductGallery> productGalleries = new HashSet<>();
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ProductPoint> productPoints = new HashSet<>();
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ProductCatalog> productCatalogs = new HashSet<>();
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ProductReview> productReviews = new HashSet<>();
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<PurchaseOrderDetail> purchaseOrderDetails = new HashSet<>();
+
+
+    public void addProductGallery(ProductGallery productGallery) {
+        this.productGalleries.add(productGallery);
+        productGallery.setProduct(this);
     }
 
     public void addProductCatalog(ProductCatalog productCatalog) {
@@ -103,5 +110,31 @@ public class Product extends AbstractAuditableEntity {
     public void addProductReview(ProductReview productReview) {
         this.productReviews.add(productReview);
         productReview.setProduct(this);
+    }
+
+    public void addProductPoint(ProductPoint productPoint) {
+        this.productPoints.add(productPoint);
+        productPoint.setProduct(this);
+    }
+
+    public Product copy(Product product) {
+        Product copy = new Product();
+        copy.setProductName(product.getProductName());
+        copy.setSku(product.getSku());
+        copy.setQuantityInStock(product.getQuantityInStock());
+        copy.setProductDescriptionUrl(product.getProductDescriptionUrl());
+        copy.setProductStatus(product.getProductStatus());
+        copy.setRating(product.getRating());
+        copy.setInputDate(product.getInputDate());
+        copy.setExpirationDate(product.getExpirationDate());
+        copy.setInitialCash(product.getInitialCash());
+        copy.setTotalSold(product.getTotalSold());
+        copy.setTotalReview(product.getTotalReview());
+        copy.setProductType(product.getProductType());
+        copy.setOrigineId(getOrigineId());
+        product.getProductGalleries().forEach(pg -> copy.addProductGallery(pg.copy(pg)));
+        product.getProductCatalogs().forEach(pc -> copy.addProductCatalog(pc.copy(pc)));
+        product.getProductPoints().forEach(pp -> copy.addProductPoint(pp.copy(pp)));
+        return copy;
     }
 }

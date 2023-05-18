@@ -61,4 +61,6 @@ public class PurchaseOrderDetail extends AbstractAuditableEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "purchaseOrderDetail")
     private Set<ProductReview> productReviews = new HashSet<>();
+    
+
 }

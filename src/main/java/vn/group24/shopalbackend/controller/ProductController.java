@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.group24.shopalbackend.controller.request.AdminCreateOrUpdateProductRequest;
 import vn.group24.shopalbackend.controller.request.CustomerProductReviewRequest;
 import vn.group24.shopalbackend.controller.request.ProductSearchCriteriaRequest;
+import vn.group24.shopalbackend.controller.response.admin.CreateOrUpdateProductResponse;
 import vn.group24.shopalbackend.controller.response.common.ProductDto;
 import vn.group24.shopalbackend.controller.response.customer.ProductDetailDto;
 import vn.group24.shopalbackend.service.ProductService;
@@ -30,14 +31,8 @@ public class ProductController extends AbstractController {
     private ProductService productService;
 
     @GetMapping("/customer/get-detail/{productId}")
-    public ResponseEntity<ProductDetailDto> getProductDetailForCustomer(@PathVariable Integer productId) {
-        ProductDetailDto productDetailDto = productService.getProductDetailForCustomer(productId);
-        return ResponseEntity.ok().body(productDetailDto);
-    }
-
-    @GetMapping("/current-admin/get-detail/{productId}")
-    public ResponseEntity<ProductDetailDto> getProductDetailForAdmin(@PathVariable Integer productId) {
-        ProductDetailDto productDetailDto = productService.getProductDetailForAdmin(productId);
+    public ResponseEntity<ProductDetailDto> getProductDetail(@PathVariable Integer productId) {
+        ProductDetailDto productDetailDto = productService.getProductDetail(productId);
         return ResponseEntity.ok().body(productDetailDto);
     }
 
@@ -63,7 +58,7 @@ public class ProductController extends AbstractController {
     }
 
     @PostMapping(value = "/current-admin/create-or-update-product", produces = {MediaType.ALL_VALUE, "application/json"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> createOrUpdateProduct(@RequestPart(name = "dto") AdminCreateOrUpdateProductRequest request, @RequestPart(name = "images") MultipartFile[] images) throws IOException {
+    public ResponseEntity<CreateOrUpdateProductResponse> createOrUpdateProduct(@RequestPart(name = "dto") AdminCreateOrUpdateProductRequest request, @RequestPart(name = "images") MultipartFile[] images) throws IOException {
         return ResponseEntity.ok().body(productService.createOrUpdateProduct(request, images));
     }
 

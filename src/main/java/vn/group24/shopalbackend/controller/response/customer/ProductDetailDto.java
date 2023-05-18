@@ -31,6 +31,7 @@ public class ProductDetailDto extends AbstractDto {
     private LocalDate expirationDate;
     private Integer totalReview;
     private ProductType productType;
+    private String productTypeDescription;
     private List<ProductImageDto> imageUrls = new ArrayList<>();
     private List<ProductPointDto> exchangeAblePoints = new ArrayList<>();
     private List<CatalogDto> catalogs = new ArrayList<>();

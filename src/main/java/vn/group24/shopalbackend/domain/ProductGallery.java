@@ -14,11 +14,11 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "PRODUCT_CATALOG", schema = "shop")
+@Table(name = "PRODUCT_GALLERY", schema = "shop")
 @Setter
 @Getter
-@AttributeOverride(name = "id", column = @Column(name = "PRODUCT_CATALOG_ID"))
-public class ProductCatalog extends AbstractAuditableEntity {
+@AttributeOverride(name = "id", column = @Column(name = "PRODUCT_GALLERY_ID"))
+public class ProductGallery extends AbstractAuditableEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,13 +26,17 @@ public class ProductCatalog extends AbstractAuditableEntity {
     private Product product;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CATALOG_ID")
-    private Catalog catalog;
+    @Column(name = "FILE_URL")
+    private String fileUrl;
 
-    public ProductCatalog copy(ProductCatalog productCatalog) {
-        ProductCatalog copy = new ProductCatalog();
-        copy.setCatalog(productCatalog.getCatalog());
+    @NotNull
+    @Column(name = "IS_MAIN_FILE")
+    private Boolean isMainFile;
+
+    public ProductGallery copy(ProductGallery productGallery) {
+        ProductGallery copy = new ProductGallery();
+        copy.setFileUrl(productGallery.getFileUrl());
+        copy.setIsMainFile(productGallery.getIsMainFile());
         return copy;
     }
 }

@@ -18,7 +18,7 @@ import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.Product;
 import vn.group24.shopalbackend.domain.ProductCatalog;
-import vn.group24.shopalbackend.domain.ProductImage;
+import vn.group24.shopalbackend.domain.ProductGallery;
 import vn.group24.shopalbackend.domain.ProductPoint;
 import vn.group24.shopalbackend.domain.ProductReview;
 
@@ -35,7 +35,7 @@ public class ProductDetailMapper {
         productDetailDto.setRating(product.getRating());
         productDetailDto.setProductStatus(product.getProductStatus());
         productDetailDto.setProductStatusDescription(product.getProductStatus().getTextForCurrentLan());
-        productDetailDto.setImageUrls(product.getProductImages().stream().map(this::mapToProductImageDto).toList());
+        productDetailDto.setImageUrls(product.getProductGalleries().stream().map(this::mapToProductImageDto).toList());
         productDetailDto.setCatalogs(product.getProductCatalogs().stream().map(ProductCatalog::getCatalog).map(this::mapToCatalogDto).toList());
         productDetailDto.setExchangeAblePoints(product.getProductPoints().stream().map(this::mapToProductPointDto).toList());
         productDetailDto.setTotalSold(product.getTotalSold());
@@ -43,16 +43,17 @@ public class ProductDetailMapper {
         productDetailDto.setInitialCash(product.getInitialCash());
         productDetailDto.setExpirationDate(product.getExpirationDate());
         productDetailDto.setProductType(product.getProductType());
+        productDetailDto.setProductTypeDescription(product.getProductType().getTextForCurrentLan());
         productDetailDto.setTotalReview(product.getTotalReview());
         productDetailDto.setReviews(product.getProductReviews().stream().map(this::mapToProductReviewDto).toList());
         return productDetailDto;
     }
 
-    public ProductImageDto mapToProductImageDto(ProductImage entity) {
+    public ProductImageDto mapToProductImageDto(ProductGallery entity) {
         ProductImageDto dto = new ProductImageDto();
         dto.setId(entity.getId());
-        dto.setImageUrl(entity.getImageUrl());
-        dto.setIsMainImg(entity.getIsMainImg());
+        dto.setImageUrl(entity.getFileUrl());
+        dto.setIsMainImg(entity.getIsMainFile());
         return dto;
     }
 

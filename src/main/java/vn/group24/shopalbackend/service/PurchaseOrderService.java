@@ -4,8 +4,8 @@ import java.util.List;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
 import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
-import vn.group24.shopalbackend.controller.request.EnterprisePurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
+import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
 import vn.group24.shopalbackend.controller.response.customer.CustomerPurchaseOrderDto;
 import vn.group24.shopalbackend.controller.response.enterprise.EnterprisePurchaseOrderDto;
@@ -21,7 +21,7 @@ public interface PurchaseOrderService {
 
     List<CustomerPurchaseOrderDto> getAllPurchaseOrderForCustomer(Customer customer);
 
-    List<EnterprisePurchaseOrderDto> getPurchaseOrderForEnterpriseByCriteria(Enterprise enterprise, EnterprisePurchaseOrderSearchCriteriaRequest criteria);
+    List<EnterprisePurchaseOrderDto> getPurchaseOrderForEnterpriseByCriteria(Enterprise enterprise, PurchaseOrderSearchCriteriaRequest criteria);
 
     EnterprisePurchaseOrderDto getPurchaseOrderDetailForEnterprise(Enterprise enterprise, Integer purchaseOrderId);
 

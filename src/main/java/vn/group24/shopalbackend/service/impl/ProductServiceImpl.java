@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.group24.shopalbackend.controller.request.AdminCreateOrUpdateProductRequest;
 import vn.group24.shopalbackend.controller.request.CustomerProductReviewRequest;
 import vn.group24.shopalbackend.controller.request.ProductSearchCriteriaRequest;
+import vn.group24.shopalbackend.controller.response.admin.CreateOrUpdateProductResponse;
 import vn.group24.shopalbackend.controller.response.common.ProductDto;
 import vn.group24.shopalbackend.controller.response.customer.ProductDetailDto;
 import vn.group24.shopalbackend.domain.CooperationContract;
@@ -26,7 +27,7 @@ import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.Product;
 import vn.group24.shopalbackend.domain.ProductCatalog;
-import vn.group24.shopalbackend.domain.ProductImage;
+import vn.group24.shopalbackend.domain.ProductGallery;
 import vn.group24.shopalbackend.domain.ProductPoint;
 import vn.group24.shopalbackend.domain.ProductReview;
 import vn.group24.shopalbackend.domain.PurchaseOrderDetail;
@@ -70,17 +71,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
 
     @Override
-    public ProductDetailDto getProductDetailForCustomer(Integer productId) {
+    public ProductDetailDto getProductDetail(Integer productId) {
         Product product = productRepository.getProductDetailById(productId);
-        if (product == null) {
-            throw new IllegalArgumentException(String.format("Can not found product with id = %s", productId));
-        }
-        return productDetailMapper.mapToProductDetailDto(product);
-    }
-
-    @Override
-    public ProductDetailDto getProductDetailForAdmin(Integer productId) {
-        Product product = productRepository.findById(productId).orElseGet(() -> null);
         if (product == null) {
             throw new IllegalArgumentException(String.format("Can not found product with id = %s", productId));
         }
@@ -167,7 +159,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public String createOrUpdateProduct(AdminCreateOrUpdateProductRequest request, MultipartFile[] images) throws IOException {
+    public CreateOrUpdateProductResponse createOrUpdateProduct(AdminCreateOrUpdateProductRequest request, MultipartFile[] images) throws IOException {
         if (request.getProductId() == null) { //case create
             validateProductInfo(request);
             Product newProduct = new Product();
@@ -183,18 +175,22 @@ public class ProductServiceImpl implements ProductService {
             newProduct.setTotalSold(0);
             newProduct.setTotalReview(0);
             for (int i = 0; i < images.length; i++) {
-                ProductImage newProductImage = new ProductImage();
-                newProductImage.setProduct(newProduct);
-                newProductImage.setImageUrl(FileUtils.saveFileWithRandomName(images[i], Constants.PRODUCT_IMAGE_DIRECTORY));
-                newProductImage.setIsMainImg(i == 0 ? Boolean.TRUE : Boolean.FALSE);
-                newProduct.addProductImage(newProductImage);
+                ProductGallery newProductGallery = new ProductGallery();
+                newProductGallery.setProduct(newProduct);
+                newProductGallery.setFileUrl(FileUtils.saveFileWithRandomName(images[i], Constants.PRODUCT_IMAGE_DIRECTORY));
+                newProductGallery.setIsMainFile(i == 0 ? Boolean.TRUE : Boolean.FALSE);
+                newProduct.addProductGallery(newProductGallery);
             }
             newProduct.setProductType(request.getProductType());
             ProductCatalog newProductCatalog = new ProductCatalog();
             newProductCatalog.setCatalog(catalogRepository.findById(request.getCatalogId()).orElseGet(() -> null));
             newProduct.addProductCatalog(newProductCatalog);
             productRepository.save(newProduct);
-            return "Create new Product successfully";
+            return CreateOrUpdateProductResponse.builder()
+                    .message("Create new Product successfully")
+                    .productId(newProduct.getId())
+                    .sku(newProduct.getSku())
+                    .build();
         } else { // create update
             return null;
         }

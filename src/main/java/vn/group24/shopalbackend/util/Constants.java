@@ -19,7 +19,7 @@ public class Constants {
     public static final String ACCEPT_ENTERPRISE_COOPERATION_REQUEST_TEMPLATE = "accept-enterprise-cooperation-request-template";
     public static final String VERIFY_CUSTOMER_EMAIL_TEMPLATE = "verify-customer-email-template";
 
-    private static Language CURRENT_LANGUAGE = Language.VN;
+    private static Language CURRENT_LANGUAGE = Language.EN;
 
     public static void setCurrentLanguage(Language language) {
         CURRENT_LANGUAGE = language;

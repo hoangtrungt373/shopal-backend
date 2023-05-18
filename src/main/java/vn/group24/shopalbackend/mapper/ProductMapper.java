@@ -10,7 +10,7 @@ import vn.group24.shopalbackend.controller.response.common.ProductDto;
 import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.Product;
-import vn.group24.shopalbackend.domain.ProductImage;
+import vn.group24.shopalbackend.domain.ProductGallery;
 import vn.group24.shopalbackend.domain.ProductPoint;
 
 /**
@@ -31,13 +31,13 @@ public class ProductMapper {
             productDto.setProductStatus(product.getProductStatus());
             productDto.setProductStatusDescription(product.getProductStatus().getTextForCurrentLan());
             productDto.setTotalSold(product.getTotalSold());
-            productDto.setMainImgUrl(product.getProductImages().stream()
-                    .filter(ProductImage::getIsMainImg)
+            productDto.setMainImgUrl(product.getProductGalleries().stream()
+                    .filter(ProductGallery::getIsMainFile)
                     .findFirst()
-                    .map(ProductImage::getImageUrl)
-                    .orElseGet(() -> product.getProductImages().stream()
+                    .map(ProductGallery::getFileUrl)
+                    .orElseGet(() -> product.getProductGalleries().stream()
                             .findAny()
-                            .map(ProductImage::getImageUrl)
+                            .map(ProductGallery::getFileUrl)
                             .orElseGet(() -> null)));
             productDto.setExchangeAblePoints(product.getProductPoints().stream()
                     .map(this::mapToProductPointDto).toList());
@@ -45,6 +45,7 @@ public class ProductMapper {
             productDto.setExpirationDate(product.getExpirationDate());
             productDto.setInitialCash(product.getInitialCash());
             productDto.setProductType(product.getProductType());
+            productDto.setProductTypeDescription(product.getProductType().getTextForCurrentLan());
             return productDto;
         }).collect(Collectors.toList());
     }

@@ -71,4 +71,16 @@ public class ProductReview extends AbstractAuditableEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentReview")
     private Set<ProductReview> childReviews = new HashSet<>();
+
+    public ProductReview copy(ProductReview productReview) {
+        ProductReview copy = new ProductReview();
+        copy.setPurchaseOrderDetail(productReview.getPurchaseOrderDetail());
+        copy.setCustomer(productReview.getCustomer());
+        copy.setContent(productReview.getContent());
+        copy.setImageUrls(productReview.getImageUrls());
+        copy.setAmountLike(productReview.getAmountLike());
+        copy.setReviewType(productReview.getReviewType());
+        copy.setReviewDate(productReview.getReviewDate());
+        return copy;
+    }
 }

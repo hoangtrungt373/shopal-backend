@@ -17,9 +17,7 @@ import vn.group24.shopalbackend.domain.QEnterprise;
 import vn.group24.shopalbackend.domain.QProduct;
 import vn.group24.shopalbackend.domain.QProductCatalog;
 import vn.group24.shopalbackend.domain.QProductPoint;
-import vn.group24.shopalbackend.domain.enums.ProductStatus;
 import vn.group24.shopalbackend.repository.ProductRepositoryCustom;
-import vn.group24.shopalbackend.security.domain.enums.UserRole;
 
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
@@ -35,12 +33,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     @Override
     public Product getProductDetailById(Integer productId) {
-        BooleanExpression condition = qProduct.id.eq(productId)
-                .and(qProductPoint.active.isTrue());
+        BooleanExpression condition = qProduct.id.eq(productId);
 
         return new JPAQuery<Product>(em)
                 .from(qProduct)
-                .leftJoin(qProduct.productImages).fetchJoin()
+                .leftJoin(qProduct.productGalleries).fetchJoin()
 
                 .leftJoin(qProduct.productPoints, qProductPoint).fetchJoin()
                 .leftJoin(qProductPoint.enterprise).fetchJoin()
@@ -58,7 +55,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         JPAQuery<Product> query = new JPAQuery<Product>(em)
                 .from(qProduct)
-                .leftJoin(qProduct.productImages).fetchJoin()
+                .leftJoin(qProduct.productGalleries).fetchJoin()
 
                 .leftJoin(qProduct.productPoints, qProductPoint).fetchJoin()
                 .leftJoin(qProductPoint.enterprise, qEnterprise).fetchJoin()
@@ -81,7 +78,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         JPAQuery<Integer> query = new JPAQuery<Product>(em)
                 .select(qProduct.id)
                 .from(qProduct)
-                .leftJoin(qProduct.productImages)
+                .leftJoin(qProduct.productGalleries)
 
                 .leftJoin(qProduct.productPoints, qProductPoint)
                 .leftJoin(qProductPoint.enterprise, qEnterprise)
@@ -98,9 +95,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     private BooleanExpression buildSearchCriteria(ProductSearchCriteriaRequest criteria) {
         BooleanExpression condition = qProduct.id.isNotNull();
 
-        if (UserRole.CUSTOMER == criteria.getUserRole()) {
-            condition = condition.and(qProductPoint.active.isTrue());
-            condition = condition.and(qProduct.productStatus.eq(ProductStatus.ACTIVE));
+        if (criteria.getProductId() != null) {
+            condition = condition.and(qProduct.id.eq(criteria.getProductId()));
         }
 
         if (CollectionUtils.isNotEmpty(criteria.getCatalogIdList())) {
@@ -121,6 +117,42 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
             condition = condition.and(qProduct.productName.containsIgnoreCase(criteria.getKeyword())
                     .or(qCatalog.catalogName.containsIgnoreCase(criteria.getKeyword())
                             .or(qParentCatalog.catalogName.containsIgnoreCase(criteria.getKeyword()))));
+        }
+
+        if (StringUtils.isNotBlank(criteria.getSku())) {
+            condition = condition.and(qProduct.sku.eq(criteria.getSku()));
+        }
+
+        if (criteria.getProductStatus() != null) {
+            condition = condition.and(qProduct.productStatus.eq(criteria.getProductStatus()));
+        }
+
+        if (criteria.getProductType() != null) {
+            condition = condition.and(qProduct.productType.eq(criteria.getProductType()));
+        }
+
+        if (criteria.getInputDateFrom() != null) {
+            condition = condition.and(qProduct.inputDate.goe(criteria.getInputDateFrom()));
+        }
+
+        if (criteria.getInputDateTo() != null) {
+            condition = condition.and(qProduct.inputDate.loe(criteria.getInputDateTo()));
+        }
+
+        if (criteria.getExpirationDateFrom() != null) {
+            condition = condition.and(qProduct.expirationDate.goe(criteria.getExpirationDateFrom()));
+        }
+
+        if (criteria.getExpirationDateTo() != null) {
+            condition = condition.and(qProduct.expirationDate.loe(criteria.getExpirationDateTo()));
+        }
+
+        if (criteria.getInitialCashFrom() != null) {
+            condition = condition.and(qProduct.initialCash.goe(criteria.getInitialCashFrom()));
+        }
+
+        if (criteria.getInitialCashTo() != null) {
+            condition = condition.and(qProduct.initialCash.loe(criteria.getInitialCashTo()));
         }
 
         return condition;

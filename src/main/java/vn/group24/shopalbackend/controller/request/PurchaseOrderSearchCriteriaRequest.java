@@ -1,6 +1,7 @@
 package vn.group24.shopalbackend.controller.request;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +13,9 @@ import vn.group24.shopalbackend.domain.enums.OrderStatus;
  */
 @Getter
 @Setter
-public class EnterprisePurchaseOrderSearchCriteriaRequest extends AbstractSearchCriteria {
-    private LocalDate startDate;
-    private LocalDate endDate;
+public class PurchaseOrderSearchCriteriaRequest extends AbstractSearchCriteria {
+    private LocalDate orderDateFrom;
+    private LocalDate orderDateTo;
+    private List<Integer> enterpriseIds;
     private OrderStatus orderStatus;
 }

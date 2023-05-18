@@ -34,7 +34,7 @@ public class ProductCartRepositoryImpl implements ProductCartRepositoryCustom {
                 .leftJoin(qProductCart.productPoint, qProductPoint).fetchJoin()
                 .leftJoin(qProductPoint.enterprise).fetchJoin()
                 .leftJoin(qProductPoint.product, qProduct).fetchJoin()
-                .leftJoin(qProduct.productImages).fetchJoin()
+                .leftJoin(qProduct.productGalleries).fetchJoin()
 
                 .where(condition)
                 .fetch();

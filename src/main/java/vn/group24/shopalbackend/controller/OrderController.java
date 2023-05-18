@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
 import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
-import vn.group24.shopalbackend.controller.request.EnterprisePurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
+import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
 import vn.group24.shopalbackend.controller.response.customer.CustomerPurchaseOrderDto;
 import vn.group24.shopalbackend.controller.response.enterprise.EnterprisePurchaseOrderDto;
@@ -50,7 +50,7 @@ public class OrderController extends AbstractController {
 
     @PostMapping("/current-enterprise/customer-order/get-by-criteria")
 //    @PreAuthorize("hasRole('ENTERPRISE_MANAGER')")
-    public ResponseEntity<List<EnterprisePurchaseOrderDto>> getPurchaseOrderForCurrentEnterpriseByCriteria(@RequestBody EnterprisePurchaseOrderSearchCriteriaRequest criteria) {
+    public ResponseEntity<List<EnterprisePurchaseOrderDto>> getPurchaseOrderForCurrentEnterpriseByCriteria(@RequestBody PurchaseOrderSearchCriteriaRequest criteria) {
         List<EnterprisePurchaseOrderDto> enterprisePurchaseOrderDtos = purchaseOrderService.getPurchaseOrderForEnterpriseByCriteria(userUtils.getAuthenticateEnterprise(), criteria);
         return ResponseEntity.ok().body(enterprisePurchaseOrderDtos);
     }
