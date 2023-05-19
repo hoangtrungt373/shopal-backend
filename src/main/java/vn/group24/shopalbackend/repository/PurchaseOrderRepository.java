@@ -12,8 +12,6 @@ import vn.group24.shopalbackend.domain.PurchaseOrder;
  * @author ttg
  */
 @Repository
-public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Integer> {
+public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Integer>, PurchaseOrderRepositoryCustom {
     List<PurchaseOrder> getByCustomerId(Integer customerId);
-
-    List<PurchaseOrder> getByEnterpriseId(Integer enterpriseId);
 }

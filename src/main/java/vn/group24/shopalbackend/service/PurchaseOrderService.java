@@ -7,8 +7,7 @@ import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRe
 import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
-import vn.group24.shopalbackend.controller.response.customer.CustomerPurchaseOrderDto;
-import vn.group24.shopalbackend.controller.response.enterprise.EnterprisePurchaseOrderDto;
+import vn.group24.shopalbackend.controller.response.enterprise.PurchaseOrderDto;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Enterprise;
 
@@ -19,11 +18,9 @@ public interface PurchaseOrderService {
 
     void createNewPurchaseOrderForCustomer(Customer customer, List<CreateNewPurchaseOrderRequest> createNewPurchaseOrderRequests);
 
-    List<CustomerPurchaseOrderDto> getAllPurchaseOrderForCustomer(Customer customer);
+    List<PurchaseOrderDto> getPurchaseOrderByCriteria(PurchaseOrderSearchCriteriaRequest criteria);
 
-    List<EnterprisePurchaseOrderDto> getPurchaseOrderForEnterpriseByCriteria(Enterprise enterprise, PurchaseOrderSearchCriteriaRequest criteria);
-
-    EnterprisePurchaseOrderDto getPurchaseOrderDetailForEnterprise(Enterprise enterprise, Integer purchaseOrderId);
+    PurchaseOrderDto getPurchaseOrderDetailForEnterprise(Enterprise enterprise, Integer purchaseOrderId);
 
     List<OrderStatusDto> getAllOrderStatus();
 

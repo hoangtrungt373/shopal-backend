@@ -1,9 +1,7 @@
 package vn.group24.shopalbackend.service.impl;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,8 +22,7 @@ import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRe
 import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
-import vn.group24.shopalbackend.controller.response.customer.CustomerPurchaseOrderDto;
-import vn.group24.shopalbackend.controller.response.enterprise.EnterprisePurchaseOrderDto;
+import vn.group24.shopalbackend.controller.response.enterprise.PurchaseOrderDto;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.Membership;
@@ -36,11 +32,13 @@ import vn.group24.shopalbackend.domain.PurchaseOrder;
 import vn.group24.shopalbackend.domain.PurchaseOrderDetail;
 import vn.group24.shopalbackend.domain.enums.DeliveryStatus;
 import vn.group24.shopalbackend.domain.enums.OrderStatus;
-import vn.group24.shopalbackend.mapper.PurchaseOrderMapper;
+import vn.group24.shopalbackend.mapper.admin.AdminPurchaseOrderMapper;
+import vn.group24.shopalbackend.mapper.customer.CustomerPurchaseOrderMapper;
 import vn.group24.shopalbackend.repository.MembershipRepository;
 import vn.group24.shopalbackend.repository.ProductCartRepository;
 import vn.group24.shopalbackend.repository.ProductRepository;
 import vn.group24.shopalbackend.repository.PurchaseOrderRepository;
+import vn.group24.shopalbackend.security.domain.enums.UserRole;
 import vn.group24.shopalbackend.service.PurchaseOrderService;
 import vn.group24.shopalbackend.util.Validator;
 
@@ -62,7 +60,9 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     private ProductRepository productRepository;
 
     @Autowired
-    private PurchaseOrderMapper purchaseOrderMapper;
+    private CustomerPurchaseOrderMapper customerPurchaseOrderMapper;
+    @Autowired
+    private AdminPurchaseOrderMapper adminPurchaseOrderMapper;
 
     @Override
     public void createNewPurchaseOrderForCustomer(Customer customer, List<CreateNewPurchaseOrderRequest> createNewPurchaseOrderRequests) {
@@ -139,43 +139,31 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Override
-    public List<CustomerPurchaseOrderDto> getAllPurchaseOrderForCustomer(Customer customer) {
-        // TODO: fetch join this
-        List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.getByCustomerId(customer.getId());
-        return purchaseOrderMapper.mapToCustomerPurchaseOrderDtos(purchaseOrders);
+    public List<PurchaseOrderDto> getPurchaseOrderByCriteria(PurchaseOrderSearchCriteriaRequest criteria) {
+        List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.getByCriteria(criteria);
+
+        if (StringUtils.isNotBlank(criteria.getProductSku())) {
+            purchaseOrders = purchaseOrders.stream().filter(po -> po.getPurchaseOrderDetails().stream().anyMatch(pod -> pod.getProduct().getSku().equals(criteria.getProductSku()))).toList();
+        }
+
+        purchaseOrders = purchaseOrders.stream()
+                .sorted(Comparator.comparing(PurchaseOrder::getOrderDate).reversed()
+                        .thenComparing(PurchaseOrder::getOrderStatus))
+                .toList();
+
+        if (UserRole.CUSTOMER == criteria.getUserRole()) {
+            return customerPurchaseOrderMapper.mapToPurchaseOrderDtos(purchaseOrders);
+        } else {
+            return adminPurchaseOrderMapper.mapToPurchaseOrderDtos(purchaseOrders);
+        }
     }
 
     @Override
-    public List<EnterprisePurchaseOrderDto> getPurchaseOrderForEnterpriseByCriteria(Enterprise enterprise, PurchaseOrderSearchCriteriaRequest criteria) {
-        List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.getByEnterpriseId(enterprise.getId()).stream()
-                .filter(po -> getPurchaseOrderPredicate(criteria).test(po))
-                .sorted(Comparator.comparing(PurchaseOrder::getOrderDate).reversed()).toList();
-        return purchaseOrderMapper.mapToEnterprisePurchaseOrderDtos(purchaseOrders);
-    }
-
-    private Predicate<PurchaseOrder> getPurchaseOrderPredicate(PurchaseOrderSearchCriteriaRequest criteria) {
-        if (criteria.getOrderDateFrom() == null) {
-            criteria.setOrderDateFrom(LocalDate.MIN);
-        }
-        if (criteria.getOrderDateTo() == null) {
-            criteria.setOrderDateTo(LocalDate.MAX);
-        }
-        Predicate<PurchaseOrder> predicate = po -> !po.getOrderDate().isBefore(LocalDateTime.of(criteria.getOrderDateFrom(), LocalTime.MIN)) &&
-                !po.getOrderDate().isAfter(LocalDateTime.of(criteria.getOrderDateTo(), LocalTime.MAX));
-
-        if (criteria.getOrderStatus() != null) {
-            predicate = predicate.and(po -> criteria.getOrderStatus() == po.getOrderStatus());
-        }
-
-        return predicate;
-    }
-
-    @Override
-    public EnterprisePurchaseOrderDto getPurchaseOrderDetailForEnterprise(Enterprise enterprise, Integer purchaseOrderId) {
+    public PurchaseOrderDto getPurchaseOrderDetailForEnterprise(Enterprise enterprise, Integer purchaseOrderId) {
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(purchaseOrderId).orElseGet(() -> null);
         Validate.isTrue(purchaseOrder != null, "Can not found Order with id = %s", purchaseOrderId);
         Validate.isTrue(purchaseOrder.getEnterprise().equals(enterprise), "Current order does belong to request enterprise");
-        return purchaseOrderMapper.mapToEnterprisePurchaseOrderDtos(Collections.singletonList(purchaseOrder)).get(0);
+        return adminPurchaseOrderMapper.mapToPurchaseOrderDtos(Collections.singletonList(purchaseOrder)).get(0);
     }
 
     @Override

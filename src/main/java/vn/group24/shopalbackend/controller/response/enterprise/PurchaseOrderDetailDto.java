@@ -1,10 +1,11 @@
-package vn.group24.shopalbackend.controller.response.customer;
+package vn.group24.shopalbackend.controller.response.enterprise;
 
 import java.math.BigDecimal;
 
 import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.controller.response.common.AbstractDto;
+import vn.group24.shopalbackend.controller.response.common.ProductDto;
 
 /**
  *
@@ -13,16 +14,11 @@ import vn.group24.shopalbackend.controller.response.common.AbstractDto;
 @Getter
 @Setter
 public class PurchaseOrderDetailDto extends AbstractDto {
-    private Integer purchaseOrderDetailId;
+    private ProductDto productDto;
     private Integer productId;
-    private String productName;
-    private String sku;
-    private String mainImgUrl;
-    private String mainImgText;
     private BigDecimal pointExchange;
     private Integer amount;
     private BigDecimal totalPointExchange;
-    private BigDecimal initialCash;
     private BigDecimal totalCash;
     private Boolean isReview;
 }

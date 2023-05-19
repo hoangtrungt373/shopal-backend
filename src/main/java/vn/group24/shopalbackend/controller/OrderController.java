@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +16,7 @@ import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRe
 import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
-import vn.group24.shopalbackend.controller.response.customer.CustomerPurchaseOrderDto;
-import vn.group24.shopalbackend.controller.response.enterprise.EnterprisePurchaseOrderDto;
+import vn.group24.shopalbackend.controller.response.enterprise.PurchaseOrderDto;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.service.PurchaseOrderService;
 
@@ -41,26 +39,12 @@ public class OrderController extends AbstractController {
         return ResponseEntity.ok().body(String.format("Create new order for customer %s successfully", currentCustomer.getContactEmail()));
     }
 
-    @GetMapping("/current-customer/order-history/get-all")
-    @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<List<CustomerPurchaseOrderDto>> getAllPurchaseOrderForCurrentCustomer() {
-        List<CustomerPurchaseOrderDto> customerPurchaseOrderDtos = purchaseOrderService.getAllPurchaseOrderForCustomer(userUtils.getAuthenticateCustomer());
-        return ResponseEntity.ok().body(customerPurchaseOrderDtos);
-    }
-
-    @PostMapping("/current-enterprise/customer-order/get-by-criteria")
-//    @PreAuthorize("hasRole('ENTERPRISE_MANAGER')")
-    public ResponseEntity<List<EnterprisePurchaseOrderDto>> getPurchaseOrderForCurrentEnterpriseByCriteria(@RequestBody PurchaseOrderSearchCriteriaRequest criteria) {
-        List<EnterprisePurchaseOrderDto> enterprisePurchaseOrderDtos = purchaseOrderService.getPurchaseOrderForEnterpriseByCriteria(userUtils.getAuthenticateEnterprise(), criteria);
-        return ResponseEntity.ok().body(enterprisePurchaseOrderDtos);
-    }
-
-    @GetMapping("/current-enterprise/customer-order/get-detail/{purchaseOrderId}")
+    @PostMapping("/get-by-crireria")
 //    @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<EnterprisePurchaseOrderDto> getPurchaseOrderDetailForCurrentEnterprise(@PathVariable Integer purchaseOrderId) {
-        EnterprisePurchaseOrderDto enterprisePurchaseOrderDto = purchaseOrderService.getPurchaseOrderDetailForEnterprise(userUtils.getAuthenticateEnterprise(), purchaseOrderId);
-        return ResponseEntity.ok().body(enterprisePurchaseOrderDto);
+    public ResponseEntity<List<PurchaseOrderDto>> getPurchaseOrderByCriteria(@RequestBody PurchaseOrderSearchCriteriaRequest request) {
+        return ResponseEntity.ok().body(purchaseOrderService.getPurchaseOrderByCriteria(request));
     }
+
 
     @PostMapping("/current-enterprise/customer-order/update-order-status")
 //    @PreAuthorize("hasRole('CUSTOMER')")

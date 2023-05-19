@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.controller.response.common.AbstractDto;
 import vn.group24.shopalbackend.controller.response.common.CustomerDto;
-import vn.group24.shopalbackend.controller.response.customer.PurchaseOrderDetailDto;
+import vn.group24.shopalbackend.controller.response.common.EnterpriseDto;
 import vn.group24.shopalbackend.domain.enums.DeliveryStatus;
 import vn.group24.shopalbackend.domain.enums.OrderStatus;
 
@@ -19,10 +19,9 @@ import vn.group24.shopalbackend.domain.enums.OrderStatus;
  */
 @Getter
 @Setter
-public class EnterprisePurchaseOrderDto extends AbstractDto {
-    private String customerContactEmail;
-    private String customerFullName;
+public class PurchaseOrderDto extends AbstractDto {
     private CustomerDto customer;
+    private EnterpriseDto enterprise;
     private BigDecimal orderTotalPointExchange;
     private LocalDateTime orderDate;
     private DeliveryStatus deliveryStatus;
