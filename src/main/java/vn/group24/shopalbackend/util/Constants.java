@@ -17,9 +17,9 @@ public class Constants {
     public static final String CUSTOMER_AVATAR_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\img\\customer";
 
     public static final String ACCEPT_ENTERPRISE_COOPERATION_REQUEST_TEMPLATE = "accept-enterprise-cooperation-request-template";
-    public static final String VERIFY_CUSTOMER_EMAIL_TEMPLATE = "verify-customer-email-template";
+    public static final String VERIFY_EMAIL_TEMPLATE = "verify-email-template";
 
-    private static Language CURRENT_LANGUAGE = Language.EN;
+    private static Language CURRENT_LANGUAGE = Language.VN;
 
     public static void setCurrentLanguage(Language language) {
         CURRENT_LANGUAGE = language;

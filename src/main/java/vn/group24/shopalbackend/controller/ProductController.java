@@ -30,7 +30,7 @@ public class ProductController extends AbstractController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/customer/get-detail/{productId}")
+    @GetMapping("/customer/{productId}")
     public ResponseEntity<ProductDetailDto> getProductDetail(@PathVariable Integer productId) {
         ProductDetailDto productDetailDto = productService.getProductDetail(productId);
         return ResponseEntity.ok().body(productDetailDto);

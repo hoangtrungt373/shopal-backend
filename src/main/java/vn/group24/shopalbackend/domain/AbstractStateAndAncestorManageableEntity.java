@@ -25,20 +25,20 @@ public class AbstractStateAndAncestorManageableEntity extends AbstractAuditableE
 
     @NotNull
     @Column(name = "ID_ORIGIN", nullable = false)
-    private Integer origineId = NOT_YET_VALID_ID_ORIGINE;
+    private Integer originId = NOT_YET_VALID_ID_ORIGINE;
 
     @PostPersist
     private void onPostPersist() {
         /**
-         * When the entity is created for the first time, its {@link origineId} id is its {@link id}.
-         * And then when this entity is copied to a new generation, the {@link origineId} still remain unchanged.
+         * When the entity is created for the first time, its {@link originId} id is its {@link id}.
+         * And then when this entity is copied to a new generation, the {@link originId} still remain unchanged.
          */
-        if (Objects.equals(origineId, NOT_YET_VALID_ID_ORIGINE)) {
+        if (Objects.equals(originId, NOT_YET_VALID_ID_ORIGINE)) {
             /**
              * Update origineId to the persisted object, and then this change will be flushed during transaction commit.
              * Obviously the {@link version} will be increased by 1 in this case.
              */
-            origineId = getId();
+            originId = getId();
         }
     }
 

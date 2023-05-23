@@ -5,7 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import vn.group24.shopalbackend.controller.request.EnterpriseRegisterRequest;
-import vn.group24.shopalbackend.controller.response.admin.EnterpriseRegisterRequestAnnDto;
+import vn.group24.shopalbackend.domain.dto.EnterpriseRegisterRequestAnn;
 
 /**
  *
@@ -15,7 +15,7 @@ public interface EnterpriseRegisterRequestService {
 
     String handleReceiveEnterpriseRegisterRequest(EnterpriseRegisterRequest request) throws JsonProcessingException;
 
-    List<EnterpriseRegisterRequestAnnDto> getAllEnterpriseRegisterRequest();
+    List<EnterpriseRegisterRequestAnn> getAllEnterpriseRegisterRequest();
 
     String handleAcceptEnterpriseCooperationRequest(Integer requestId);
 }

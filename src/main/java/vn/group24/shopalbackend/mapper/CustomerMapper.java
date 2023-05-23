@@ -10,7 +10,7 @@ import vn.group24.shopalbackend.domain.Customer;
  * @author ttg
  */
 @Component
-public class CustomerMapper {
+public class CustomerMapper extends AbstractMapper {
 
     public CustomerDto mapToCustomerDto(Customer customer) {
         CustomerDto customerDto = new CustomerDto();
@@ -23,7 +23,7 @@ public class CustomerMapper {
         customerDto.setBirthDate(customer.getBirthDate());
         customerDto.setNickName(customer.getNickName());
         customerDto.setGender(customer.getGender());
-        customerDto.setGenderDescription(customer.getGender().getTextForCurrentLan());
+        customerDto.setGenderDescription(getTextForCurrentLan(customer.getGender()));
         return customerDto;
     }
 }

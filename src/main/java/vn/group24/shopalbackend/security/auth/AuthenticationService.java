@@ -1,7 +1,9 @@
 package vn.group24.shopalbackend.security.auth;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import vn.group24.shopalbackend.controller.request.EmailDetailRequest;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.repository.CustomerRepository;
 import vn.group24.shopalbackend.repository.EnterpriseRepository;
@@ -23,6 +26,8 @@ import vn.group24.shopalbackend.security.domain.enums.TokenType;
 import vn.group24.shopalbackend.security.domain.enums.UserRole;
 import vn.group24.shopalbackend.security.repository.UserAccountRepository;
 import vn.group24.shopalbackend.security.repository.UserAccountTokenRepository;
+import vn.group24.shopalbackend.service.EmailService;
+import vn.group24.shopalbackend.util.Constants;
 import vn.group24.shopalbackend.util.Validator;
 
 @Service
@@ -36,6 +41,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         Validator validator = new Validator();
@@ -61,6 +67,7 @@ public class AuthenticationService {
         saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .userRole(request.getRole())
                 .build();
     }
 
@@ -101,6 +108,24 @@ public class AuthenticationService {
                 .build();
     }
 
+    public String sendVerifyEmail(String email) {
+        String otp = vn.group24.shopalbackend.util.StringUtils.generateOtp();
+
+        EmailDetailRequest emailDetailRequest = new EmailDetailRequest();
+        emailDetailRequest.setRecipient(email);
+        emailDetailRequest.setSubject("Verify email register");
+        emailDetailRequest.setTemplate(Constants.VERIFY_EMAIL_TEMPLATE);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("code", otp);
+        emailDetailRequest.setProperties(properties);
+        emailService.sendEmail(emailDetailRequest);
+        return otp;
+    }
+
+    public boolean checkEmailExists(String email) {
+        return userRepository.existsByEmail(email.replace("\"", ""));
+    }
+
     private void saveUserToken(UserAccount user, String jwtToken) {
         UserAccountToken token = UserAccountToken.builder()
                 .userAccount(user)
@@ -124,14 +149,14 @@ public class AuthenticationService {
     }
 
     private Validator validatePreconditionField(AuthenticationRequest request, Validator validator) {
-        validator.notNull(request.getEmail(), "Email can not be blank");
+        validator.notBlank(request.getEmail(), "Email can not be blank");
         validator.notBlank(request.getPassword(), "Password can not be blank");
         validator.isTrue(request.getRole() != null && StringUtils.isNotBlank(request.getRole().name()), "Role can not be blank");
         return validator;
     }
 
     private Validator validatePreconditionField(RegisterRequest request, Validator validator) {
-        validator.notNull(request.getEmail(), "Email can not be blank");
+        validator.notBlank(request.getEmail(), "Email can not be blank");
         validator.notBlank(request.getPassword(), "Password can not be blank");
         validator.isTrue(request.getRole() != null && StringUtils.isNotBlank(request.getRole().name()), "Role can not be blank");
         return validator;

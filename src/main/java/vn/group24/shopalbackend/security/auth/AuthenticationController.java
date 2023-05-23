@@ -17,12 +17,22 @@ public class AuthenticationController extends AbstractController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthenticationResponse> handleUserRegister(@RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> handleUserAuthenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
+    }
+
+    @PostMapping("/send-verify-email")
+    public ResponseEntity<String> sendVerifyEmail(@RequestBody String email) {
+        return ResponseEntity.ok(authenticationService.sendVerifyEmail(email));
+    }
+
+    @PostMapping("/check-email-exists")
+    public ResponseEntity<Boolean> checkEmailExists(@RequestBody String email) {
+        return ResponseEntity.ok(authenticationService.checkEmailExists(email));
     }
 }

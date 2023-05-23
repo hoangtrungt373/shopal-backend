@@ -11,4 +11,5 @@ import lombok.Setter;
 @Setter
 public class AbstractDto {
     private Integer id;
+    private Integer originId;
 }

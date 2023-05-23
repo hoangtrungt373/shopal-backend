@@ -131,7 +131,7 @@ public class Product extends AbstractStateAndAncestorManageableEntity {
         copy.setTotalSold(product.getTotalSold());
         copy.setTotalReview(product.getTotalReview());
         copy.setProductType(product.getProductType());
-        copy.setOrigineId(getOrigineId());
+        copy.setOriginId(getOriginId());
         product.getProductGalleries().forEach(pg -> copy.addProductGallery(pg.copy(pg)));
         product.getProductCatalogs().forEach(pc -> copy.addProductCatalog(pc.copy(pc)));
         product.getProductPoints().forEach(pp -> copy.addProductPoint(pp.copy(pp)));

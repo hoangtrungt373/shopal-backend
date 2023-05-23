@@ -43,5 +43,4 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     public List<Announcement> getAnnouncementByCriteria(AnnouncementSearchCriteriaRequest criteria) {
         return announcementRepository.getByCriteria(criteria);
     }
-
 }

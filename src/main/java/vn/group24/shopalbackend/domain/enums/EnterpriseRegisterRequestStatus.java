@@ -5,7 +5,7 @@ package vn.group24.shopalbackend.domain.enums;
  * @author ttg
  */
 public enum EnterpriseRegisterRequestStatus implements AbstractMultilingualEnum<EnterpriseRegisterRequestStatus> {
-    RECEIVED("Đã tiếp nhận", "Rêcived"),
+    RECEIVED("Đã tiếp nhận", "Received"),
     ACCEPT("Chấp nhận", "Accept"),
     VERIFIED("Đã xác minh", "Verified"),
     // TODO: handle case why refuse

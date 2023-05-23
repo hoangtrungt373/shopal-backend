@@ -28,6 +28,7 @@ public class ProductDetailMapper {
     public ProductDetailDto mapToProductDetailDto(Product product) {
         ProductDetailDto productDetailDto = new ProductDetailDto();
         productDetailDto.setId(product.getId());
+        productDetailDto.setOriginId(product.getOriginId());
         productDetailDto.setProductName(product.getProductName());
         productDetailDto.setSku(product.getSku());
         productDetailDto.setProductDescriptionUrl(product.getProductDescriptionUrl());

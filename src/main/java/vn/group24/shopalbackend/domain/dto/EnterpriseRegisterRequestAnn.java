@@ -12,7 +12,7 @@ import vn.group24.shopalbackend.domain.enums.EnterpriseRegisterRequestStatus;
  */
 @Getter
 @Setter
-public class EnterpriseRegisterRequestAnn {
+public class EnterpriseRegisterRequestAnn extends AbstractAnn {
     private String fullName;
     private String position;
     private String workEmail;
@@ -21,6 +21,7 @@ public class EnterpriseRegisterRequestAnn {
     private String enterpriseName;
     private String enterpriseWebsite;
     private EnterpriseRegisterRequestStatus registerRequestStatus;
+    private String registerRequestStatusDescription;
     private LocalDateTime registerDate;
     private LocalDateTime verificationDate;
     private String tempPasswordGenerate;

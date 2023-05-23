@@ -89,7 +89,7 @@ public class CustomerServiceImpl implements CustomerService {
         EmailDetailRequest emailDetailRequest = new EmailDetailRequest();
         emailDetailRequest.setRecipient(newEmail);
         emailDetailRequest.setSubject("Change email address");
-        emailDetailRequest.setTemplate(Constants.VERIFY_CUSTOMER_EMAIL_TEMPLATE);
+        emailDetailRequest.setTemplate(Constants.VERIFY_EMAIL_TEMPLATE);
         Map<String, Object> properties = new HashMap<>();
         properties.put("code", otp);
         emailDetailRequest.setProperties(properties);
