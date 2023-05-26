@@ -26,7 +26,7 @@ public class AdminCreateOrUpdateProductRequest {
     private Integer catalogId;
     private ProductStatus productStatus;
     private ProductType productType;
-    private List<String> imageUrls;
-    //    private MultipartFile[] files;
+    private List<String> imgUrls;
+    private String content;
     private String productDescriptionUrl;
 }

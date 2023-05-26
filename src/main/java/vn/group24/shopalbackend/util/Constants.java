@@ -12,7 +12,10 @@ public class Constants {
     public static final Integer DEFAULT_SEARCH_LIMIT = 1000;
     public static final String INITIAL_CREATE = "Initial";
 
+    public static final String TXT_FILE_EXTENSION = ".txt";
+
     public static final String PRODUCT_IMAGE_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\img\\product";
+    public static final String PRODUCT_CONTENT_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\content\\product";
     public static final String PRODUCT_REVIEW_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\img\\review";
     public static final String CUSTOMER_AVATAR_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\img\\customer";
 

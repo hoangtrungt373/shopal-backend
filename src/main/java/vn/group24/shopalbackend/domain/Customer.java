@@ -26,7 +26,7 @@ import vn.group24.shopalbackend.domain.enums.Gender;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "CUSTOMER_ID"))
-public class Customer extends AbstractAuditableEntity {
+public class Customer extends AbstractGenerationEntity {
 
     @NotNull
     @Column(name = "USER_ACCOUNT_ID")

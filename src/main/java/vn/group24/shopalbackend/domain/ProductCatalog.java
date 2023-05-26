@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "PRODUCT_CATALOG_ID"))
-public class ProductCatalog extends AbstractAuditableEntity {
+public class ProductCatalog extends AbstractGenerationEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,9 +30,10 @@ public class ProductCatalog extends AbstractAuditableEntity {
     @JoinColumn(name = "CATALOG_ID")
     private Catalog catalog;
 
-    public ProductCatalog copy(ProductCatalog productCatalog) {
+    public ProductCatalog copy(Product generation) {
         ProductCatalog copy = new ProductCatalog();
-        copy.setCatalog(productCatalog.getCatalog());
+        copy.setCatalog(getCatalog());
+        copy.setProduct(generation);
         return copy;
     }
 }

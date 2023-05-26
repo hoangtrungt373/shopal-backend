@@ -50,7 +50,6 @@ public class EnterpriseMapper {
         enterpriseCooperationContractDto.setEndDate(cooperationContract.getEndDate());
         enterpriseCooperationContractDto.setContractStatusDescription(cooperationContract.getContractStatus().getTextForCurrentLan());
         enterpriseCooperationContractDto.setCashPerPoint(cooperationContract.getCashPerPoint());
-        enterpriseCooperationContractDto.setUpdateDescription(cooperationContract.getUpdateDescription());
         return enterpriseCooperationContractDto;
     }
 }

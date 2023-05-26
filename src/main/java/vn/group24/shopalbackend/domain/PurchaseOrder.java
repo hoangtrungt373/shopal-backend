@@ -29,7 +29,7 @@ import vn.group24.shopalbackend.domain.enums.OrderStatus;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "PURCHASE_ORDER_ID"))
-public class PurchaseOrder extends AbstractAuditableEntity {
+public class PurchaseOrder extends AbstractGenerationEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

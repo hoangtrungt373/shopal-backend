@@ -2,8 +2,11 @@ package vn.group24.shopalbackend.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
@@ -27,7 +30,7 @@ import vn.group24.shopalbackend.domain.enums.ProductType;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "PRODUCT_ID"))
-public class Product extends AbstractStateAndAncestorManageableEntity {
+public class Product extends AbstractGenerationEntity {
 
     @NotNull
     @Column(name = "PRODUCT_NAME")
@@ -78,8 +81,8 @@ public class Product extends AbstractStateAndAncestorManageableEntity {
     private ProductType productType;
 
     @NotNull
-    @Column(name = "UPDATE_DESCRIPTION")
-    private String updateDescription;
+    @Column(name = "GALLERY_URLS")
+    private String galleryUrls;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<ProductGallery> productGalleries = new HashSet<>();
@@ -95,6 +98,9 @@ public class Product extends AbstractStateAndAncestorManageableEntity {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<PurchaseOrderDetail> purchaseOrderDetails = new HashSet<>();
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ProductCart> productCarts = new HashSet<>();
 
 
     public void addProductGallery(ProductGallery productGallery) {
@@ -117,24 +123,47 @@ public class Product extends AbstractStateAndAncestorManageableEntity {
         productPoint.setProduct(this);
     }
 
-    public Product copy(Product product) {
+    public Product copy() {
         Product copy = new Product();
-        copy.setProductName(product.getProductName());
-        copy.setSku(product.getSku());
-        copy.setQuantityInStock(product.getQuantityInStock());
-        copy.setProductDescriptionUrl(product.getProductDescriptionUrl());
-        copy.setProductStatus(product.getProductStatus());
-        copy.setRating(product.getRating());
-        copy.setInputDate(product.getInputDate());
-        copy.setExpirationDate(product.getExpirationDate());
-        copy.setInitialCash(product.getInitialCash());
-        copy.setTotalSold(product.getTotalSold());
-        copy.setTotalReview(product.getTotalReview());
-        copy.setProductType(product.getProductType());
+        copy.setProductName(getProductName());
+        copy.setSku(getSku());
+        copy.setQuantityInStock(getQuantityInStock());
+        copy.setProductDescriptionUrl(getProductDescriptionUrl());
+        copy.setProductStatus(getProductStatus());
+        copy.setRating(getRating());
+        copy.setInputDate(getInputDate());
+        copy.setExpirationDate(getExpirationDate());
+        copy.setInitialCash(getInitialCash());
+        copy.setTotalSold(getTotalSold());
+        copy.setTotalReview(getTotalReview());
+        copy.setProductType(getProductType());
         copy.setOriginId(getOriginId());
-        product.getProductGalleries().forEach(pg -> copy.addProductGallery(pg.copy(pg)));
-        product.getProductCatalogs().forEach(pc -> copy.addProductCatalog(pc.copy(pc)));
-        product.getProductPoints().forEach(pp -> copy.addProductPoint(pp.copy(pp)));
+        copy.setGalleryUrls(getGalleryUrls());
+        copy.setProductGalleries(getProductGalleries().stream().map(pg -> pg.copy(copy)).collect(Collectors.toSet()));
+        copy.setProductCatalogs(getProductCatalogs().stream().map(pc -> pc.copy(copy)).collect(Collectors.toSet()));
+
+        Map<ProductPoint, ProductPoint> productPointMapByOldAndNewGe = new HashMap<>();
+        getProductPoints().forEach(pp -> {
+            ProductPoint newProductPointGe = pp.copy(copy);
+            productPointMapByOldAndNewGe.put(pp, newProductPointGe);
+        });
+        copy.setProductPoints(new HashSet<>(productPointMapByOldAndNewGe.values()));
+
+        Map<PurchaseOrderDetail, PurchaseOrderDetail> purchaseOrderDetailMapByOldAndNewGe = new HashMap<>();
+        Map<ProductReview, ProductReview> productReviewMapByOldAndNewGeneration = new HashMap<>();
+
+        getPurchaseOrderDetails().forEach(pod -> {
+            PurchaseOrderDetail newPurchaseOrderDetailGe = pod.copy(copy, productPointMapByOldAndNewGe.get(pod.getProductPoint()));
+            purchaseOrderDetailMapByOldAndNewGe.put(pod, newPurchaseOrderDetailGe);
+        });
+
+        getProductReviews().forEach(pr -> {
+            ProductReview newProductReviewGe = pr.copy(copy, purchaseOrderDetailMapByOldAndNewGe.get(pr.getPurchaseOrderDetail()));
+            productReviewMapByOldAndNewGeneration.put(pr, newProductReviewGe);
+        });
+        copy.setPurchaseOrderDetails(new HashSet<>(purchaseOrderDetailMapByOldAndNewGe.values()));
+        copy.setProductReviews(new HashSet<>(productReviewMapByOldAndNewGeneration.values()));
+
         return copy;
     }
 }

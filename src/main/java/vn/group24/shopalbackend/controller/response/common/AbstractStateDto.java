@@ -12,9 +12,7 @@ import vn.group24.shopalbackend.domain.enums.StateMutation;
  */
 @Getter
 @Setter
-public class AbstractDto {
-    private Integer id;
-    private Integer originId;
+public class AbstractStateDto extends AbstractDto {
     private StateMutation state;
     private LocalDateTime dateMutation;
     private String updateDescription;

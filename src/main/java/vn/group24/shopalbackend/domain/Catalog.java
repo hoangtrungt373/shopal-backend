@@ -27,7 +27,7 @@ import vn.group24.shopalbackend.domain.enums.ProductTrendingState;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "CATALOG_ID"))
-public class Catalog extends AbstractAuditableEntity {
+public class Catalog extends AbstractGenerationEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_CATALOG_ID")

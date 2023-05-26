@@ -6,7 +6,7 @@ import vn.group24.shopalbackend.controller.request.ProductSearchCriteriaRequest;
 import vn.group24.shopalbackend.domain.Product;
 
 public interface ProductRepositoryCustom {
-    Product getProductDetailById(Integer productId);
+    Product getDetailById(Integer productId);
 
     List<Product> getByCriteria(ProductSearchCriteriaRequest criteria);
 

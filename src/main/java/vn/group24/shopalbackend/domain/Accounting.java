@@ -30,7 +30,7 @@ import vn.group24.shopalbackend.domain.enums.PaymentStatus;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "ACCOUNTING_ID"))
-public class Accounting extends AbstractAuditableEntity {
+public class Accounting extends AbstractGenerationEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

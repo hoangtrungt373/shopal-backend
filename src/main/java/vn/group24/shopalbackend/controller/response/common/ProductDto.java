@@ -16,7 +16,7 @@ import vn.group24.shopalbackend.domain.enums.ProductType;
  */
 @Getter
 @Setter
-public class ProductDto extends AbstractDto {
+public class ProductDto extends AbstractStateDto {
     private String productName;
     private String sku;
     private Integer quantityInStock;

@@ -24,7 +24,7 @@ import vn.group24.shopalbackend.domain.enums.ContractStatus;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "COOPERATION_CONTRACT_ID"))
-public class CooperationContract extends AbstractStateAndAncestorManageableEntity {
+public class CooperationContract extends AbstractGenerationEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,10 +51,6 @@ public class CooperationContract extends AbstractStateAndAncestorManageableEntit
     @NotNull
     @Column(name = "CASH_PER_POINT")
     private BigDecimal cashPerPoint;
-
-    @NotNull
-    @Column(name = "UPDATE_DESCRIPTION")
-    private String updateDescription;
 
     @NotNull
     @Column(name = "CONTRACT_STATUS")

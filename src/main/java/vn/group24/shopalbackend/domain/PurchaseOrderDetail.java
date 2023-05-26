@@ -3,10 +3,12 @@ package vn.group24.shopalbackend.domain;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,7 +25,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "PURCHASE_ORDER_DETAIL_ID"))
-public class PurchaseOrderDetail extends AbstractAuditableEntity {
+public class PurchaseOrderDetail extends AbstractGenerationEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,8 +61,20 @@ public class PurchaseOrderDetail extends AbstractAuditableEntity {
     @Column(name = "CONTACT_EMAIL")
     private String contactEmail;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "purchaseOrderDetail")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "purchaseOrderDetail", cascade = CascadeType.ALL)
     private Set<ProductReview> productReviews = new HashSet<>();
-    
 
+    public PurchaseOrderDetail copy(Product generation, ProductPoint newProductPointGe) {
+        PurchaseOrderDetail copy = new PurchaseOrderDetail();
+        copy.setPurchaseOrder(getPurchaseOrder());
+        copy.setProduct(generation);
+        copy.setProductPoint(newProductPointGe);
+        copy.setPointExchange(getPointExchange());
+        copy.setAmount(getAmount());
+        copy.setTotalPointExchange(getTotalPointExchange());
+        copy.setTotalCash(getTotalCash());
+        copy.setContactEmail(getContactEmail());
+        copy.setProductReviews(getProductReviews().stream().map(pr -> pr.copy(generation, copy)).collect(Collectors.toSet()));
+        return copy;
+    }
 }

@@ -20,7 +20,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "MEMBERSHIP_ID"))
-public class Membership extends AbstractAuditableEntity {
+public class Membership extends AbstractGenerationEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

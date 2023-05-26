@@ -12,4 +12,4 @@ import vn.group24.shopalbackend.domain.ProductCart;
 @Repository
 public interface ProductCartRepository extends JpaRepository<ProductCart, Integer>, ProductCartRepositoryCustom {
     ProductCart getByCustomerIdAndProductPointId(Integer customerId, Integer productPointId);
-}
+};

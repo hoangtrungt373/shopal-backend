@@ -22,7 +22,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "ENTERPRISE_ID"))
-public class Enterprise extends AbstractAuditableEntity {
+public class Enterprise extends AbstractGenerationEntity {
 
     @NotNull
     @Column(name = "USER_ACCOUNT_ID")

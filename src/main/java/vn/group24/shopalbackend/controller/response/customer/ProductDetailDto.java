@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.controller.response.ProductReviewDto;
-import vn.group24.shopalbackend.controller.response.common.AbstractDto;
+import vn.group24.shopalbackend.controller.response.common.AbstractStateDto;
 import vn.group24.shopalbackend.controller.response.common.CatalogDto;
 import vn.group24.shopalbackend.controller.response.common.ProductImageDto;
 import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
@@ -17,7 +17,7 @@ import vn.group24.shopalbackend.domain.enums.ProductType;
 
 @Getter
 @Setter
-public class ProductDetailDto extends AbstractDto {
+public class ProductDetailDto extends AbstractStateDto {
     private String productName;
     private String sku;
     private Integer quantityInStock;

@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,9 +34,12 @@ import vn.group24.shopalbackend.domain.ProductReview;
 import vn.group24.shopalbackend.domain.PurchaseOrderDetail;
 import vn.group24.shopalbackend.domain.enums.ContractStatus;
 import vn.group24.shopalbackend.domain.enums.ProductReviewType;
+import vn.group24.shopalbackend.domain.enums.ProductStatus;
 import vn.group24.shopalbackend.mapper.ProductDetailMapper;
 import vn.group24.shopalbackend.mapper.ProductMapper;
 import vn.group24.shopalbackend.repository.CatalogRepository;
+import vn.group24.shopalbackend.repository.CooperationContractRepository;
+import vn.group24.shopalbackend.repository.ProductCartRepository;
 import vn.group24.shopalbackend.repository.ProductPointRepository;
 import vn.group24.shopalbackend.repository.ProductRepository;
 import vn.group24.shopalbackend.repository.ProductReviewRepository;
@@ -63,6 +67,10 @@ public class ProductServiceImpl implements ProductService {
     private ProductReviewRepository productReviewRepository;
     @Autowired
     private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
+    @Autowired
+    private CooperationContractRepository cooperationContractRepository;
+    @Autowired
+    private ProductCartRepository productCartRepository;
 
     @Autowired
     private ProductDetailMapper productDetailMapper;
@@ -72,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDetailDto getProductDetail(Integer productId) {
-        Product product = productRepository.getProductDetailById(productId);
+        Product product = productRepository.getDetailById(productId);
         if (product == null) {
             throw new IllegalArgumentException(String.format("Can not found product with id = %s", productId));
         }
@@ -142,7 +150,6 @@ public class ProductServiceImpl implements ProductService {
         newProductPoint.setProduct(existsProduct);
         newProductPoint.setEnterprise(enterprise);
         newProductPoint.setActive(Boolean.TRUE);
-        newProductPoint.setUpdateDescription(Constants.INITIAL_CREATE);
         newProductPoint.setPointExchange(BigDecimalUtils.divide(existsProduct.getInitialCash(), existsCooperationContract.getCashPerPoint(), 0, 2));
         productPointRepository.save(newProductPoint);
         return "Registration to sell product succefully";
@@ -160,13 +167,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public CreateOrUpdateProductResponse createOrUpdateProduct(AdminCreateOrUpdateProductRequest request, MultipartFile[] images) throws IOException {
+        validateProductInfoCaseCreate(request);
         if (request.getProductId() == null) { //case create
-            validateProductInfo(request);
             Product newProduct = new Product();
             newProduct.setSku(StringUtils.isNotBlank(request.getSku()) ? request.getSku() : nextProductSku());
             newProduct.setProductName(request.getProductName());
             newProduct.setQuantityInStock(request.getQuantityInStock());
-            newProduct.setProductDescriptionUrl(request.getProductDescriptionUrl());
             newProduct.setProductStatus(request.getProductStatus());
             newProduct.setRating(BigDecimal.ZERO);
             newProduct.setInputDate(LocalDate.now());
@@ -174,6 +180,8 @@ public class ProductServiceImpl implements ProductService {
             newProduct.setInitialCash(request.getInitialCash());
             newProduct.setTotalSold(0);
             newProduct.setTotalReview(0);
+
+            // save gallery
             for (int i = 0; i < images.length; i++) {
                 ProductGallery newProductGallery = new ProductGallery();
                 newProductGallery.setProduct(newProduct);
@@ -181,18 +189,87 @@ public class ProductServiceImpl implements ProductService {
                 newProductGallery.setIsMainFile(i == 0 ? Boolean.TRUE : Boolean.FALSE);
                 newProduct.addProductGallery(newProductGallery);
             }
+            newProduct.setGalleryUrls(newProduct.getProductGalleries().stream().map(ProductGallery::getFileUrl).collect(Collectors.joining(",")));
+
+            // save content
+            String productDescriptionUrl = newProduct.getSku().concat(Constants.TXT_FILE_EXTENSION);
+            FileUtils.writeFile(request.getContent(), productDescriptionUrl, Constants.PRODUCT_CONTENT_DIRECTORY);
+            newProduct.setProductDescriptionUrl(productDescriptionUrl);
+
             newProduct.setProductType(request.getProductType());
             ProductCatalog newProductCatalog = new ProductCatalog();
             newProductCatalog.setCatalog(catalogRepository.findById(request.getCatalogId()).orElseGet(() -> null));
             newProduct.addProductCatalog(newProductCatalog);
+
             productRepository.save(newProduct);
+
             return CreateOrUpdateProductResponse.builder()
                     .message("Create new Product successfully")
                     .productId(newProduct.getId())
                     .sku(newProduct.getSku())
                     .build();
-        } else { // create update
-            return null;
+
+        } else { // case update
+            //TODO handle case edit
+            Product oldGenerationProduct = productRepository.getDetailById(request.getProductId());
+            Validate.isTrue(oldGenerationProduct != null, "Can not found Product by Id = %s", request.getProductId());
+
+            Product newGenerationProduct = oldGenerationProduct.copy();
+            newGenerationProduct.setSku(StringUtils.isNotBlank(request.getSku()) ? request.getSku() : nextProductSku());
+            newGenerationProduct.setProductName(request.getProductName());
+            newGenerationProduct.setQuantityInStock(request.getQuantityInStock());
+            newGenerationProduct.setProductDescriptionUrl(request.getProductDescriptionUrl());
+            newGenerationProduct.setProductStatus(request.getProductStatus());
+            newGenerationProduct.setExpirationDate(request.getExpirationDate() == null ? LocalDate.of(2023, 12, 31) : request.getExpirationDate());
+            newGenerationProduct.setInitialCash(request.getInitialCash());
+            newGenerationProduct.setProductType(request.getProductType());
+
+            // update gallery
+            newGenerationProduct.getProductGalleries().forEach(productGallery -> {
+                FileUtils.deleteFile(productGallery.getFileUrl(), Constants.PRODUCT_IMAGE_DIRECTORY);
+            });
+            newGenerationProduct.getProductGalleries().clear();
+            for (int i = 0; i < images.length; i++) {
+                ProductGallery newProductGallery = new ProductGallery();
+                newProductGallery.setProduct(newGenerationProduct);
+                newProductGallery.setFileUrl(FileUtils.saveFileWithRandomName(images[i], Constants.PRODUCT_IMAGE_DIRECTORY));
+                newProductGallery.setIsMainFile(i == 0 ? Boolean.TRUE : Boolean.FALSE);
+                newGenerationProduct.addProductGallery(newProductGallery);
+            }
+            newGenerationProduct.setGalleryUrls(newGenerationProduct.getProductGalleries().stream().map(ProductGallery::getFileUrl).collect(Collectors.joining(",")));
+
+            // update content
+            String productDescriptionUrl = newGenerationProduct.getSku().concat(Constants.TXT_FILE_EXTENSION);
+            FileUtils.writeFile(request.getContent(), productDescriptionUrl, Constants.PRODUCT_CONTENT_DIRECTORY);
+            newGenerationProduct.setProductDescriptionUrl(productDescriptionUrl);
+
+            // update catalog
+            if (!request.getCatalogId().equals(oldGenerationProduct.getProductCatalogs().stream().map(pc -> pc.getCatalog().getId()).findFirst().orElseGet(() -> null))) {
+                ProductCatalog newProductCatalog = new ProductCatalog();
+                newProductCatalog.setCatalog(catalogRepository.findById(request.getCatalogId()).orElseGet(() -> null));
+                newGenerationProduct.getProductCatalogs().clear();
+                newGenerationProduct.addProductCatalog(newProductCatalog);
+            }
+
+            // update cart and point
+            if (!request.getInitialCash().equals(oldGenerationProduct.getInitialCash())) {
+                newGenerationProduct.getProductPoints().forEach(productPoint -> {
+                    CooperationContract existsCooperationContract = cooperationContractRepository
+                            .getByEnterpriseIdAndContractStatus(productPoint.getEnterprise().getId(), ContractStatus.ACTIVE);
+                    productPoint.setPointExchange(BigDecimalUtils.divide(newGenerationProduct.getInitialCash(), existsCooperationContract.getCashPerPoint(), 0, 2));
+                });
+            }
+
+            productRepository.save(newGenerationProduct);
+
+            oldGenerationProduct.setProductStatus(ProductStatus.INACTIVE);
+            productRepository.save(oldGenerationProduct);
+
+            return CreateOrUpdateProductResponse.builder()
+                    .message("Update Product successfully")
+                    .productId(newGenerationProduct.getId())
+                    .sku(newGenerationProduct.getSku())
+                    .build();
         }
     }
 
@@ -232,7 +309,7 @@ public class ProductServiceImpl implements ProductService {
         return "Add product review successfully";
     }
 
-    private void validateProductInfo(AdminCreateOrUpdateProductRequest request) {
+    private void validateProductInfoCaseCreate(AdminCreateOrUpdateProductRequest request) {
         Validate.isTrue(request.getProductName() != null, "Product name can not be null");
         Validate.isTrue(request.getQuantityInStock() != null && request.getQuantityInStock() > 0, "Quantity in stock must be > 0");
         Validate.isTrue(request.getInitialCash() != null &&

@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "PRODUCT_CART_ID"))
-public class ProductCart extends AbstractAuditableEntity {
+public class ProductCart extends AbstractGenerationEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

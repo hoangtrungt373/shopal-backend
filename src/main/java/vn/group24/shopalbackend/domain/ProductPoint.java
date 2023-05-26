@@ -20,7 +20,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "PRODUCT_POINT_ID"))
-public class ProductPoint extends AbstractStateAndAncestorManageableEntity {
+public class ProductPoint extends AbstractGenerationEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,18 +35,15 @@ public class ProductPoint extends AbstractStateAndAncestorManageableEntity {
     private BigDecimal pointExchange;
 
     @NotNull
-    @Column(name = "UPDATE_DESCRIPTION")
-    private String updateDescription;
-
-    @NotNull
     @Column(name = "ACTIVE")
     private Boolean active;
 
-    public ProductPoint copy(ProductPoint productPoint) {
+    public ProductPoint copy(Product generation) {
         ProductPoint copy = new ProductPoint();
-        copy.setEnterprise(productPoint.getEnterprise());
-        copy.setPointExchange(productPoint.getPointExchange());
-        copy.setActive(productPoint.getActive());
+        copy.setEnterprise(getEnterprise());
+        copy.setPointExchange(getPointExchange());
+        copy.setActive(getActive());
+        copy.setProduct(generation);
         return copy;
     }
 }

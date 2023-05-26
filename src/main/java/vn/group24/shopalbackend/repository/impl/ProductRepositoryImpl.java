@@ -32,7 +32,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     QCatalog qParentCatalog = new QCatalog("qParentCatalog");
 
     @Override
-    public Product getProductDetailById(Integer productId) {
+    public Product getDetailById(Integer productId) {
         BooleanExpression condition = qProduct.id.eq(productId);
 
         return new JPAQuery<Product>(em)

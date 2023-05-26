@@ -27,7 +27,7 @@ import vn.group24.shopalbackend.domain.enums.ProductReviewType;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "PRODUCT_REVIEW_ID"))
-public class ProductReview extends AbstractAuditableEntity {
+public class ProductReview extends AbstractGenerationEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,7 +49,8 @@ public class ProductReview extends AbstractAuditableEntity {
     @Column(name = "CONTENT")
     private String content;
 
-    @Column(name = "IMAGE_URLS")
+    //TODO: change field name too
+    @Column(name = "GALLERY_URLS")
     private String imageUrls;
 
     @NotNull
@@ -72,15 +73,16 @@ public class ProductReview extends AbstractAuditableEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentReview")
     private Set<ProductReview> childReviews = new HashSet<>();
 
-    public ProductReview copy(ProductReview productReview) {
+    public ProductReview copy(Product generation, PurchaseOrderDetail newPurchaseOrderDetailGe) {
         ProductReview copy = new ProductReview();
-        copy.setPurchaseOrderDetail(productReview.getPurchaseOrderDetail());
-        copy.setCustomer(productReview.getCustomer());
-        copy.setContent(productReview.getContent());
-        copy.setImageUrls(productReview.getImageUrls());
-        copy.setAmountLike(productReview.getAmountLike());
-        copy.setReviewType(productReview.getReviewType());
-        copy.setReviewDate(productReview.getReviewDate());
+        copy.setProduct(generation);
+        copy.setPurchaseOrderDetail(newPurchaseOrderDetailGe);
+        copy.setCustomer(getCustomer());
+        copy.setContent(getContent());
+        copy.setImageUrls(getImageUrls());
+        copy.setAmountLike(getAmountLike());
+        copy.setReviewType(getReviewType());
+        copy.setReviewDate(getReviewDate());
         return copy;
     }
 }

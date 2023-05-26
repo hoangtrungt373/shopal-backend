@@ -5,11 +5,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import vn.group24.shopalbackend.controller.response.common.CatalogDto;
 import vn.group24.shopalbackend.controller.response.common.EnterpriseDto;
 import vn.group24.shopalbackend.controller.response.common.ProductDto;
 import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
+import vn.group24.shopalbackend.domain.Catalog;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.Product;
+import vn.group24.shopalbackend.domain.ProductCatalog;
 import vn.group24.shopalbackend.domain.ProductGallery;
 import vn.group24.shopalbackend.domain.ProductPoint;
 
@@ -46,6 +49,7 @@ public class ProductMapper {
             productDto.setInitialCash(product.getInitialCash());
             productDto.setProductType(product.getProductType());
             productDto.setProductTypeDescription(product.getProductType().getTextForCurrentLan());
+            productDto.setCatalogs(product.getProductCatalogs().stream().map(ProductCatalog::getCatalog).map(this::mapToCatalogDto).collect(Collectors.toList()));
             return productDto;
         }).collect(Collectors.toList());
     }
@@ -65,5 +69,13 @@ public class ProductMapper {
         dto.setEnterpriseName(entity.getEnterpriseName());
         dto.setLogoUrl(entity.getLogoUrl());
         return dto;
+    }
+
+    private CatalogDto mapToCatalogDto(Catalog catalog) {
+        CatalogDto catalogDto = new CatalogDto();
+        catalogDto.setId(catalog.getId());
+        catalogDto.setCatalogName(catalog.getCatalogName());
+        catalogDto.setLogoUrl(catalog.getLogoUrl());
+        return catalogDto;
     }
 }

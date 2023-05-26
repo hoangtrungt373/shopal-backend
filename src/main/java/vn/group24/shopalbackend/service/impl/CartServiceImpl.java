@@ -55,7 +55,7 @@ public class CartServiceImpl implements CartService {
             Product product = productPoint.getProduct();
             Validate.isTrue(product.getQuantityInStock() > amount, "Amount order can not large than amount of product in stock, amount order = %s", amount);
 
-            if (productCartId != null) { // use edit in CartPage
+            if (productCartId != null) { // user edit in CartPage
                 ProductCart productCart = productCartRepository.findById(productCartId)
                         .orElseThrow(() -> new IllegalArgumentException(String.format("Can not found ProductCart with id = %s", productCartId)));
                 if (amount == 0) {
@@ -65,7 +65,7 @@ public class CartServiceImpl implements CartService {
                     productCart.setProductPoint(productPoint);
                     productCartRepository.save(productCart);
                 }
-            } else { // use add new in ProductDetail page
+            } else { // user add new in ProductDetail page
                 ProductCart productCart = productCartRepository.getByCustomerIdAndProductPointId(customer.getId(), productPointId);
                 if (productCart != null) {
                     productCart.setAmount(productCart.getAmount() + amount);

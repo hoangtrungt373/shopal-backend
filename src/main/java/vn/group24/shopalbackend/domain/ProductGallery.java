@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AttributeOverride(name = "id", column = @Column(name = "PRODUCT_GALLERY_ID"))
-public class ProductGallery extends AbstractAuditableEntity {
+public class ProductGallery extends AbstractGenerationEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,10 +33,11 @@ public class ProductGallery extends AbstractAuditableEntity {
     @Column(name = "IS_MAIN_FILE")
     private Boolean isMainFile;
 
-    public ProductGallery copy(ProductGallery productGallery) {
+    public ProductGallery copy(Product product) {
         ProductGallery copy = new ProductGallery();
-        copy.setFileUrl(productGallery.getFileUrl());
-        copy.setIsMainFile(productGallery.getIsMainFile());
+        copy.setFileUrl(getFileUrl());
+        copy.setIsMainFile(getIsMainFile());
+        copy.setProduct(product);
         return copy;
     }
 }
