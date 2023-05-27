@@ -99,10 +99,6 @@ public class Product extends AbstractGenerationEntity {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<PurchaseOrderDetail> purchaseOrderDetails = new HashSet<>();
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<ProductCart> productCarts = new HashSet<>();
-
-
     public void addProductGallery(ProductGallery productGallery) {
         this.productGalleries.add(productGallery);
         productGallery.setProduct(this);

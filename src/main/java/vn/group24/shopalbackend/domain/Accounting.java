@@ -3,8 +3,6 @@ package vn.group24.shopalbackend.domain;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -16,7 +14,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Getter;
@@ -67,7 +64,4 @@ public class Accounting extends AbstractGenerationEntity {
 
     @Transient
     private BigDecimal commissionRate;
-
-    @OneToMany(mappedBy = "accounting", fetch = FetchType.LAZY)
-    private Set<CooperationContract> cooperationContracts = new HashSet<>();
 }

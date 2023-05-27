@@ -12,8 +12,9 @@ import vn.group24.shopalbackend.domain.enums.ContractStatus;
  */
 @Getter
 @Setter
-public class EnterpriseCooperationContractSearchCriteriaRequest extends AbstractSearchCriteria {
+public class CooperationContractSearchCriteriaRequest extends AbstractSearchCriteria {
     private LocalDate startDate;
     private LocalDate endDate;
     private ContractStatus contractStatus;
+    private Integer enterpriseId;
 }

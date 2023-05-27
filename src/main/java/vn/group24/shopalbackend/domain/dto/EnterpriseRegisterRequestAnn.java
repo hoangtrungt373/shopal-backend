@@ -24,6 +24,6 @@ public class EnterpriseRegisterRequestAnn extends AbstractAnn {
     private String registerRequestStatusDescription;
     private LocalDateTime registerDate;
     private LocalDateTime verificationDate;
+    private String taxId;
     private String tempPasswordGenerate;
-    private Integer enterpriseId;
 }

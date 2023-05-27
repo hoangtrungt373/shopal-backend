@@ -4,8 +4,8 @@ import java.util.List;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
 import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
-import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
+import vn.group24.shopalbackend.controller.request.UpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
 import vn.group24.shopalbackend.controller.response.enterprise.PurchaseOrderDto;
 import vn.group24.shopalbackend.domain.Customer;
@@ -24,7 +24,7 @@ public interface PurchaseOrderService {
 
     List<OrderStatusDto> getAllOrderStatus();
 
-    String updatePurchaseOrderStatusForEnterprise(Enterprise enterprise, EnterpriseUpdateOrderStatusRequest request);
+    String updatePurchaseOrderStatus(UpdateOrderStatusRequest request);
 
     String cancelOrderForCustomer(Customer customer, CustomerPurchaseOrderCancelRequest request);
 }

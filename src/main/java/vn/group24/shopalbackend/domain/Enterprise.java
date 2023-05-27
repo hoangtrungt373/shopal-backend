@@ -44,13 +44,19 @@ public class Enterprise extends AbstractGenerationEntity {
     @Column(name = "WEBSITE_URL")
     private String websiteUrl;
 
-    @NotNull
     @Column(name = "LOGO_URL")
     private String logoUrl;
 
     @NotNull
     @Column(name = "JOIN_DATE")
     private LocalDate joinDate;
+
+    @NotNull
+    @Column(name = "CONTACT_EMAIL")
+    private String contactEmail;
+
+    @Column(name = "TAX_ID")
+    private String taxId;
 
     @OneToMany(mappedBy = "enterprise", fetch = FetchType.LAZY)
     private Set<Membership> memberships = new HashSet<>();

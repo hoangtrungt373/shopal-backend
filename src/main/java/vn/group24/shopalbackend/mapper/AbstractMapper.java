@@ -13,7 +13,7 @@ import vn.group24.shopalbackend.domain.enums.AbstractMultilingualEnum;
 @Component
 public class AbstractMapper {
 
-    protected <T extends AbstractMultilingualEnum> String getTextForCurrentLan(T enumz) {
+    public <T extends AbstractMultilingualEnum> String getTextForCurrentLan(T enumz) {
         return Optional.ofNullable(enumz)
                 .map(AbstractMultilingualEnum::getTextForCurrentLan)
                 .orElseGet(() -> null);

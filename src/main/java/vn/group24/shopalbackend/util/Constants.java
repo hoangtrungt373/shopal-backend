@@ -18,6 +18,7 @@ public class Constants {
     public static final String PRODUCT_CONTENT_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\content\\product";
     public static final String PRODUCT_REVIEW_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\img\\review";
     public static final String CUSTOMER_AVATAR_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\img\\customer";
+    public static final String ENTERPRISE_LOGO_DIRECTORY = "C:\\Users\\TTG\\Documents\\GitHub\\shopal-frontend\\public\\img\\enterprise";
 
     public static final String ACCEPT_ENTERPRISE_COOPERATION_REQUEST_TEMPLATE = "accept-enterprise-cooperation-request-template";
     public static final String VERIFY_EMAIL_TEMPLATE = "verify-email-template";

@@ -72,7 +72,7 @@ public class AdminPurchaseOrderMapper {
     private PurchaseOrderDetailDto mapToPurchaseOrderDetailDto(PurchaseOrderDetail purchaseOrderDetail) {
         PurchaseOrderDetailDto purchaseOrderDetailDto = new PurchaseOrderDetailDto();
         purchaseOrderDetailDto.setId(purchaseOrderDetail.getId());
-        purchaseOrderDetailDto.setProductDto(mapToProductDto(purchaseOrderDetail.getProduct()));
+        purchaseOrderDetailDto.setProduct(mapToProductDto(purchaseOrderDetail.getProduct()));
         purchaseOrderDetailDto.setPointExchange(purchaseOrderDetail.getPointExchange());
         purchaseOrderDetailDto.setAmount(purchaseOrderDetail.getAmount());
         purchaseOrderDetailDto.setTotalPointExchange(purchaseOrderDetail.getTotalPointExchange());

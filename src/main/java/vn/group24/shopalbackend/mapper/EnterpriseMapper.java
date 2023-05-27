@@ -33,6 +33,12 @@ public class EnterpriseMapper {
         enterpriseDto.setId(enterprise.getId());
         enterpriseDto.setEnterpriseName(enterprise.getEnterpriseName());
         enterpriseDto.setLogoUrl(enterprise.getLogoUrl());
+        enterpriseDto.setWebsiteUrl(enterprise.getWebsiteUrl());
+        enterpriseDto.setAddress(enterprise.getAddress());
+        enterpriseDto.setPhoneNumber(enterprise.getPhoneNumber());
+        enterpriseDto.setJoinDate(enterprise.getJoinDate());
+        enterpriseDto.setContactEmail(enterprise.getContactEmail());
+        enterpriseDto.setTaxId(enterprise.getTaxId());
         enterprise.getCooperationContracts().stream()
                 .filter(cc -> ContractStatus.ACTIVE == cc.getContractStatus())
                 .findFirst()

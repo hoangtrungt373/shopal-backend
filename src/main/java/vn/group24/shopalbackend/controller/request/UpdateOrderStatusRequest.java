@@ -12,7 +12,7 @@ import vn.group24.shopalbackend.domain.enums.OrderStatus;
  */
 @Getter
 @Setter
-public class EnterpriseUpdateOrderStatusRequest {
+public class UpdateOrderStatusRequest {
     private Integer purchaseOrderId;
     private OrderStatus newOrderStatus;
     private LocalDateTime deliveryDate;

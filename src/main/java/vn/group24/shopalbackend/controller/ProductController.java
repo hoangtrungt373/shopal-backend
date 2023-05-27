@@ -21,6 +21,7 @@ import vn.group24.shopalbackend.controller.request.ProductSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.admin.CreateOrUpdateProductResponse;
 import vn.group24.shopalbackend.controller.response.common.ProductDto;
 import vn.group24.shopalbackend.controller.response.customer.ProductDetailDto;
+import vn.group24.shopalbackend.domain.dto.EnterpriseProductSellingRequestAnn;
 import vn.group24.shopalbackend.service.ProductService;
 
 @RestController
@@ -47,9 +48,19 @@ public class ProductController extends AbstractController {
         return ResponseEntity.ok().body(productService.countProductByCriteria(criteria));
     }
 
-    @GetMapping("/current-enterprise/request-selling/{productId}")
+    @GetMapping("/current-enterprise/request-selling/receive/{productId}")
     public ResponseEntity<String> handleRequestSellingProductForCurrentEnterprise(@PathVariable Integer productId) {
         return ResponseEntity.ok().body(productService.handleRequestSellingProductForEnterprise(userUtils.getAuthenticateEnterprise(), productId));
+    }
+
+    @GetMapping("/get-all-request-selling")
+    public ResponseEntity<List<EnterpriseProductSellingRequestAnn>> getAllEnterpriseProductSellingRequestAnn() {
+        return ResponseEntity.ok().body(productService.getAllEnterpriseProductSellingRequestAnn());
+    }
+
+    @PostMapping("/request-selling/accept")
+    public ResponseEntity<String> handleAcceptRequestSellingProduct(@RequestBody EnterpriseProductSellingRequestAnn request) {
+        return ResponseEntity.ok().body(productService.handleAcceptRequestSellingProduct(request));
     }
 
     @GetMapping("/current-enterprise/request-cancelling/{productId}")

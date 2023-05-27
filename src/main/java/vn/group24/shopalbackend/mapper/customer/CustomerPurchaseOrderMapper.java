@@ -58,7 +58,7 @@ public class CustomerPurchaseOrderMapper {
         purchaseOrderDetailDto.setTotalPointExchange(purchaseOrderDetail.getTotalPointExchange());
         purchaseOrderDetailDto.setProductId(purchaseOrderDetail.getProduct().getId());
         purchaseOrderDetailDto.setTotalCash(purchaseOrderDetail.getTotalCash());
-        purchaseOrderDetailDto.setProductDto(mapToProductDto(purchaseOrderDetail.getProduct()));
+        purchaseOrderDetailDto.setProduct(mapToProductDto(purchaseOrderDetail.getProduct()));
         purchaseOrderDetailDto.setIsReview(purchaseOrderDetail.getProductReviews().stream()
                 .anyMatch(pr -> ProductReviewType.REVIEW == pr.getReviewType()));
         return purchaseOrderDetailDto;

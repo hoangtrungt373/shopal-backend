@@ -17,5 +17,5 @@ public interface EnterpriseRegisterRequestService {
 
     List<EnterpriseRegisterRequestAnn> getAllEnterpriseRegisterRequest();
 
-    String handleAcceptEnterpriseCooperationRequest(Integer requestId);
+    String handleAcceptEnterpriseCooperationRequest(EnterpriseRegisterRequestAnn enterpriseRegisterRequestAnn);
 }

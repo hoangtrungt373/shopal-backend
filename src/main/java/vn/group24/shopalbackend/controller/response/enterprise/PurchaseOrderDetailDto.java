@@ -14,7 +14,7 @@ import vn.group24.shopalbackend.controller.response.common.ProductDto;
 @Getter
 @Setter
 public class PurchaseOrderDetailDto extends AbstractDto {
-    private ProductDto productDto;
+    private ProductDto product;
     private Integer productId;
     private BigDecimal pointExchange;
     private Integer amount;

@@ -33,6 +33,10 @@ public class StagCustomer extends AbstractAuditableEntity {
     private String fullName;
 
     @NotNull
+    @Column(name = "ID_CHECKING")
+    private Integer idChecking;
+
+    @NotNull
     @Column(name = "REGISTER_PHONE_NUMBER")
     private String registerPhoneNumber;
 

@@ -18,5 +18,6 @@ public class EnterpriseRegisterRequest {
     private String enterpriseAddress;
     private String enterpriseName;
     private String enterpriseWebsite;
+    private String taxId;
     private EnterpriseRegisterRequestStatus registerRequestStatus;
 }

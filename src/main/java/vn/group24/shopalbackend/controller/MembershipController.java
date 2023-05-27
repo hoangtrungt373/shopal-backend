@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.group24.shopalbackend.controller.request.CustomerNewMembershipRequest;
 import vn.group24.shopalbackend.controller.response.customer.EnterpriseMembershipDto;
+import vn.group24.shopalbackend.controller.response.enterprise.CustomerRegisterDto;
 import vn.group24.shopalbackend.service.MembershipService;
 import vn.group24.shopalbackend.service.StagCustomerService;
 
@@ -36,5 +37,11 @@ public class MembershipController extends AbstractController {
     @PostMapping("/current-customer/enterprise-membership/request-new")
     public ResponseEntity<String> handleRequestNewMembershipForCurrentCustomer(@RequestBody CustomerNewMembershipRequest request) {
         return ResponseEntity.ok(stagCustomerService.handleRequestNewMembershipForCustomer(userUtils.getAuthenticateCustomer(), request));
+    }
+
+    @PostMapping("/import-register-customers")
+    // TODO: change to request dto
+    public ResponseEntity<String> importRegisterCustomers(@RequestBody List<CustomerRegisterDto> request) {
+        return ResponseEntity.ok(stagCustomerService.importRegisterCustomers(request, userUtils.getAuthenticateEnterprise()));
     }
 }

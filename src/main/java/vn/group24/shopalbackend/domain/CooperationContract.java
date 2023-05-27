@@ -32,11 +32,6 @@ public class CooperationContract extends AbstractGenerationEntity {
     private Enterprise enterprise;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ACCOUNTING_ID")
-    private Accounting accounting;
-
-    @NotNull
     @Column(name = "START_DATE")
     private LocalDate startDate;
 
@@ -56,4 +51,16 @@ public class CooperationContract extends AbstractGenerationEntity {
     @Column(name = "CONTRACT_STATUS")
     @Enumerated(EnumType.STRING)
     private ContractStatus contractStatus;
+
+    public CooperationContract copy() {
+        CooperationContract copy = new CooperationContract();
+        copy.setEnterprise(getEnterprise());
+        copy.setStartDate(getStartDate());
+        copy.setEndDate(getEndDate());
+        copy.setCommissionRate(getCommissionRate());
+        copy.setCashPerPoint(getCashPerPoint());
+        copy.setContractStatus(getContractStatus());
+        copy.setOriginId(getOriginId());
+        return copy;
+    }
 }

@@ -13,6 +13,7 @@ import vn.group24.shopalbackend.controller.response.common.ProductDto;
 import vn.group24.shopalbackend.controller.response.customer.ProductDetailDto;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Enterprise;
+import vn.group24.shopalbackend.domain.dto.EnterpriseProductSellingRequestAnn;
 
 /**
  * @author ttg
@@ -26,6 +27,10 @@ public interface ProductService {
     Integer countProductByCriteria(ProductSearchCriteriaRequest criteria);
 
     String handleRequestSellingProductForEnterprise(Enterprise enterprise, Integer productId);
+
+    String handleAcceptRequestSellingProduct(EnterpriseProductSellingRequestAnn enterpriseProductSellingRequestAnn);
+
+    List<EnterpriseProductSellingRequestAnn> getAllEnterpriseProductSellingRequestAnn();
 
     String handleRequestCancellingProductForEnterprise(Enterprise enterprise, Integer productId);
 

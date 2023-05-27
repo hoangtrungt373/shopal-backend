@@ -1,6 +1,8 @@
 package vn.group24.shopalbackend.service.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +32,11 @@ import vn.group24.shopalbackend.domain.enums.AnnouncementInterface;
 import vn.group24.shopalbackend.domain.enums.AnnouncementStatus;
 import vn.group24.shopalbackend.domain.enums.AnnouncementType;
 import vn.group24.shopalbackend.domain.enums.EnterpriseRegisterRequestStatus;
+import vn.group24.shopalbackend.repository.AnnouncementRepository;
 import vn.group24.shopalbackend.repository.EnterpriseRepository;
+import vn.group24.shopalbackend.security.domain.UserAccount;
+import vn.group24.shopalbackend.security.domain.enums.UserRole;
+import vn.group24.shopalbackend.security.repository.UserAccountRepository;
 import vn.group24.shopalbackend.service.AnnouncementService;
 import vn.group24.shopalbackend.service.EmailService;
 import vn.group24.shopalbackend.service.EnterpriseRegisterRequestService;
@@ -46,6 +53,10 @@ public class EnterpriseRegisterRequestServiceImpl implements EnterpriseRegisterR
     @Autowired
     private EnterpriseRepository enterpriseRepository;
     @Autowired
+    private UserAccountRepository userAccountRepository;
+    @Autowired
+    private AnnouncementRepository announcementRepository;
+    @Autowired
     private EmailService emailService;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -61,7 +72,7 @@ public class EnterpriseRegisterRequestServiceImpl implements EnterpriseRegisterR
     public String handleReceiveEnterpriseRegisterRequest(EnterpriseRegisterRequest request) throws JsonProcessingException {
         //TODO: validate
         EnterpriseRegisterRequestAnn enterpriseRegisterRequestAnn = new EnterpriseRegisterRequestAnn();
-        enterpriseRegisterRequestAnn.setId(enterpriseRepository.getNextEnterpriseRequestId());
+        enterpriseRegisterRequestAnn.setId(announcementService.getNextAnnouncementMessageIdSeq());
         enterpriseRegisterRequestAnn.setFullName(request.getFullName());
         enterpriseRegisterRequestAnn.setPosition(request.getPosition());
         enterpriseRegisterRequestAnn.setWorkEmail(request.getWorkEmail());
@@ -72,6 +83,7 @@ public class EnterpriseRegisterRequestServiceImpl implements EnterpriseRegisterR
         enterpriseRegisterRequestAnn.setRegisterRequestStatus(EnterpriseRegisterRequestStatus.RECEIVED);
         enterpriseRegisterRequestAnn.setRegisterRequestStatusDescription(EnterpriseRegisterRequestStatus.RECEIVED.getTextForCurrentLan());
         enterpriseRegisterRequestAnn.setRegisterDate(LocalDateTime.now());
+        enterpriseRegisterRequestAnn.setTaxId(request.getTaxId());
 
         announcementService.createAnnouncement(AnnouncementInput.builder()
                 .anInterface(AnnouncementInterface.ENTERPRISE_REGISTER_REQUEST)
@@ -84,27 +96,28 @@ public class EnterpriseRegisterRequestServiceImpl implements EnterpriseRegisterR
 
     @Override
     public List<EnterpriseRegisterRequestAnn> getAllEnterpriseRegisterRequest() {
-        List<EnterpriseRegisterRequestAnn> enterpriseRegisterRequestAnns = announcementService.getAnnouncementByCriteria(AnnouncementSearchCriteriaRequest.builder()
+        Map<Announcement, EnterpriseRegisterRequestAnn> enterpriseRegisterRequestAnnMap = new HashMap<>();
+        announcementService.getAnnouncementByCriteria(AnnouncementSearchCriteriaRequest.builder()
                         .anInterface(AnnouncementInterface.ENTERPRISE_REGISTER_REQUEST)
+                        .type(AnnouncementType.RECEIVE)
                         .build())
-                .stream()
-                .map(Announcement::getMessage)
-                .map(message -> {
+                .forEach(announcement -> {
                     try {
-                        return jsonObjectMapper.readValue(message, EnterpriseRegisterRequestAnn.class);
+                        EnterpriseRegisterRequestAnn messageDto = jsonObjectMapper.readValue(announcement.getMessage(), EnterpriseRegisterRequestAnn.class);
+                        enterpriseRegisterRequestAnnMap.put(announcement, messageDto);
                     } catch (JsonProcessingException e) {
                         throw new IllegalArgumentException(
                                 "Unable to deserialize the message for EnterpriseRegisterRequest");
                     }
-                })
-                .collect(Collectors.toList());
+                });
 
-        Map<Integer, Enterprise> enterpriseMap = enterpriseRepository.findAllById(enterpriseRegisterRequestAnns.stream().map(EnterpriseRegisterRequestAnn::getEnterpriseId)
+        Map<Integer, Enterprise> enterpriseMap = enterpriseRepository.findAllById(enterpriseRegisterRequestAnnMap.values().stream().map(EnterpriseRegisterRequestAnn::getEnterpriseId)
                         .filter(Objects::nonNull).toList())
                 .stream().collect(Collectors.toMap(Enterprise::getId, Function.identity()));
 
-        enterpriseRegisterRequestAnns.forEach(announcement -> {
-            announcement.setEnterprise(Optional.ofNullable(enterpriseMap.get(announcement.getEnterpriseId()))
+        enterpriseRegisterRequestAnnMap.forEach((announcement, enterpriseRegisterRequestAnn) -> {
+            enterpriseRegisterRequestAnn.setAnnouncementId(announcement.getId());
+            enterpriseRegisterRequestAnn.setEnterprise(Optional.ofNullable(enterpriseMap.get(enterpriseRegisterRequestAnn.getEnterpriseId()))
                     .map(enterprise -> {
                         EnterpriseDto enterpriseDto = new EnterpriseDto();
                         enterpriseDto.setId(enterprise.getId());
@@ -114,16 +127,33 @@ public class EnterpriseRegisterRequestServiceImpl implements EnterpriseRegisterR
                     }).orElseGet(() -> null));
         });
 
-        return enterpriseRegisterRequestAnns;
+        return new ArrayList<>(enterpriseRegisterRequestAnnMap.values());
     }
 
     @Override
-    public String handleAcceptEnterpriseCooperationRequest(Integer requestId) {
-        EnterpriseRegisterRequestAnn enterpriseRegisterRequestAnn = null;
-//        orElseThrow(() -> new IllegalArgumentException(String.format("EnterpriseCooperationRequest not found with id = %s", requestId)));
+    public String handleAcceptEnterpriseCooperationRequest(EnterpriseRegisterRequestAnn enterpriseRegisterRequestAnn) {
 
-        String tempPassword = "123456";
+        String tempPassword = "password";
 //                StringUtils.generateOtp();
+        String passwordEncode = passwordEncoder.encode(tempPassword);
+
+        UserAccount userAccount = UserAccount.builder()
+                .email(enterpriseRegisterRequestAnn.getWorkEmail())
+                .password(passwordEncode)
+                .role(UserRole.ENTERPRISE_MANAGER)
+                .build();
+        userAccountRepository.save(userAccount);
+
+        Enterprise newEnterprise = new Enterprise();
+        newEnterprise.setEnterpriseName(enterpriseRegisterRequestAnn.getEnterpriseName());
+        newEnterprise.setAddress(enterpriseRegisterRequestAnn.getEnterpriseAddress());
+        newEnterprise.setContactEmail(enterpriseRegisterRequestAnn.getWorkEmail());
+        newEnterprise.setTaxId(enterpriseRegisterRequestAnn.getTaxId());
+        newEnterprise.setJoinDate(LocalDate.now());
+        newEnterprise.setUserAccountId(userAccount.getId());
+        newEnterprise.setPhoneNumber(enterpriseRegisterRequestAnn.getPhoneNumber());
+        newEnterprise.setWebsiteUrl(enterpriseRegisterRequestAnn.getEnterpriseWebsite());
+        enterpriseRepository.save(newEnterprise);
 
         EmailDetailRequest emailDetailRequest = new EmailDetailRequest();
         emailDetailRequest.setRecipient(enterpriseRegisterRequestAnn.getWorkEmail());
@@ -136,10 +166,21 @@ public class EnterpriseRegisterRequestServiceImpl implements EnterpriseRegisterR
         emailService.sendEmail(emailDetailRequest);
 
         enterpriseRegisterRequestAnn.setRegisterRequestStatus(EnterpriseRegisterRequestStatus.ACCEPT);
-        enterpriseRegisterRequestAnn.setRegisterRequestStatusDescription(EnterpriseRegisterRequestStatus.ACCEPT.getTextForCurrentLan());
-        enterpriseRegisterRequestAnn.setTempPasswordGenerate(passwordEncoder.encode(passwordEncoder.encode(tempPassword)));
-//        enterpriseCooperationRequestRepository.save(enterpriseRegisterRequestAnnouncement);
+        enterpriseRegisterRequestAnn.setTempPasswordGenerate(passwordEncode);
+        enterpriseRegisterRequestAnn.setEnterpriseId(newEnterprise.getId());
 
-        return "Accept cooperation request for enterprise " + enterpriseRegisterRequestAnn.getEnterpriseName() + " successfully";
+        Announcement announcement = announcementRepository.findById(enterpriseRegisterRequestAnn.getAnnouncementId()).orElseGet(() -> null);
+        Validate.isTrue(announcement != null, "Can not found Announcement with id = %s", enterpriseRegisterRequestAnn.getAnnouncementId());
+
+        announcement.setEnterprise(newEnterprise);
+        announcement.setStatus(AnnouncementStatus.TRANSMITTED);
+        try {
+            announcement.setMessage(jsonObjectMapper.writeValueAsString(enterpriseRegisterRequestAnn));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        announcementRepository.save(announcement);
+
+        return "Accept register request for enterprise " + enterpriseRegisterRequestAnn.getEnterpriseName() + " successfully";
     }
 }

@@ -33,6 +33,26 @@ public class AnnouncementRepositoryImpl implements AnnouncementRepositoryCustom 
             condition = condition.and(qAnnouncement.id.eq(criteria.getAnnouncementId()));
         }
 
+        if (criteria.getAnInterface() != null) {
+            condition = condition.and(qAnnouncement.anInterface.eq(criteria.getAnInterface()));
+        }
+
+        if (criteria.getStatus() != null) {
+            condition = condition.and(qAnnouncement.status.eq(criteria.getStatus()));
+        }
+
+        if (criteria.getType() != null) {
+            condition = condition.and(qAnnouncement.type.eq(criteria.getType()));
+        }
+
+        if (criteria.getProductId() != null) {
+            condition = condition.and(qAnnouncement.product.id.eq(criteria.getProductId()));
+        }
+
+        if (criteria.getEnterpriseId() != null) {
+            condition = condition.and(qAnnouncement.enterprise.id.eq(criteria.getEnterpriseId()));
+        }
+
         return new JPAQuery<Announcement>(em)
                 .from(qAnnouncement)
                 .where(condition)

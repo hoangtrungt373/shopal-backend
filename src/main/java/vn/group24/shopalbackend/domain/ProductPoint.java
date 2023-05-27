@@ -46,4 +46,14 @@ public class ProductPoint extends AbstractGenerationEntity {
         copy.setProduct(generation);
         return copy;
     }
+
+    public ProductPoint copy() {
+        ProductPoint copy = new ProductPoint();
+        copy.setProduct(getProduct());
+        copy.setEnterprise(getEnterprise());
+        copy.setPointExchange(getPointExchange());
+        copy.setActive(getActive());
+        copy.setOriginId(getOriginId());
+        return copy;
+    }
 }

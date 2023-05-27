@@ -7,5 +7,6 @@ package vn.group24.shopalbackend.domain.enums;
 public enum AnnouncementStatus {
     PREPARE,
     VALID,
-    TRANSMITTED
+    TRANSMITTED,
+    CANCEL,
 }

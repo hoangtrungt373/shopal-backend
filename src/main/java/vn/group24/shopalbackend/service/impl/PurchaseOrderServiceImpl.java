@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
 import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
-import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
+import vn.group24.shopalbackend.controller.request.UpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
 import vn.group24.shopalbackend.controller.response.enterprise.PurchaseOrderDto;
 import vn.group24.shopalbackend.domain.Customer;
@@ -177,7 +177,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Override
-    public String updatePurchaseOrderStatusForEnterprise(Enterprise enterprise, EnterpriseUpdateOrderStatusRequest request) {
+    public String updatePurchaseOrderStatus(UpdateOrderStatusRequest request) {
         Validate.isTrue(request.getPurchaseOrderId() != null, "Request PurchaseOrderId can not be null");
         Validate.isTrue(request.getNewOrderStatus() != null, "Request NewOrderStatus can not be null");
         if (OrderStatus.DELIVERED == request.getNewOrderStatus()) {
@@ -187,7 +187,6 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         }
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(request.getPurchaseOrderId()).orElseGet(() -> null);
         Validate.isTrue(purchaseOrder != null, "Can not found Order with id = %s", request.getPurchaseOrderId());
-        Validate.isTrue(purchaseOrder.getEnterprise().equals(enterprise), "Current order does belong to request enterprise");
         Validate.isTrue(purchaseOrder.getOrderStatus() != request.getNewOrderStatus(), "New Status can not be the same with Old Status");
 
         purchaseOrder.setOrderStatus(request.getNewOrderStatus());

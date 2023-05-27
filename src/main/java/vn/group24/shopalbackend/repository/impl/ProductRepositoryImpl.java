@@ -33,7 +33,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     @Override
     public Product getDetailById(Integer productId) {
-        BooleanExpression condition = qProduct.id.eq(productId);
+        BooleanExpression condition = qProduct.id.eq(productId)
+                .and(qProductPoint.active.isTrue());
 
         return new JPAQuery<Product>(em)
                 .from(qProduct)
@@ -93,7 +94,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     private BooleanExpression buildSearchCriteria(ProductSearchCriteriaRequest criteria) {
-        BooleanExpression condition = qProduct.id.isNotNull();
+        BooleanExpression condition = qProduct.id.isNotNull()
+                .and(qProductPoint.active.isTrue());
 
         if (criteria.getProductId() != null) {
             condition = condition.and(qProduct.id.eq(criteria.getProductId()));

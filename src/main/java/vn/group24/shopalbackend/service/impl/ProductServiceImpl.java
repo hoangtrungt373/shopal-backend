@@ -6,7 +6,14 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,12 +24,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import vn.group24.shopalbackend.controller.request.AdminCreateOrUpdateProductRequest;
+import vn.group24.shopalbackend.controller.request.AnnouncementSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.request.CustomerProductReviewRequest;
 import vn.group24.shopalbackend.controller.request.ProductSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.admin.CreateOrUpdateProductResponse;
+import vn.group24.shopalbackend.controller.response.common.EnterpriseDto;
 import vn.group24.shopalbackend.controller.response.common.ProductDto;
 import vn.group24.shopalbackend.controller.response.customer.ProductDetailDto;
+import vn.group24.shopalbackend.domain.Announcement;
 import vn.group24.shopalbackend.domain.CooperationContract;
 import vn.group24.shopalbackend.domain.Customer;
 import vn.group24.shopalbackend.domain.Enterprise;
@@ -32,23 +45,35 @@ import vn.group24.shopalbackend.domain.ProductGallery;
 import vn.group24.shopalbackend.domain.ProductPoint;
 import vn.group24.shopalbackend.domain.ProductReview;
 import vn.group24.shopalbackend.domain.PurchaseOrderDetail;
+import vn.group24.shopalbackend.domain.dto.AbstractAnn;
+import vn.group24.shopalbackend.domain.dto.AnnouncementInput;
+import vn.group24.shopalbackend.domain.dto.EnterpriseProductSellingRequestAnn;
+import vn.group24.shopalbackend.domain.enums.AnnouncementInterface;
+import vn.group24.shopalbackend.domain.enums.AnnouncementStatus;
+import vn.group24.shopalbackend.domain.enums.AnnouncementType;
 import vn.group24.shopalbackend.domain.enums.ContractStatus;
+import vn.group24.shopalbackend.domain.enums.EnterpriseProductSellingRequestStatus;
 import vn.group24.shopalbackend.domain.enums.ProductReviewType;
 import vn.group24.shopalbackend.domain.enums.ProductStatus;
+import vn.group24.shopalbackend.mapper.AbstractMapper;
 import vn.group24.shopalbackend.mapper.ProductDetailMapper;
 import vn.group24.shopalbackend.mapper.ProductMapper;
+import vn.group24.shopalbackend.repository.AnnouncementRepository;
 import vn.group24.shopalbackend.repository.CatalogRepository;
 import vn.group24.shopalbackend.repository.CooperationContractRepository;
+import vn.group24.shopalbackend.repository.EnterpriseRepository;
 import vn.group24.shopalbackend.repository.ProductCartRepository;
 import vn.group24.shopalbackend.repository.ProductPointRepository;
 import vn.group24.shopalbackend.repository.ProductRepository;
 import vn.group24.shopalbackend.repository.ProductReviewRepository;
 import vn.group24.shopalbackend.repository.PurchaseOrderDetailRepository;
 import vn.group24.shopalbackend.security.domain.enums.UserRole;
+import vn.group24.shopalbackend.service.AnnouncementService;
 import vn.group24.shopalbackend.service.ProductService;
 import vn.group24.shopalbackend.util.BigDecimalUtils;
 import vn.group24.shopalbackend.util.Constants;
 import vn.group24.shopalbackend.util.FileUtils;
+import vn.group24.shopalbackend.util.Validator;
 
 /**
  * @author ttg
@@ -59,6 +84,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private EnterpriseRepository enterpriseRepository;
+    @Autowired
+    private AnnouncementService announcementService;
+    @Autowired
+    private AnnouncementRepository announcementRepository;
     @Autowired
     private ProductPointRepository productPointRepository;
     @Autowired
@@ -71,12 +102,16 @@ public class ProductServiceImpl implements ProductService {
     private CooperationContractRepository cooperationContractRepository;
     @Autowired
     private ProductCartRepository productCartRepository;
+    @Autowired
+    private ObjectMapper jsonObjectMapper;
 
     @Autowired
     private ProductDetailMapper productDetailMapper;
 
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private AbstractMapper abstractMapper;
 
     @Override
     public ProductDetailDto getProductDetail(Integer productId) {
@@ -142,17 +177,130 @@ public class ProductServiceImpl implements ProductService {
         CooperationContract existsCooperationContract = enterprise.getCooperationContracts()
                 .stream().filter(cc -> ContractStatus.ACTIVE == cc.getContractStatus())
                 .findFirst().orElseGet(() -> null);
+        Validator validator = new Validator();
         Validate.isTrue(existsProductPoint == null, "Request enterprise already selling this product");
         Validate.isTrue(existsProduct != null, "Can not found product with id = %s", productId);
-        Validate.isTrue(existsCooperationContract != null, "Not exists active Contract in current date for request enterprise");
+
+        validator.throwIfFalse(existsCooperationContract != null, "Not exists active Contract in current date for request enterprise");
+        validator.throwIfFalse(enterprise.getLogoUrl() != null, "Please update enterprise LogoUrl to request selling product");
+
+        Announcement existsAnnouncement = announcementService.getAnnouncementByCriteria(AnnouncementSearchCriteriaRequest.builder()
+                .productId(productId)
+                .enterpriseId(enterprise.getId())
+                .status(AnnouncementStatus.VALID)
+                .anInterface(AnnouncementInterface.REQ_PRODUCT_SELLING)
+                .type(AnnouncementType.RECEIVE)
+                .build()).stream().findFirst().orElseGet(() -> null);
+        validator.throwIfFalse(existsAnnouncement == null, "Already exists an request selling for this product");
+
+        EnterpriseProductSellingRequestAnn announcement = new EnterpriseProductSellingRequestAnn();
+        announcement.setEnterpriseProductSellingRequestStatus(EnterpriseProductSellingRequestStatus.RECEIVED);
+        announcement.setProductId(productId);
+        announcement.setEnterpriseId(enterprise.getId());
+        announcement.setCashPerPoint(existsCooperationContract.getCashPerPoint());
+        announcement.setCooperationContractId(existsCooperationContract.getId());
+
+        try {
+            announcementService.createAnnouncement(AnnouncementInput.builder()
+                    .anInterface(AnnouncementInterface.REQ_PRODUCT_SELLING)
+                    .type(AnnouncementType.RECEIVE)
+                    .status(AnnouncementStatus.VALID)
+                    .product(existsProduct)
+                    .enterprise(enterprise)
+                    .message(jsonObjectMapper.writeValueAsString(announcement))
+                    .build());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        return "Received product selling request for enterprise " + enterprise.getEnterpriseName() + " successfully";
+    }
+
+    @Override
+    public List<EnterpriseProductSellingRequestAnn> getAllEnterpriseProductSellingRequestAnn() {
+        List<Announcement> announcements = new ArrayList<>();
+
+        announcements.addAll(announcementService.getAnnouncementByCriteria(AnnouncementSearchCriteriaRequest.builder()
+                .anInterface(AnnouncementInterface.REQ_PRODUCT_SELLING)
+                .type(AnnouncementType.RECEIVE)
+                .build()));
+
+        Map<Announcement, EnterpriseProductSellingRequestAnn> announcementMap = new HashMap<>();
+        announcements.forEach(announcement -> {
+            try {
+                EnterpriseProductSellingRequestAnn messageDto =
+                        jsonObjectMapper.readValue(announcement.getMessage(), EnterpriseProductSellingRequestAnn.class);
+                announcementMap.put(announcement, messageDto);
+            } catch (JsonProcessingException e) {
+                throw new IllegalArgumentException(
+                        "Unable to deserialize the message for EnterpriseProductSellingRequestAnn");
+            }
+        });
+
+        Map<Integer, Enterprise> enterpriseMap = enterpriseRepository.findAllById(announcementMap.values().stream().map(AbstractAnn::getEnterpriseId)
+                        .filter(Objects::nonNull).toList())
+                .stream().collect(Collectors.toMap(Enterprise::getId, Function.identity()));
+
+        Map<Integer, Product> productMap = productRepository.findAllById(announcementMap.values().stream().map(AbstractAnn::getProductId)
+                        .filter(Objects::nonNull).toList())
+                .stream().collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        announcementMap.forEach((announcement, messageDto) -> {
+            messageDto.setAnnouncementId(announcement.getId());
+            messageDto.setDate(announcement.getDate());
+            messageDto.setEnterpriseProductSellingRequestStatusDescription(abstractMapper.getTextForCurrentLan(messageDto.getEnterpriseProductSellingRequestStatus()));
+            messageDto.setEnterprise(Optional.ofNullable(enterpriseMap.get(messageDto.getEnterpriseId()))
+                    .map(enterprise -> {
+                        EnterpriseDto enterpriseDto = new EnterpriseDto();
+                        enterpriseDto.setId(enterprise.getId());
+                        enterpriseDto.setEnterpriseName(enterprise.getEnterpriseName());
+                        enterpriseDto.setLogoUrl(enterprise.getLogoUrl());
+                        return enterpriseDto;
+                    }).orElseGet(() -> null));
+            messageDto.setProduct(Optional.ofNullable(productMap.get(messageDto.getProductId()))
+                    .map(product -> {
+                        return productMapper.mapToProductDtos(Collections.singletonList(product)).get(0);
+                    }).orElseGet(() -> null));
+        });
+
+        return announcementMap.values().stream().sorted(Comparator.comparing(EnterpriseProductSellingRequestAnn::getDate).reversed()
+                .thenComparing(EnterpriseProductSellingRequestAnn::getEnterpriseProductSellingRequestStatus)).collect(Collectors.toList());
+    }
+
+    @Override
+    public String handleAcceptRequestSellingProduct(EnterpriseProductSellingRequestAnn enterpriseProductSellingRequestAnn) {
+        Product product = productRepository.findById(enterpriseProductSellingRequestAnn.getProductId()).orElseGet(() -> null);
+        Validate.isTrue(product != null, "Can not found product with id = %s", enterpriseProductSellingRequestAnn.getProductId());
+
+        Enterprise enterprise = enterpriseRepository.findById(enterpriseProductSellingRequestAnn.getEnterpriseId()).orElseGet(() -> null);
+        Validate.isTrue(enterprise != null, "Can not found enterprise with id = %s", enterpriseProductSellingRequestAnn.getEnterpriseId());
+
+        CooperationContract cooperationContract = cooperationContractRepository.findById(enterpriseProductSellingRequestAnn.getCooperationContractId()).orElseGet(() -> null);
+        Validate.isTrue(cooperationContract != null, "Can not found Cooperation Contract with id = %s", enterpriseProductSellingRequestAnn.getCooperationContractId());
+        Validator validator = new Validator();
+        validator.throwIfFalse(ContractStatus.ACTIVE == cooperationContract.getContractStatus(), "Request contract must be active");
 
         ProductPoint newProductPoint = new ProductPoint();
-        newProductPoint.setProduct(existsProduct);
+        newProductPoint.setProduct(product);
         newProductPoint.setEnterprise(enterprise);
         newProductPoint.setActive(Boolean.TRUE);
-        newProductPoint.setPointExchange(BigDecimalUtils.divide(existsProduct.getInitialCash(), existsCooperationContract.getCashPerPoint(), 0, 2));
+        newProductPoint.setPointExchange(BigDecimalUtils.divide(product.getInitialCash(), cooperationContract.getCashPerPoint(), 0, 2));
         productPointRepository.save(newProductPoint);
-        return "Registration to sell product succefully";
+
+        enterpriseProductSellingRequestAnn.setEnterpriseProductSellingRequestStatus(EnterpriseProductSellingRequestStatus.ACCEPT);
+
+        Announcement announcement = announcementRepository.findById(enterpriseProductSellingRequestAnn.getAnnouncementId()).orElseGet(() -> null);
+        Validate.isTrue(announcement != null, "Can not found Announcement with id = %s", enterpriseProductSellingRequestAnn.getAnnouncementId());
+
+        announcement.setStatus(AnnouncementStatus.TRANSMITTED);
+        try {
+            announcement.setMessage(jsonObjectMapper.writeValueAsString(enterpriseProductSellingRequestAnn));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        announcementRepository.save(announcement);
+
+        return "Accept product selling for enterprise " + enterprise.getEnterpriseName() + " successfully";
     }
 
     @Override
@@ -162,7 +310,7 @@ public class ProductServiceImpl implements ProductService {
 
         existsProductPoint.setActive(Boolean.FALSE);
         productPointRepository.save(existsProductPoint);
-        return "Registration to sell product succefully";
+        return "Cancel selling product succefully";
     }
 
     @Override

@@ -135,4 +135,35 @@ public class StagCustomerServiceImpl implements StagCustomerService {
         List<StagCustomer> stagCustomers = stagCustomerRepository.getByEnterpriseId(enterprise.getId());
         return customerMembershipMapper.mapToCustomerRegisterDtos(stagCustomers);
     }
+
+    @Override
+    public String importRegisterCustomers(List<CustomerRegisterDto> request, Enterprise enterprise) {
+        Map<Integer, StagCustomer> existsStagCustomerMap = stagCustomerRepository.getByEnterpriseId(enterprise.getId()).stream()
+                .collect(Collectors.toMap(StagCustomer::getIdChecking, Function.identity()));
+
+        List<StagCustomer> newStagCustomers = new ArrayList<>();
+        request.forEach(newCustomerRegister -> {
+            StagCustomer updateStagCustomer = existsStagCustomerMap.get(newCustomerRegister.getId());
+            if (updateStagCustomer != null) {
+                updateStagCustomer.setInitialPoint(newCustomerRegister.getInitialPoint());
+                updateStagCustomer.setFullName(newCustomerRegister.getFullName());
+                updateStagCustomer.setImportDate(LocalDateTime.now());
+            } else {
+                StagCustomer newStagCustomer = new StagCustomer();
+                newStagCustomer.setIdChecking(newCustomerRegister.getId());
+                newStagCustomer.setEnterpriseId(enterprise.getId());
+                newStagCustomer.setImportDate(LocalDateTime.now());
+                newStagCustomer.setFullName(newCustomerRegister.getFullName());
+                newStagCustomer.setRegisterEmail(newCustomerRegister.getRegisterEmail());
+                newStagCustomer.setRegisterPhoneNumber(newCustomerRegister.getRegisterPhoneNumber());
+                newStagCustomer.setInitialPoint(newCustomerRegister.getInitialPoint());
+                newStagCustomers.add(newStagCustomer);
+            }
+        });
+
+        stagCustomerRepository.saveAll(existsStagCustomerMap.values());
+        stagCustomerRepository.saveAll(newStagCustomers);
+
+        return "Import customer registers successfully";
+    }
 }

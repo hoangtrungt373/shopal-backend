@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
 import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
-import vn.group24.shopalbackend.controller.request.EnterpriseUpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
+import vn.group24.shopalbackend.controller.request.UpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
 import vn.group24.shopalbackend.controller.response.enterprise.PurchaseOrderDto;
 import vn.group24.shopalbackend.domain.Customer;
@@ -46,10 +46,10 @@ public class OrderController extends AbstractController {
     }
 
 
-    @PostMapping("/current-enterprise/customer-order/update-order-status")
+    @PostMapping("/update-order-status")
 //    @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<String> updatePurchaseOrderStatusForCurrentEnterprise(@RequestBody EnterpriseUpdateOrderStatusRequest request) {
-        return ResponseEntity.ok().body(purchaseOrderService.updatePurchaseOrderStatusForEnterprise(userUtils.getAuthenticateEnterprise(), request));
+    public ResponseEntity<String> updatePurchaseOrderStatus(@RequestBody UpdateOrderStatusRequest request) {
+        return ResponseEntity.ok().body(purchaseOrderService.updatePurchaseOrderStatus(request));
     }
 
     @PostMapping("/current-customer/cancel-order")

@@ -20,4 +20,6 @@ public interface StagCustomerService {
 
     List<CustomerRegisterDto> getCustomerRegisterForEnterprise(UserAccount userAccount);
 
+    String importRegisterCustomers(List<CustomerRegisterDto> request, Enterprise enterprise);
+
 }
