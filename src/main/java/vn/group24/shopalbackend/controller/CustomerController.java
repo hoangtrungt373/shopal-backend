@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import vn.group24.shopalbackend.controller.request.CustomerSearchCriteriaRequest;
+import vn.group24.shopalbackend.controller.request.CustomerSyncInfoRequest;
 import vn.group24.shopalbackend.controller.response.admin.CustomerAllInfoDto;
 import vn.group24.shopalbackend.controller.response.common.CustomerDto;
 import vn.group24.shopalbackend.controller.response.enterprise.CustomerMembershipDto;
@@ -60,6 +61,13 @@ public class CustomerController extends AbstractController {
     public ResponseEntity<List<CustomerMembershipDto>> getCustomerMembershipForCurrentEnterprise() {
         UserAccount userAccount = userUtils.getAuthenticateUser();
         return ResponseEntity.ok(customerService.getCustomerMembershipForEnterprise(userAccount));
+    }
+
+    @PostMapping("/customer-point-sync")
+    //TODO: get reactive check role
+//    @PreAuthorize("hasRole('ENTERPRISE_MANAGER')")
+    public ResponseEntity<String> syncCustomerPoint(@RequestBody List<CustomerSyncInfoRequest> requests) {
+        return ResponseEntity.ok(customerService.syncCustomerPoint(requests));
     }
 
     @GetMapping("/current-enterprise/customer-register/get-all")

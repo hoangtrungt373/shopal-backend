@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
-import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
+import vn.group24.shopalbackend.controller.request.PurchaseOrderCancelRequest;
 import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.request.UpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
@@ -54,7 +54,7 @@ public class OrderController extends AbstractController {
 
     @PostMapping("/current-customer/cancel-order")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<String> cancelOrderForCurrentCustomer(@RequestBody CustomerPurchaseOrderCancelRequest request) {
+    public ResponseEntity<String> cancelOrderForCurrentCustomer(@RequestBody PurchaseOrderCancelRequest request) {
         return ResponseEntity.ok().body(purchaseOrderService.cancelOrderForCustomer(userUtils.getAuthenticateCustomer(), request));
     }
 

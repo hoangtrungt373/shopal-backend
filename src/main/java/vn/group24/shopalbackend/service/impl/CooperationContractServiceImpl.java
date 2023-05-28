@@ -29,6 +29,7 @@ import vn.group24.shopalbackend.controller.response.common.EnterpriseDto;
 import vn.group24.shopalbackend.domain.Announcement;
 import vn.group24.shopalbackend.domain.CooperationContract;
 import vn.group24.shopalbackend.domain.Enterprise;
+import vn.group24.shopalbackend.domain.ProductCart;
 import vn.group24.shopalbackend.domain.ProductPoint;
 import vn.group24.shopalbackend.domain.dto.AbstractAnn;
 import vn.group24.shopalbackend.domain.dto.AnnouncementInput;
@@ -43,6 +44,7 @@ import vn.group24.shopalbackend.mapper.CooperationContractMapper;
 import vn.group24.shopalbackend.repository.AnnouncementRepository;
 import vn.group24.shopalbackend.repository.CooperationContractRepository;
 import vn.group24.shopalbackend.repository.EnterpriseRepository;
+import vn.group24.shopalbackend.repository.ProductCartRepository;
 import vn.group24.shopalbackend.repository.ProductPointRepository;
 import vn.group24.shopalbackend.service.AnnouncementService;
 import vn.group24.shopalbackend.service.CooperationContractService;
@@ -70,6 +72,8 @@ public class CooperationContractServiceImpl implements CooperationContractServic
     private AnnouncementService announcementService;
     @Autowired
     private AnnouncementRepository announcementRepository;
+    @Autowired
+    private ProductCartRepository productCartRepository;
     @Autowired
     private ObjectMapper jsonObjectMapper;
     @Autowired
@@ -228,19 +232,27 @@ public class CooperationContractServiceImpl implements CooperationContractServic
 
             oldGeContract.setContractStatus(ContractStatus.INACTIVE);
 
-            List<ProductPoint> oldGeProductPoints = productPointRepository.getByEnterpriseIdAndActiveIsTrue(createOrUpdateContractRequestAnn.getEnterpriseId());
-            List<ProductPoint> newGeProductPoints = oldGeProductPoints.stream().map(pp -> {
-                ProductPoint newProductPoint = pp.copy();
-                newProductPoint.setPointExchange(BigDecimalUtils.divide(pp.getProduct().getInitialCash(), newGeContract.getCashPerPoint(), 0, 2));
-                return newProductPoint;
-            }).toList();
-            oldGeProductPoints.forEach(pp -> pp.setActive(Boolean.FALSE));
-
             cooperationContractRepository.save(oldGeContract);
             cooperationContractRepository.save(newGeContract);
 
-            productPointRepository.saveAll(oldGeProductPoints);
-            productPointRepository.saveAll(newGeProductPoints);
+            Map<ProductPoint, ProductPoint> productPointOldAndNewGeMap = new HashMap<>();
+            productPointRepository.getByEnterpriseIdAndActiveIsTrue(createOrUpdateContractRequestAnn.getEnterpriseId()).forEach(oldGeProductPoint -> {
+                ProductPoint newGeProductPoint = oldGeProductPoint.copy();
+                newGeProductPoint.setPointExchange(BigDecimalUtils.divide(oldGeProductPoint.getProduct().getInitialCash(), newGeContract.getCashPerPoint(), 0, 2));
+                productPointOldAndNewGeMap.put(oldGeProductPoint, newGeProductPoint);
+                oldGeProductPoint.setActive(Boolean.FALSE);
+            });
+
+            productPointRepository.saveAll(productPointOldAndNewGeMap.keySet());
+            productPointRepository.saveAll(productPointOldAndNewGeMap.values());
+
+            List<ProductCart> productCarts = productCartRepository.getByProductPointIdIn(productPointOldAndNewGeMap.keySet().stream()
+                    .map(ProductPoint::getId).toList());
+            productCarts.forEach(productCart -> {
+                productCart.setProductPoint(productPointOldAndNewGeMap.get(productCart.getProductPoint()));
+            });
+
+            productCartRepository.saveAll(productCarts);
 
             createOrUpdateContractRequestAnn.setContractChangeRequestStatus(ContractChangeRequestStatus.ACCEPT);
 

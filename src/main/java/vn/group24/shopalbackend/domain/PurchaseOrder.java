@@ -66,8 +66,8 @@ public class PurchaseOrder extends AbstractGenerationEntity {
     @Column(name = "DELIVERY_DATE")
     private LocalDateTime deliveryDate;
 
-    @Column(name = "CANCEL_REASON")
-    private String cancelReason;
+    @Column(name = "CANCEL_CODE")
+    private String cancelCode;
 
     @Column(name = "CANCEL_DATE")
     private LocalDateTime cancelDate;

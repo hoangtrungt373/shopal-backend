@@ -42,6 +42,8 @@ public class AdminPurchaseOrderMapper {
             purchaseOrderDto.setCustomer(mapToCustomerDto(purchaseOrder.getCustomer()));
             purchaseOrderDto.setEnterprise(mapToEnterpriseDto(purchaseOrder.getEnterprise()));
             purchaseOrderDto.setOrderTotalCash(purchaseOrder.getOrderTotalCash());
+            purchaseOrderDto.setCancelCode(purchaseOrder.getCancelCode());
+            purchaseOrderDto.setCancelDate(purchaseOrder.getCancelDate());
             purchaseOrderAllInfoDtos.add(purchaseOrderDto);
         });
         return purchaseOrderAllInfoDtos;

@@ -49,7 +49,7 @@ public class CartServiceImpl implements CartService {
 
             Validate.isTrue(amount >= 0, "Product amount can not negative");
 
-            ProductPoint productPoint = productPointRepository.getByIdAndActiveIsTrue(productPointId);
+            ProductPoint productPoint = productPointRepository.findById(productPointId).orElseGet(() -> null);
             Validate.isTrue(productPoint != null, "Can not found ProductPoint with id = %s", productPointId);
 
             Product product = productPoint.getProduct();

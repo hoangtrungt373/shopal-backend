@@ -24,6 +24,7 @@ public class PurchaseOrderDto extends AbstractDto {
     private EnterpriseDto enterprise;
     private BigDecimal orderTotalPointExchange;
     private LocalDateTime orderDate;
+    private LocalDateTime cancelDate;
     private DeliveryStatus deliveryStatus;
     private String deliveryStatusDescription;
     private OrderStatus orderStatus;
@@ -31,5 +32,6 @@ public class PurchaseOrderDto extends AbstractDto {
     private LocalDateTime deliveryDate;
     private Integer orderTotalItems;
     private BigDecimal orderTotalCash;
+    private String cancelCode;
     private List<PurchaseOrderDetailDto> purchaseProducts = new ArrayList<>();
 }

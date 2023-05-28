@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import vn.group24.shopalbackend.controller.request.CustomerSearchCriteriaRequest;
+import vn.group24.shopalbackend.controller.request.CustomerSyncInfoRequest;
 import vn.group24.shopalbackend.controller.response.admin.CustomerAllInfoDto;
 import vn.group24.shopalbackend.controller.response.common.CustomerDto;
 import vn.group24.shopalbackend.controller.response.enterprise.CustomerMembershipDto;
@@ -26,4 +27,6 @@ public interface CustomerService {
     String handleSendEmailVerifyEmailUpdate(Customer customer, String newEmail);
 
     List<CustomerMembershipDto> getCustomerMembershipForEnterprise(UserAccount userAccount);
+
+    String syncCustomerPoint(List<CustomerSyncInfoRequest> customerSyncInfoRequests);
 }

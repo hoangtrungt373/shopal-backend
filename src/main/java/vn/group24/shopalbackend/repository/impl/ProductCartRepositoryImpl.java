@@ -24,8 +24,7 @@ public class ProductCartRepositoryImpl implements ProductCartRepositoryCustom {
         QProduct qProduct = QProduct.product;
         QProductPoint qProductPoint = QProductPoint.productPoint;
 
-        BooleanExpression condition = qProductCart.customer.id.eq(customerId)
-                .and(qProductPoint.active.isTrue());
+        BooleanExpression condition = qProductCart.customer.id.eq(customerId);
 
         // TODO: optimize this method to ge ProductPoint of ProductCart
         return new JPAQuery<ProductCart>(em)

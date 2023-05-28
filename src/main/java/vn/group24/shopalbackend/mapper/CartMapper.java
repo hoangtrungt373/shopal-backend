@@ -27,6 +27,8 @@ public class CartMapper {
         dto.setId(productCart.getId());
         dto.setProductId(productCart.getProductPoint().getProduct().getId());
         dto.setProductName(productCart.getProductPoint().getProduct().getProductName());
+        dto.setProductStatus(productCart.getProductPoint().getProduct().getProductStatus());
+        dto.setProductStatusDescription(productCart.getProductPoint().getProduct().getProductStatus().getTextForCurrentLan());
         dto.setQuantityInStock(productCart.getProductPoint().getProduct().getQuantityInStock());
         dto.setAmountSelected(productCart.getAmount());
         dto.setMainImgUrl(productCart.getProductPoint().getProduct().getProductGalleries().stream()
@@ -50,6 +52,7 @@ public class CartMapper {
         ProductPointDto dto = new ProductPointDto();
         dto.setId(entity.getId());
         dto.setPointExchange(entity.getPointExchange());
+        dto.setActive(entity.getActive());
         dto.setEnterprise(mapToEnterpriseDto(entity.getEnterprise()));
         return dto;
     }

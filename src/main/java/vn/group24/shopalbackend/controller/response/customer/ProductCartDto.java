@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.controller.response.common.AbstractDto;
 import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
+import vn.group24.shopalbackend.domain.enums.ProductStatus;
 
 /**
  *
@@ -16,6 +17,8 @@ import vn.group24.shopalbackend.controller.response.common.ProductPointDto;
 @Setter
 public class ProductCartDto extends AbstractDto {
     private String productName;
+    private ProductStatus productStatus;
+    private String productStatusDescription;
     private Integer productId;
     private Integer quantityInStock;
     private Boolean active;

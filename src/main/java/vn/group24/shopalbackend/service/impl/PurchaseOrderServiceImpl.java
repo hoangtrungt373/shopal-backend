@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import vn.group24.shopalbackend.controller.request.CreateNewPurchaseOrderRequest;
-import vn.group24.shopalbackend.controller.request.CustomerPurchaseOrderCancelRequest;
+import vn.group24.shopalbackend.controller.request.PurchaseOrderCancelRequest;
 import vn.group24.shopalbackend.controller.request.PurchaseOrderSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.request.UpdateOrderStatusRequest;
 import vn.group24.shopalbackend.controller.response.common.OrderStatusDto;
 import vn.group24.shopalbackend.controller.response.enterprise.PurchaseOrderDto;
 import vn.group24.shopalbackend.domain.Customer;
+import vn.group24.shopalbackend.domain.CustomerPointMovement;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.domain.Membership;
 import vn.group24.shopalbackend.domain.Product;
@@ -32,8 +34,11 @@ import vn.group24.shopalbackend.domain.PurchaseOrder;
 import vn.group24.shopalbackend.domain.PurchaseOrderDetail;
 import vn.group24.shopalbackend.domain.enums.DeliveryStatus;
 import vn.group24.shopalbackend.domain.enums.OrderStatus;
+import vn.group24.shopalbackend.domain.enums.ProductStatus;
+import vn.group24.shopalbackend.domain.enums.TypeMovement;
 import vn.group24.shopalbackend.mapper.admin.AdminPurchaseOrderMapper;
 import vn.group24.shopalbackend.mapper.customer.CustomerPurchaseOrderMapper;
+import vn.group24.shopalbackend.repository.CustomerPointMovementRepository;
 import vn.group24.shopalbackend.repository.MembershipRepository;
 import vn.group24.shopalbackend.repository.ProductCartRepository;
 import vn.group24.shopalbackend.repository.ProductRepository;
@@ -58,6 +63,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     private MembershipRepository membershipRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private CustomerPointMovementRepository customerPointMovementRepository;
 
     @Autowired
     private CustomerPurchaseOrderMapper customerPurchaseOrderMapper;
@@ -73,7 +80,12 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
         // TODO: create query fetch join here
         List<ProductCart> orderProductCarts = productCartRepository.findAllById(createNewPurchaseOrderRequests.stream()
-                .map(CreateNewPurchaseOrderRequest::getProductCartId).collect(Collectors.toList()));
+                .map(CreateNewPurchaseOrderRequest::getProductCartId).toList());
+
+        orderProductCarts.forEach(orderProductCart -> {
+            validator.throwIfFalse(BooleanUtils.isTrue(orderProductCart.getProductPoint().getActive()), "Product Point must be active");
+        });
+
         // TODO: fetch join this
         Map<Enterprise, Membership> customerAvailablePointByEnterprise = customer.getMemberships()
                 .stream().collect(Collectors.toMap(Membership::getEnterprise, Function.identity()));
@@ -82,6 +94,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 .collect(Collectors.groupingBy(productCart -> productCart.getProductPoint().getProduct()));
 
         productGroupByOrderProduct.forEach((product, productCarts) -> {
+            validator.throwIfFalse(ProductStatus.ACTIVE == product.getProductStatus(), "Order Product must be active");
             Integer totalAmountOrder = productCarts.stream().map(ProductCart::getAmount).reduce(0, Integer::sum);
             Integer remainQuantityInStock = product.getQuantityInStock() - totalAmountOrder;
             validator.throwIfFalse(remainQuantityInStock > 0, "Số lượng sản phẩm đặt [%s] đã vượt quá số hàng tồn, vui lòng thử lại", product.getProductName());
@@ -90,6 +103,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         });
 
         List<PurchaseOrder> purchaseOrders = new ArrayList<>();
+        List<CustomerPointMovement> movements = new ArrayList<>();
         orderProductCarts.stream().collect(Collectors.groupingBy(pc -> pc.getProductPoint().getEnterprise()))
                 .forEach(((enterprise, orderProductCartsByEnterprise) -> {
 
@@ -122,20 +136,31 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                     BigDecimal orderTotalPointExchange = purchaseOrder.getPurchaseOrderDetails().stream()
                             .map(PurchaseOrderDetail::getTotalPointExchange).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                    Validate.isTrue(availablePoint.compareTo(orderTotalPointExchange) > 0,
+                    Validate.isTrue(availablePoint.compareTo(orderTotalPointExchange) >= 0,
                             "Customer [%s]'s available point for enterprise [%s] is not enough to place this order", customer.getContactEmail(), enterprise.getEnterpriseName());
 
                     purchaseOrder.setOrderTotalPointExchange(orderTotalPointExchange);
                     purchaseOrder.setOrderTotalCash(purchaseOrder.getPurchaseOrderDetails().stream().map(PurchaseOrderDetail::getTotalCash).reduce(BigDecimal.ZERO, BigDecimal::add));
                     purchaseOrders.add(purchaseOrder);
 
-                    membership.setAvailablePoint(availablePoint.subtract(orderTotalPointExchange));
+                    BigDecimal remainPoint = availablePoint.subtract(orderTotalPointExchange);
+                    membership.setAvailablePoint(remainPoint);
+
+                    CustomerPointMovement movement = new CustomerPointMovement();
+                    movement.setDateMovement(LocalDateTime.now());
+                    movement.setCustomer(customer);
+                    movement.setPurchaseOrder(purchaseOrder);
+                    movement.setTypeMovement(TypeMovement.PAY_ORDER);
+                    movement.setValue(orderTotalPointExchange);
+                    movement.setPay(remainPoint);
+                    movements.add(movement);
                 }));
 
         productCartRepository.deleteAll(orderProductCarts);
         purchaseOrderRepository.saveAll(purchaseOrders);
         membershipRepository.saveAll(customerAvailablePointByEnterprise.values());
         productRepository.saveAll(productGroupByOrderProduct.keySet());
+        customerPointMovementRepository.saveAll(movements);
     }
 
     @Override
@@ -199,17 +224,17 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Override
-    public String cancelOrderForCustomer(Customer customer, CustomerPurchaseOrderCancelRequest request) {
+    public String cancelOrderForCustomer(Customer customer, PurchaseOrderCancelRequest request) {
         // TODO: fetch join this
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(request.getPurchaseOrderId()).orElseGet(() -> null);
         Validate.isTrue(purchaseOrder != null, "Can not found PurchaseOrder with id = %s", request.getPurchaseOrderId());
-        Validate.isTrue(OrderStatus.CANCELLED == purchaseOrder.getOrderStatus(), "Can not cancel PurchaseOrder with status = %s", purchaseOrder.getOrderStatus());
+        Validate.isTrue(OrderStatus.OPEN == purchaseOrder.getOrderStatus(), "Can not cancel PurchaseOrder with status = %s", purchaseOrder.getOrderStatus());
 
         // update order status
         purchaseOrder.setOrderStatus(OrderStatus.CANCELLED);
         purchaseOrder.setCancelDate(LocalDateTime.now());
         // TODO: config request cancel reason
-        purchaseOrder.setCancelReason(request.getCancelReason());
+        purchaseOrder.setCancelCode(request.getCancelCode());
         purchaseOrderRepository.save(purchaseOrder);
 
         // restore customer point
@@ -224,6 +249,16 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             product.setTotalSold(product.getTotalSold() - purchaseOrderDetail.getAmount());
             productRepository.save(product);
         });
+
+        CustomerPointMovement movement = new CustomerPointMovement();
+        movement.setCustomer(customer);
+        movement.setPurchaseOrder(purchaseOrder);
+        movement.setDateMovement(LocalDateTime.now());
+        movement.setTypeMovement(TypeMovement.CANCEL_ORDER);
+        movement.setValue(purchaseOrder.getOrderTotalPointExchange());
+        movement.setPay(membership.getAvailablePoint());
+
+        customerPointMovementRepository.save(movement);
 
         return "Cancel PurchaseOrder succefully";
     }
