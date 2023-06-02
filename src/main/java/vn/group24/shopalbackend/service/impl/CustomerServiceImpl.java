@@ -88,10 +88,11 @@ public class CustomerServiceImpl implements CustomerService {
         List<Membership> memberships = membershipRepository.findAllById(customerSyncInfoRequests.stream().map(CustomerSyncInfoRequest::getMembershipId).filter(Objects::nonNull).collect(Collectors.toList()));
         List<CustomerPointMovement> movements = new ArrayList<>();
         memberships.forEach(membership -> {
-            StagCustomer stagCustomer = stagCustomerRepository.getByRegisterEmailAndRegisterPhoneNumberAndEnterpriseId(
-                    membership.getRegisterEmail(), membership.getRegisterPhoneNumber(), membership.getEnterprise().getId()
-            );
-            if (stagCustomer != null) {
+            List<StagCustomer> stagCustomers = stagCustomerRepository.getByRegisterEmailOrRegisterPhoneNumber(
+                            membership.getRegisterEmail(), membership.getRegisterPhoneNumber()).stream()
+                    .filter(sa -> sa.getEnterpriseId().equals(membership.getEnterprise().getId())).toList();
+
+            stagCustomers.forEach(stagCustomer -> {
                 BigDecimal distancePoint = stagCustomer.getInitialPoint().subtract(membership.getAvailablePoint());
                 if (BigDecimalUtils.isGreaterThan(distancePoint, BigDecimal.ZERO)) {
                     membership.setAvailablePoint(membership.getAvailablePoint().add(distancePoint));
@@ -107,7 +108,7 @@ public class CustomerServiceImpl implements CustomerService {
 
                     stagCustomerRepository.delete(stagCustomer);
                 }
-            }
+            });
         });
 
         membershipRepository.saveAll(memberships);

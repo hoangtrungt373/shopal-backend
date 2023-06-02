@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import vn.group24.shopalbackend.controller.request.EnterpriseRegisterRequest;
+import vn.group24.shopalbackend.controller.request.EnterpriseSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.common.EnterpriseDto;
 import vn.group24.shopalbackend.domain.dto.EnterpriseRegisterRequestAnn;
 import vn.group24.shopalbackend.security.domain.UserAccount;
@@ -42,6 +43,10 @@ public class EnterpriseController extends AbstractController {
         return ResponseEntity.ok(enterpriseService.getAllEnterprise());
     }
 
+    @PostMapping("/get-by-criteria")
+    public ResponseEntity<List<EnterpriseDto>> getEnterpriseByCriteria(@RequestBody EnterpriseSearchCriteriaRequest criteria) {
+        return ResponseEntity.ok(enterpriseService.getEnterpriseByCriteria(criteria));
+    }
 
     @GetMapping("/current-enterprise/info")
     public ResponseEntity<EnterpriseDto> getCurrentEnterpriseInfo() {

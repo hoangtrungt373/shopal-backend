@@ -1,17 +1,6 @@
 package vn.group24.shopalbackend.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +10,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import jakarta.servlet.http.HttpServletRequest;
-import vn.group24.shopalbackend.controller.response.enterprise.EnterpriseAccountingDto;
+import vn.group24.shopalbackend.controller.request.AccountingCalculateRequest;
+import vn.group24.shopalbackend.controller.request.AccountingSearchCriteriaRequest;
+import vn.group24.shopalbackend.controller.response.common.AccountingDto;
+import vn.group24.shopalbackend.domain.dto.VnPayPaymentResult;
 import vn.group24.shopalbackend.service.AccountingService;
 
 /**
@@ -37,79 +31,62 @@ public class AccountingController extends AbstractController {
     @Autowired
     private AccountingService accountingService;
 
-    @GetMapping("/current-enterprise/accounting/get-all")
+    @PostMapping("/get-by-criteria")
 //    @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<List<EnterpriseAccountingDto>> getAllAccountingForCurrentEnterprise() {
-        return ResponseEntity.ok().body(accountingService.getAllAccountingForEnterprise(userUtils.getAuthenticateEnterprise()));
+    public ResponseEntity<List<AccountingDto>> getAccountingByCriteria(@RequestBody AccountingSearchCriteriaRequest criteria) {
+        return ResponseEntity.ok().body(accountingService.getAccountingByCriteria(criteria));
     }
 
-    @PostMapping("/current-enterprise/create-url-process-payment")
-    public ResponseEntity<String> createNewUrlProcessPaymentAccountingForCurrentEnterprise(@RequestBody Integer accountingId, HttpServletRequest req) throws UnsupportedEncodingException {
+    @PostMapping("/calculate-accounting")
+//    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<String> calculateAccounting(@RequestBody AccountingCalculateRequest request) {
+        return ResponseEntity.ok().body(accountingService.calculateAccounting(request));
+    }
 
-        String vnp_Version = "2.1.0";
-        String vnp_Command = "pay";
-        String orderType = "other";
-        long amount = 100000;
-        String bankCode = "";
+    @PostMapping("/get-payment-url")
+    public ResponseEntity<String> getPaymentUrl(@RequestBody AccountingDto accountingDto,
+                                                HttpServletRequest request) throws JsonProcessingException {
+        return ResponseEntity.ok().body(accountingService.getVnPayPaymentUrl(accountingDto, request));
+    }
 
-        String vnp_TxnRef = Config.getRandomNumber(8);
-        String vnp_IpAddr = Config.getIpAddress(req);
-        String vnp_TmnCode = Config.vnp_TmnCode;
+    @GetMapping("/vnpay-payment")
+    public String returnOrderSuccess(HttpServletRequest request) throws JsonProcessingException {
+        VnPayPaymentResult result = accountingService.saveVnPayPaymentResult(request);
 
-        Map<String, String> vnp_Params = new HashMap<>();
-        vnp_Params.put("vnp_Version", vnp_Version);
-        vnp_Params.put("vnp_Command", vnp_Command);
-        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(amount));
-        vnp_Params.put("vnp_CurrCode", "VND");
-
-        if (bankCode != null && !bankCode.isEmpty()) {
-            vnp_Params.put("vnp_BankCode", bankCode);
-        }
-        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
-        vnp_Params.put("vnp_OrderType", orderType);
-
-        vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", Config.vnp_Returnurl);
-        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
-
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(cld.getTime());
-        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-
-        cld.add(Calendar.MINUTE, 15);
-        String vnp_ExpireDate = formatter.format(cld.getTime());
-        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
-
-        List fieldNames = new ArrayList(vnp_Params.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder hashData = new StringBuilder();
-        StringBuilder query = new StringBuilder();
-        Iterator itr = fieldNames.iterator();
-        while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                //Build hash data
-                hashData.append(fieldName);
-                hashData.append('=');
-                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                //Build query
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
-                query.append('=');
-                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                if (itr.hasNext()) {
-                    query.append('&');
-                    hashData.append('&');
-                }
-            }
-        }
-        String queryUrl = query.toString();
-        String vnp_SecureHash = Config.md5(hashData.toString());
-        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        String paymentUrl = Config.vnp_PayUrl + "?" + queryUrl;
-        return ResponseEntity.ok().body(paymentUrl);
+        return "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                "    <link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\">\n" +
+                "    <title>Payment success</title>\n" +
+                "</head>\n" +
+                "\n" +
+                "<body>\n" +
+                "<!-- back to top -->\n" +
+                "\n" +
+                "<!-- start body -->\n" +
+                "<div class=\"body py-5\">\n" +
+                "    <div class=\"container\">\n" +
+                "        <div class=\"w-50 m-auto\" style=\"display: flex; flex-direction: column; align-items: center; gap: 24px\">\n" +
+                "            <h2 class=\"my-3 text-success text-center\">Process payment successfully</h2>\n" +
+                "            <img style=\"width: 400px\"\n" +
+                "                 src=\"https://img.freepik.com/free-vector/mobile-online-service-payment-concept-mobile-payments-online-payment-app-smartphone-has-security-protection-contactless-payment-business-finance-pay-transaction-online_1150-56215.jpg?w=1060&t=st=1685637602~exp=1685638202~hmac=b6b7d07e221fe6cb9f7c843a33038cc63f24d372fb6f6b096952337f4e19c4cb\"/>\n" +
+                "            <a href=\"http://localhost:3000/enterprise/dashboard/accounting\" class=\"btn btn-primary\">Click here to see\n" +
+                "                the payment detail</a>\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "</div>\n" +
+                "<!-- end body -->\n" +
+                "\n" +
+                "\n" +
+                "<!-- start footer -->\n" +
+                "\n" +
+                "<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js\"\n" +
+                "        integrity=\"sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM\"\n" +
+                "        crossorigin=\"anonymous\"></script>\n" +
+                "</body>\n" +
+                "\n" +
+                "</html>";
     }
 }

@@ -17,6 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
 
         if (CollectionUtils.isNotEmpty(criteria.getEnterpriseIdList())) {
             products = products.stream().filter(p -> {
-                List<Integer> enterpriseIds = p.getProductPoints().stream().map(ProductPoint::getEnterprise).map(Enterprise::getId).toList();
+                List<Integer> enterpriseIds = p.getProductPoints().stream().filter(pp -> BooleanUtils.isTrue(pp.getActive())).map(ProductPoint::getEnterprise).map(Enterprise::getId).toList();
                 return criteria.getEnterpriseIdList().stream().anyMatch(enterpriseIds::contains);
             }).toList();
         }
@@ -341,7 +342,7 @@ public class ProductServiceImpl implements ProductService {
 
             // save content
             String productDescriptionUrl = newProduct.getSku().concat(Constants.TXT_FILE_EXTENSION);
-            FileUtils.writeFile(request.getContent(), productDescriptionUrl, Constants.PRODUCT_CONTENT_DIRECTORY);
+            FileUtils.writeFile(StringUtils.stripToEmpty(request.getContent()), productDescriptionUrl, Constants.PRODUCT_CONTENT_DIRECTORY);
             newProduct.setProductDescriptionUrl(productDescriptionUrl);
 
             newProduct.setProductType(request.getProductType());

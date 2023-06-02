@@ -28,7 +28,6 @@ public class StagCustomer extends AbstractAuditableEntity {
     @Column(name = "ENTERPRISE_ID")
     private Integer enterpriseId;
 
-    @NotNull
     @Column(name = "FULL_NAME")
     private String fullName;
 
@@ -36,11 +35,9 @@ public class StagCustomer extends AbstractAuditableEntity {
     @Column(name = "ID_CHECKING")
     private Integer idChecking;
 
-    @NotNull
     @Column(name = "REGISTER_PHONE_NUMBER")
     private String registerPhoneNumber;
 
-    @NotNull
     @Column(name = "REGISTER_EMAIL")
     private String registerEmail;
 

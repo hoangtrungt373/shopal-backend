@@ -60,7 +60,10 @@ public class Accounting extends AbstractGenerationEntity {
 
     @Column(name = "PAYMENT_METHOD")
     @Enumerated(EnumType.STRING)
-    public PaymentMethod paymentMethod;
+    private PaymentMethod paymentMethod;
+
+    @Column(name = "PAYMENT_DETAIL")
+    private String paymentDetail;
 
     @Transient
     private BigDecimal commissionRate;

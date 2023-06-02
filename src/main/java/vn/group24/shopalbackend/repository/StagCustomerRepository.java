@@ -13,7 +13,7 @@ import vn.group24.shopalbackend.domain.staging.StagCustomer;
  */
 @Repository
 public interface StagCustomerRepository extends JpaRepository<StagCustomer, Integer> {
-    StagCustomer getByRegisterEmailAndRegisterPhoneNumberAndEnterpriseId(String registerEmail, String registerPhoneNumber, Integer enterpriseId);
+    List<StagCustomer> getByRegisterEmailOrRegisterPhoneNumber(String registerEmail, String registerPhoneNumber);
 
     List<StagCustomer> getByEnterpriseId(Integer enterpriseId);
 }

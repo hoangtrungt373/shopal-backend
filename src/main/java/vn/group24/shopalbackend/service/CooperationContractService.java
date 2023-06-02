@@ -18,4 +18,8 @@ public interface CooperationContractService {
     List<CreateOrUpdateContractRequestAnn> getAllCreateOrUpdateContractAnn();
 
     String handleAcceptCreateOrUpdateContractRequest(CreateOrUpdateContractRequestAnn createOrUpdateContractRequestAnn);
+
+    String cancelCreateOrUpdateContractAnn(Integer annId);
+
+    String syncContractStatus();
 }

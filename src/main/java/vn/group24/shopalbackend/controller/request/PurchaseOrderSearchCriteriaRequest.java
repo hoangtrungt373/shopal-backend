@@ -3,6 +3,7 @@ package vn.group24.shopalbackend.controller.request;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import vn.group24.shopalbackend.domain.enums.OrderStatus;
@@ -13,6 +14,7 @@ import vn.group24.shopalbackend.domain.enums.OrderStatus;
  */
 @Getter
 @Setter
+@Builder
 public class PurchaseOrderSearchCriteriaRequest extends AbstractSearchCriteria {
     private Integer purchaseOrderId;
     private LocalDateTime orderDateFrom;

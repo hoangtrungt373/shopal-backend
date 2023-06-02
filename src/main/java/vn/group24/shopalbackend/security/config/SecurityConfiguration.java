@@ -30,7 +30,9 @@ public class SecurityConfiguration {
             "/api/email/**",
             "/api/cooperation-request/**",
             "/api/accounting/**",
+            "/api/order-success/**",
             "/api/file/**",
+            "/**",
             "/api/contract/**",
             "/api/membership/**"};
 

@@ -3,6 +3,7 @@ package vn.group24.shopalbackend.mapper;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +39,7 @@ public class ProductDetailMapper {
         productDetailDto.setProductStatusDescription(product.getProductStatus().getTextForCurrentLan());
         productDetailDto.setImageUrls(product.getProductGalleries().stream().map(this::mapToProductImageDto).toList());
         productDetailDto.setCatalogs(product.getProductCatalogs().stream().map(ProductCatalog::getCatalog).map(this::mapToCatalogDto).toList());
-        productDetailDto.setExchangeAblePoints(product.getProductPoints().stream().map(this::mapToProductPointDto).toList());
+        productDetailDto.setExchangeAblePoints(product.getProductPoints().stream().filter(pp -> BooleanUtils.isTrue(pp.getActive())).map(this::mapToProductPointDto).toList());
         productDetailDto.setTotalSold(product.getTotalSold());
         productDetailDto.setInputDate(product.getInputDate());
         productDetailDto.setInitialCash(product.getInitialCash());

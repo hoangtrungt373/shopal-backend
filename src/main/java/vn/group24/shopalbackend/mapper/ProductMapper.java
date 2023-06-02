@@ -3,6 +3,7 @@ package vn.group24.shopalbackend.mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Component;
 
 import vn.group24.shopalbackend.controller.response.common.CatalogDto;
@@ -42,7 +43,7 @@ public class ProductMapper {
                             .findAny()
                             .map(ProductGallery::getFileUrl)
                             .orElseGet(() -> null)));
-            productDto.setExchangeAblePoints(product.getProductPoints().stream()
+            productDto.setExchangeAblePoints(product.getProductPoints().stream().filter(pp -> BooleanUtils.isTrue(pp.getActive()))
                     .map(this::mapToProductPointDto).toList());
             productDto.setInputDate(product.getInputDate());
             productDto.setExpirationDate(product.getExpirationDate());

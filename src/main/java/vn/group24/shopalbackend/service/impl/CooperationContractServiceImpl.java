@@ -3,6 +3,7 @@ package vn.group24.shopalbackend.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,7 @@ import vn.group24.shopalbackend.repository.ProductPointRepository;
 import vn.group24.shopalbackend.service.AnnouncementService;
 import vn.group24.shopalbackend.service.CooperationContractService;
 import vn.group24.shopalbackend.util.BigDecimalUtils;
+import vn.group24.shopalbackend.util.DateUtils;
 import vn.group24.shopalbackend.util.Validator;
 
 /**
@@ -105,6 +107,11 @@ public class CooperationContractServiceImpl implements CooperationContractServic
             validator.throwIfFalse(request.getCashPerPoint() != null && request.getCashPerPoint().compareTo(BigDecimal.ZERO) > 0, "Cash per point must larger than 0");
             validator.throwIfFalse(request.getCommissionRate() != null && request.getCommissionRate().compareTo(BigDecimal.ZERO) > 0, "Commission rate must larger than 0");
 
+            CooperationContract currentActiveContract = cooperationContractRepository.getByEnterpriseIdAndContractStatus(request.getEnterprise().getId(), ContractStatus.ACTIVE);
+            if (request.getContractStatus() == ContractStatus.ACTIVE) {
+                validator.throwIfFalse(currentActiveContract == null, "Already exists an active contract, can not request more");
+            }
+
             CreateOrUpdateContractRequestAnn announcement = new CreateOrUpdateContractRequestAnn();
             announcement.setId(announcementService.getNextAnnouncementMessageIdSeq());
             announcement.setEnterpriseId(request.getEnterprise().getId());
@@ -119,6 +126,7 @@ public class CooperationContractServiceImpl implements CooperationContractServic
                 announcementService.createAnnouncement(AnnouncementInput.builder()
                         .anInterface(AnnouncementInterface.CREATE_CONTRACT)
                         .type(AnnouncementType.RECEIVE)
+                        .enterprise(enterpriseRepository.findById(request.getEnterprise().getId()).orElseGet(() -> null))
                         .status(AnnouncementStatus.VALID)
                         .message(jsonObjectMapper.writeValueAsString(announcement))
                         .build());
@@ -162,6 +170,7 @@ public class CooperationContractServiceImpl implements CooperationContractServic
                         .anInterface(AnnouncementInterface.UPDATE_CONTRACT)
                         .type(AnnouncementType.RECEIVE)
                         .status(AnnouncementStatus.VALID)
+                        .enterprise(enterpriseRepository.findById(request.getEnterprise().getId()).orElseGet(() -> null))
                         .message(jsonObjectMapper.writeValueAsString(announcement))
                         .build());
             } catch (JsonProcessingException e) {
@@ -279,7 +288,7 @@ public class CooperationContractServiceImpl implements CooperationContractServic
             newGeContract.setEndDate(createOrUpdateContractRequestAnn.getEndDate());
             newGeContract.setCommissionRate(createOrUpdateContractRequestAnn.getCommissionRate());
             newGeContract.setCashPerPoint(createOrUpdateContractRequestAnn.getCashPerPoint());
-            newGeContract.setContractStatus(createOrUpdateContractRequestAnn.getContractStatus());
+            newGeContract.setContractStatus(ContractStatus.PENDING);
 
             cooperationContractRepository.save(newGeContract);
 
@@ -298,6 +307,71 @@ public class CooperationContractServiceImpl implements CooperationContractServic
 
             return "Create contract successfully";
         }
+    }
+
+    @Override
+    public String cancelCreateOrUpdateContractAnn(Integer annId) {
+        Announcement announcement = announcementRepository.findById(annId).orElseGet(() -> null);
+        Validate.isTrue(announcement != null, "Can not found Announcement with id %s", annId);
+        announcement.setStatus(AnnouncementStatus.CANCEL);
+        announcementRepository.save(announcement);
+        return null;
+    }
+
+    @Override
+    public String syncContractStatus() {
+        Map<Enterprise, List<CooperationContract>> cooperationContractMap = cooperationContractRepository.findAll().stream()
+                .filter(cc -> cc.getContractStatus() != ContractStatus.INACTIVE).collect(Collectors.groupingBy(CooperationContract::getEnterprise));
+
+        cooperationContractMap.forEach((enterprise, cooperationContracts) -> {
+            CooperationContract activeContract = cooperationContracts.stream()
+                    .filter(cc -> cc.getContractStatus() == ContractStatus.ACTIVE && cc.getEndDate().isBefore(LocalDate.now()))
+                    .findFirst().orElseGet(() -> null);
+
+            CooperationContract pendingContract = cooperationContracts.stream()
+                    .filter(cc -> cc.getContractStatus() == ContractStatus.PENDING &&
+                            cc.getStartDate().isAfter(activeContract != null ? activeContract.getEndDate() : LocalDate.MIN))
+                    .findFirst().orElseGet(() -> null);
+
+            if (activeContract != null) {
+                activeContract.setContractStatus(ContractStatus.INACTIVE);
+
+                if (pendingContract == null) {
+                    pendingContract = activeContract.copy();
+                    pendingContract.setContractStatus(ContractStatus.ACTIVE);
+                    pendingContract.setStartDate(DateUtils.firstDayOfNextMonth(activeContract.getEndDate()));
+                    pendingContract.setEndDate(DateUtils.lastDayOfNextMonth(activeContract.getEndDate()));
+                    cooperationContractRepository.save(pendingContract);
+                } else {
+                    pendingContract.setContractStatus(ContractStatus.ACTIVE);
+                }
+
+                List<ProductPoint> existsProductPoints = productPointRepository.getByEnterpriseIdAndActiveIsTrue(enterprise.getId());
+                Map<ProductPoint, ProductPoint> productPointOldAndNewGeMap = new HashMap<>();
+                for (ProductPoint oldGeProductPoint : existsProductPoints) {
+                    ProductPoint newGeProductPoint = oldGeProductPoint.copy();
+                    newGeProductPoint.setPointExchange(BigDecimalUtils.divide(oldGeProductPoint.getProduct().getInitialCash(), pendingContract.getCashPerPoint(), 0, 2));
+                    productPointOldAndNewGeMap.put(oldGeProductPoint, newGeProductPoint);
+                    oldGeProductPoint.setActive(Boolean.FALSE);
+                }
+
+                productPointRepository.saveAll(existsProductPoints);
+                productPointRepository.saveAll(productPointOldAndNewGeMap.values());
+
+                List<ProductCart> productCarts = productCartRepository.getByProductPointIdIn(productPointOldAndNewGeMap.keySet().stream()
+                        .map(ProductPoint::getId).toList());
+                productCarts.forEach(productCart -> {
+                    Optional.ofNullable(productPointOldAndNewGeMap.get(productCart.getProductPoint()))
+                            .ifPresent(productCart::setProductPoint);
+                });
+                productCartRepository.saveAll(productCarts);
+            }
+
+        });
+
+        cooperationContractRepository.saveAll(cooperationContractMap.values().stream().flatMap(Collection::stream).toList());
+
+        return "Sync all contract info successfully";
     }
 
     private Predicate<CooperationContract> getCooperationContractPredicate(CooperationContractSearchCriteriaRequest criteria) {

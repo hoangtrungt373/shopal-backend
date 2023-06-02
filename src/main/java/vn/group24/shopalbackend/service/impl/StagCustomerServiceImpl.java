@@ -11,7 +11,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,32 +59,33 @@ public class StagCustomerServiceImpl implements StagCustomerService {
         String registerEmail = createNewMembershipRequest.getRegisterEmail();
         String registerPhoneNumber = createNewMembershipRequest.getRegisterPhoneNumber();
         Integer enterpriseId = createNewMembershipRequest.getEnterpriseId();
-        Validate.isTrue(registerEmail != null, "Register email can not be blank");
-        Validate.isTrue(registerPhoneNumber != null, "Register phone number can not be blank");
-        Validate.isTrue(enterpriseId != null, "EnterpriseId can not be null");
 
-        StagCustomer registerAccount = stagCustomerRepository.getByRegisterEmailAndRegisterPhoneNumberAndEnterpriseId(
-                registerEmail, registerPhoneNumber, enterpriseId);
+        List<StagCustomer> registerAccounts = stagCustomerRepository.getByRegisterEmailOrRegisterPhoneNumber(
+                registerEmail, registerPhoneNumber);
+
+        if (enterpriseId != null) {
+            registerAccounts = registerAccounts.stream().filter(ra -> ra.getEnterpriseId().equals(enterpriseId)).toList();
+        }
+
         Validator validator = new Validator();
-        validator.throwIfFalse(registerAccount != null, "Membership information can not be found");
+        validator.throwIfFalse(CollectionUtils.isNotEmpty(registerAccounts), "Không tìm thấy thông tin thành viên, vui lòng thử lại sau");
 
-        Enterprise registerEnterprise = enterpriseRepository.findById(Objects.requireNonNull(registerAccount).getEnterpriseId()).orElseGet(() -> null);
-        Validate.isTrue(registerEnterprise != null, "Enterprise not found with id= %s", registerAccount.getEnterpriseId());
+        registerAccounts.forEach(registerAccount -> {
 
-        Validate.isTrue(customer.getMemberships().stream()
-                        .noneMatch(m -> m.getEnterprise().equals(registerEnterprise)), "Customer [%s] already a membership of enterprise [%s]",
-                customer.getContactEmail(), registerEnterprise.getEnterpriseName());
+            Enterprise registerEnterprise = enterpriseRepository.findById(Objects.requireNonNull(registerAccount).getEnterpriseId()).orElseGet(() -> null);
+            Validate.isTrue(registerEnterprise != null, "Enterprise not found with id= %s", registerAccount.getEnterpriseId());
 
-        Membership membership = new Membership();
-        membership.setCustomer(customer);
-        membership.setEnterprise(registerEnterprise);
-        membership.setAvailablePoint(registerAccount.getInitialPoint());
-        membership.setRegisterEmail(registerEmail);
-        membership.setTotalBuy(0);
-        membership.setRegisterPhoneNumber(registerPhoneNumber);
+            Membership membership = new Membership();
+            membership.setCustomer(customer);
+            membership.setEnterprise(registerEnterprise);
+            membership.setAvailablePoint(registerAccount.getInitialPoint());
+            membership.setRegisterEmail(registerEmail);
+            membership.setTotalBuy(0);
+            membership.setRegisterPhoneNumber(registerPhoneNumber);
 
-        membershipRepository.save(membership);
-        stagCustomerRepository.delete(registerAccount);
+            membershipRepository.save(membership);
+            stagCustomerRepository.delete(registerAccount);
+        });
 
         return "Create new membership successfully";
     }
@@ -98,9 +101,9 @@ public class StagCustomerServiceImpl implements StagCustomerService {
                 stagCustomer.setId(id);
                 stagCustomer.setEnterpriseId(enterprise.getId());
             }
-            stagCustomer.setRegisterEmail(jsonStagCustomer.getRegisterEmail());
-            stagCustomer.setRegisterPhoneNumber(jsonStagCustomer.getRegisterPhoneNumber());
-            stagCustomer.setFullName(jsonStagCustomer.getFullName());
+            stagCustomer.setRegisterEmail(StringUtils.stripToNull(jsonStagCustomer.getRegisterEmail()));
+            stagCustomer.setRegisterPhoneNumber(StringUtils.stripToNull(jsonStagCustomer.getRegisterPhoneNumber()));
+            stagCustomer.setFullName(StringUtils.stripToNull(jsonStagCustomer.getFullName()));
             stagCustomer.setImportDate(LocalDateTime.now());
             stagCustomer.setInitialPoint(jsonStagCustomer.getInitialPoint());
             stagCustomers.add(stagCustomer);

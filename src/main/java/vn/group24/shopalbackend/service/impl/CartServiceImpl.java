@@ -53,7 +53,7 @@ public class CartServiceImpl implements CartService {
             Validate.isTrue(productPoint != null, "Can not found ProductPoint with id = %s", productPointId);
 
             Product product = productPoint.getProduct();
-            Validate.isTrue(product.getQuantityInStock() > amount, "Amount order can not large than amount of product in stock, amount order = %s", amount);
+            Validate.isTrue(product.getQuantityInStock() >= amount, "Amount order can not large than amount of product in stock, amount order = %s", amount);
 
             if (productCartId != null) { // user edit in CartPage
                 ProductCart productCart = productCartRepository.findById(productCartId)

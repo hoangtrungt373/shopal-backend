@@ -2,6 +2,7 @@ package vn.group24.shopalbackend.service.impl;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import vn.group24.shopalbackend.controller.request.EnterpriseSearchCriteriaRequest;
 import vn.group24.shopalbackend.controller.response.common.EnterpriseDto;
 import vn.group24.shopalbackend.domain.Enterprise;
 import vn.group24.shopalbackend.mapper.EnterpriseMapper;
@@ -34,6 +36,11 @@ public class EnterpriseServiceImpl implements EnterpriseService {
     @Override
     public List<EnterpriseDto> getAllEnterprise() {
         return enterpriseMapper.mapToEnterpriseDtos(enterpriseRepository.findAll());
+    }
+
+    @Override
+    public List<EnterpriseDto> getEnterpriseByCriteria(EnterpriseSearchCriteriaRequest criteria) {
+        return enterpriseRepository.getByCriteria(criteria).stream().map(enterpriseMapper::mapToEnterpriseDto).collect(Collectors.toList());
     }
 
     @Override

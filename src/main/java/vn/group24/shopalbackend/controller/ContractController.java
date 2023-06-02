@@ -46,6 +46,20 @@ public class ContractController extends AbstractController {
         return ResponseEntity.ok().body(cooperationContractService.getAllCreateOrUpdateContractAnn());
     }
 
+    @PostMapping("/contract-request/cancel")
+//    @PreAuthorize("hasRole('ENTERPRISE_MANAGER')")
+    // TODO: change to request
+    public ResponseEntity<String> cancelCreateOrUpdateContractAnn(@RequestBody Integer annId) {
+        return ResponseEntity.ok().body(cooperationContractService.cancelCreateOrUpdateContractAnn(annId));
+    }
+
+    @PostMapping("/sync-status")
+//    @PreAuthorize("hasRole('ENTERPRISE_MANAGER')")
+    // TODO: change to request
+    public ResponseEntity<String> syncContractStatus() {
+        return ResponseEntity.ok().body(cooperationContractService.syncContractStatus());
+    }
+
     @PostMapping("/create-or-update-contract-request/accept")
 //    @PreAuthorize("hasRole('ENTERPRISE_MANAGER')")
     // TODO: change to request

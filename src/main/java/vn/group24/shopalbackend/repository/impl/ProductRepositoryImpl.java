@@ -17,7 +17,9 @@ import vn.group24.shopalbackend.domain.QEnterprise;
 import vn.group24.shopalbackend.domain.QProduct;
 import vn.group24.shopalbackend.domain.QProductCatalog;
 import vn.group24.shopalbackend.domain.QProductPoint;
+import vn.group24.shopalbackend.domain.enums.ProductStatus;
 import vn.group24.shopalbackend.repository.ProductRepositoryCustom;
+import vn.group24.shopalbackend.security.domain.enums.UserRole;
 
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
@@ -33,8 +35,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     @Override
     public Product getDetailById(Integer productId) {
-        BooleanExpression condition = qProduct.id.eq(productId)
-                .and(qProductPoint.active.isTrue());
+        BooleanExpression condition = qProduct.id.eq(productId);
 
         return new JPAQuery<Product>(em)
                 .from(qProduct)
@@ -94,8 +95,12 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     private BooleanExpression buildSearchCriteria(ProductSearchCriteriaRequest criteria) {
-        BooleanExpression condition = qProduct.id.isNotNull()
-                .and(qProductPoint.active.isTrue());
+        BooleanExpression condition = qProduct.id.isNotNull();
+
+        if (criteria.getUserRole() == UserRole.CUSTOMER) {
+            condition = condition.and(qProductPoint.active.isTrue());
+            condition = condition.and(qProduct.productStatus.eq(ProductStatus.ACTIVE));
+        }
 
         if (criteria.getProductId() != null) {
             condition = condition.and(qProduct.id.eq(criteria.getProductId()));
