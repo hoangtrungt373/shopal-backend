@@ -6,8 +6,8 @@ spring:
       integratedSecurity=false;
       encrypt=false;
       trustServerCertificate=true;
-    username: ipension-operations
-    password: P@ssw0rd
+    username: username
+    password: password
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
